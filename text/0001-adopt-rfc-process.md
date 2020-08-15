@@ -32,8 +32,8 @@ Any RFC (short for "request for comments") starts out with an idea. Some ideas a
 2. Create a new branch for your RFC on your private repo, name it accordingly, e.g. `my-new-proposal`.
 3. Copy the `0000-template.md` from the root to `text/0000-my-new-proposal.md`.
 4. Edit the file, creating the first draft of the RFC.
-5. Create a pull request to the RFC repo at [casperlabs/rfcs](https://github.com/casperlabs/rfcs). This PR will have a number, which is the official RFC number. Be sure to include a "Rendered" link pointing to the branch-latest file via GitHub on your RFCs branch for easier reading.
-6. Add one commit immediately that updates the file name and links inside the RFC with the assigned number.
+5. Create a pull request to the RFC repo at [casperlabs/rfcs](https://github.com/casperlabs/rfcs). This PR will have a number, which is the official RFC number.
+6. Add one commit immediately that updates the file name and links inside the RFC with the assigned number. Afterwards, add a "Rendered" link pointing to the branch-latest file via GitHub on your RFCs branch for easier reading (e.g. `https://github.com/yourgitusername/rfcs/blob/my-new-proposal/text/1234-my-new-proposal.md`)
 
 ### Discussion and merging
 
