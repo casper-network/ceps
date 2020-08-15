@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-RFC PR: [casperlabs/rfcs#0000](https://github.com/casperlabs/rfcs/pull/0000)
+RFC PR: [casperlabs/rfcs#0002](https://github.com/casperlabs/rfcs/pull/0002)
 
 Currently there are multiple serialization formats in use inside the Rust node's storage and various networking protocols. This proposal outlines why they can (and should) all be replaced with [Bincode](https://crates.io/crates/bincode).
 
