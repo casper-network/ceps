@@ -1,6 +1,6 @@
 # RFCs
 
-This is an empty repository. Content will follow soon.
+Please see [RFC0000](text/0000-adopt-rfc-process.md) on how to create an RFC.
 
 
 ## Copyright
