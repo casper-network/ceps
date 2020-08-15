@@ -1,6 +1,6 @@
 # RFCs
 
-Please see [RFC0000](text/0000-adopt-rfc-process.md) on how to create an RFC.
+Please see [RFC0001](text/0001-adopt-rfc-process.md) on how to create an RFC.
 
 
 ## Copyright

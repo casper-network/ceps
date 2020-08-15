@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-RFC PR: [casperlabs/rfcs#0000](https://github.com/casperlabs/rfcs/pull/0000)
+RFC PR: [casperlabs/rfcs#0001](https://github.com/casperlabs/rfcs/pull/0001)
 
 Make specifications, ideas and implementation guidelines more developer friendly and accessible through the introduction of an easy to use RFCs process.
 
