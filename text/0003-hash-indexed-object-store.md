@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-RFC PR: [casperlabs/rfcs#0000](https://github.com/casperlabs/rfcs/pull/0000)
+RFC PR: [casperlabs/rfcs#0003](https://github.com/casperlabs/rfcs/pull/0003)
 
 There is a variety of "objects" floating around in our codebase at the moment: Deploys, WASM blobs, Blocks, DAG nodes and others. By standardizing them into a [Git](https://git-scm.com)-inspired object model we can simplify our networking, gossiping, retrieval, and storage logic greatly.
 
