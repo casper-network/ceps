@@ -57,6 +57,8 @@ The one danger is that we are just creating a situation where all the existing w
 
 Another is potential growth of the process, making it become cumbersome. Any extension to this RFC itself should keep this in mind.
 
+While suggested, it is not possible to make the branch contain the RFC number, since it is assigned only by the time the PR is made, for which the branch already needs to exist. This is also why the seperate step updating the docs is required.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
