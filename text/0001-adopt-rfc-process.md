@@ -89,7 +89,7 @@ The process is heavily based on [Rust's RFC process](https://github.com/rust-lan
 
 [unresolved-questions]: #unresolved-questions
 
-- Is RFC okay as a name, or do we need to disambiguate it with a custom name?
+* Is RFC okay as a name, or do we need to disambiguate it with a custom name?
 
 ## Future possibilities
 
