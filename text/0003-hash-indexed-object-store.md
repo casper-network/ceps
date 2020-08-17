@@ -14,7 +14,7 @@ There is a variety of "objects" floating around in our codebase at the moment: D
 
 One possible implementation of a mechanism for a new node joining the network is to provide it with a block and have it download all parents and dependencies up until the well-known genesis block.
 
-With the current node architecture, this approach would requires quite a few component instances: Seperate instantiations of the gossiper and fetcher components for each type involved, which at the minimum are block and deploy if not counting DAG nodes. Storage needs to namespace according to types and component developers need to remember which effect to call for each. During all of this, the core logic remains the same for all IO operations of these different types though.
+With the current node architecture, this approach would require quite a few component instances: Separate instantiations of the gossiper and fetcher components for each type involved, which at the minimum are block and deploy if not counting DAG nodes. Storage needs to namespace according to types and component developers need to remember which effect to call for each. During all of this, the core logic remains the same for all IO operations of these different types though.
 
 By unifying all these types, we can simplify all of our IO components drastically. Ensuring that all have a unique hash that includes a type-discriminating tag ensures that we can use the same namespace for identifiers.
 
