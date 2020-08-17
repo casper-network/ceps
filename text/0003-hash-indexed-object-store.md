@@ -107,7 +107,7 @@ fn bincode_opts() -> impl bincode::config::Options {
 /// A serializable, hashable object.
 #[derive(Debug, Deserialize, Serialize)]
 #[repr(u16)] // TODO: Verify this is correctly encoded using bincode
-            //       and add tests for known binaries representations.
+            //       and add tests for known binary representations.
             //       If varint encoding works correctly, this can be a
             //       u32 easily.
 pub enum Object {
