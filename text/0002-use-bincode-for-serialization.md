@@ -66,6 +66,8 @@ The biggest drawback of Bincode itself is that there is no spec *yet*. Having a 
 
 Not having a spec makes it harder to reimplement Bincode in other languages, there are almost zero implementations outside of Rust. This is not an issue for storage, but could be a problem for interaction with node implementations that are not written in Rust. Since they are not on the horizon today this is not considered an issue at this time. If the requirements should change to include these, allowing a switch of the used encoding protocol should be a straightforward.
 
+An unlikely but potentially painful occurence would be a major version change in the Bincode crate, as there is currently no versioning built into our serialization code. Every binary published should be sure to use a proper `Cargo.lock` to prevent this from happening.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
