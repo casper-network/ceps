@@ -1,4 +1,4 @@
-# Adopt an CEP process
+# Adopt the CEP process
 
 ## Summary
 
@@ -22,11 +22,11 @@ By introducing a little bit of formality, we hope to keep these designs fun and 
 
 We are largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albeit simplified. This document will tell you all you need to know about creating a CEP.
 
-## How to create an CEP
+## How to create a CEP
 
 [guide-level-explanation]: #guide-level-explanation
 
-Any CEP (short for "request for comments") starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create an CEP for these. However, if the discussions grows in size and requires feedback from multiple people, this is the process:
+Any CEP (short for "request for comments") starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create a CEP for these. However, if the discussions grows in size and requires feedback from multiple people, this is the process:
 
 1. Fork the CEP repo at [casperlabs/ceps](https://github.com/casperlabs/ceps).
 2. Create a new branch for your CEP on your private repo, name it accordingly, e.g. `my-new-proposal`.
@@ -41,7 +41,7 @@ The CEP now enters discussion period. Invite people to review it by requesting r
 
 Please remind people to keep feedback and comments to the PR on GitHub if possible, as it is otherwise likely that the author will have to repeat himself multiple times. Of course, if you need to ask a question in private, do so instead.
 
-Once an CEP is done and has at least one approval, it can be merged. When deciding whose approvals are required for a merge, there is no hard rule - instead think about the teams impacted by this change and try to get at least one representative of each to sign off on this. If you do not know whom to invite, ask anyone in the project for a suitable reviewer.
+Once a CEP is finished and has at least one approval, it can be merged. When deciding whose approvals are required for a merge, there is no hard rule - instead think about the teams impacted by this change and try to get at least one representative of each to sign off on this. If you do not know whom to invite, ask anyone in the project for a suitable reviewer.
 
 The prescribed process ends here. How proposed features and changes make it into the product is currently unspecified.
 
