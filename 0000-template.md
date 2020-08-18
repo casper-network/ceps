@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-RFC PR: [casperlabs/rfcs#0000](https://github.com/casperlabs/rfcs/pull/0000)
+CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
 
 One paragraph explanation of the feature.
 
@@ -23,13 +23,13 @@ Explain the proposal as if it was already approved and implemented. That general
 - Introducing new named concepts.
 - Explaining the feature largely in terms of examples.
 
-For implementation-oriented RFCs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy RFCs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+For implementation-oriented CEPs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy CEPs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-This is the technical portion of the RFC. Explain the design in sufficient detail that:
+This is the technical portion of the CEP. Explain the design in sufficient detail that:
 
 - Its interaction with other features is clear.
 - It is reasonably clear how the feature would be implemented.
@@ -65,14 +65,14 @@ A few examples of what this can include are:
 - For other teams: What lessons can we learn from what other communities have done here?
 - Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
 
-This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your RFC with a fuller picture.
+This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your CEP with a fuller picture.
 
 ## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
-- What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
+- What parts of the design do you expect to resolve through the CEP process before this gets merged?
+- What related issues do you consider out of scope for this CEP that could be addressed in the future independently of the solution that comes out of this CEP?
 
 ## Future possibilities
 
@@ -80,8 +80,8 @@ This section is intended to encourage you as an author to think about the lesson
 
 Think about what the natural extension and evolution of your proposal would be and how it would affect the project as a whole in a holistic way. Try to use this section as a tool to more fully consider all possible interactions with the project and language in your proposal. Also consider how the this all fits into the roadmap for the project and of the relevant sub-team.
 
-This is also a good place to "dump ideas", if they are out of scope for the RFC you are writing but otherwise related.
+This is also a good place to "dump ideas", if they are out of scope for the CEP you are writing but otherwise related.
 
 If you have tried and cannot think of any future possibilities, you may simply state that you cannot think of anything.
 
-Note that having something written down in the future-possibilities section is not a reason to accept the current or a future RFC; such notes should be in the section on motivation or rationale in this or subsequent RFCs. The section merely provides additional information.
+Note that having something written down in the future-possibilities section is not a reason to accept the current or a future CEP; such notes should be in the section on motivation or rationale in this or subsequent CEPs. The section merely provides additional information.

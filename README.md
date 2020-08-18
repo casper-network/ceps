@@ -1,6 +1,6 @@
-# RFCs
+# CEPs
 
-Please see [RFC0001](text/0001-adopt-rfc-process.md) on how to create an RFC.
+Please see [CEP0001](text/0001-adopt-cep-process.md) on how to create a CEP.
 
 ## Copyright
 
