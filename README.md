@@ -1,4 +1,4 @@
-# CEPs
+# Casper Enhancement Proposals
 
 Please see [CEP0001](text/0001-adopt-cep-process.md) on how to create a CEP.
 
