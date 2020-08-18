@@ -40,9 +40,9 @@ Some alternatives considered directly were JSON, Msgpack, CBOR; see the alternat
 
 [reference-level-explanation]: #reference-level-explanation
 
-The code changes are minimal due to the fact that the serialization method is already behind a layer of abstraction in the form of the `serde::Deserialize` and `serde::Serialize` traits.
+The code changes are minimal when the serialization method is already behind a layer of abstraction in the form of the `serde::Deserialize` and `serde::Serialize` traits and a custom module inside the codebase.
 
-Changing these typically involves only switching out a single method call, e.g. `rmp_serde::write` with `bincode::serialize_into`.
+Changing these ideally involves only switching out a single method call, e.g. `rmp_serde::write` with `bincode::serialize_into`. With a centralization of serialization in the aforementioned custom module, the number of call sites should be small as well.
 
 ### Encoding module
 
