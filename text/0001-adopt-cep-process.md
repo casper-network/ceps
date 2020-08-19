@@ -12,7 +12,7 @@ Make specifications, ideas and implementation guidelines more developer friendly
 
 [motivation]: #motivation
 
-Currently we are relying on a hodge-podge of tools for capturing specifications and ideas. Confluence is the place where documentation goes to die, while there is also the public [docs.casperlabs.io](https://docs.casperlabs.io), comments on Jira tickets, Google Docs (for better comments and versioning that Confluence), HackMD (for Markdown), Slack conversations, plain old text files on a developers machine and other things I have missed.
+To standardize on a single unified process for capturing and specifying proposals for enhancements to our software. 
 
 There is a need for a reasonably lightweight process to discuss and adopt ideas, not only on the tech side, but governance and economics as well. We want this process to serve those behind these ideas and those implementing them first, instead of being caught in project management tooling. If possible, it should also be friendly to outside contributors, setting a low barrier for them to contribute feedback or their own ideas.
 
