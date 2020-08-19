@@ -39,7 +39,7 @@ Any CEP (short for "request for comments") starts out with an idea. Some ideas a
 
 The CEP now enters the discussion period. Invite people to review it by requesting reviews and/or messaging them directly. The ensuing discussion may result in proposed changes, which should be addressed through additional commits.
 
-Please remind people to keep feedback and comments to the PR on GitHub if possible, as it is otherwise likely that the author will have to repeat himself multiple times. Of course, if you need to ask a question in private, do so instead.
+Feedback and comments to the PR should be handled via GitHub to capture the discussion for later reference.
 
 Once a CEP is finished and has at least one approval, it can be merged. When deciding whose approvals are required for a merge, there is no hard rule - instead think about the teams impacted by this change and try to get at least one representative of each to sign off on this. If you do not know whom to invite, ask anyone in the project for a suitable reviewer.
 
