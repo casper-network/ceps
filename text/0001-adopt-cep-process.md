@@ -37,7 +37,7 @@ Any CEP (short for "request for comments") starts out with an idea. Some ideas a
 
 ### Discussion and merging
 
-The CEP now enters discussion period. Invite people to review it by requesting reviews and/or messaging them directly to get them to comment on it. This will likely result in proposed changes, which should be addressed through additional commits.
+The CEP now enters the discussion period. Invite people to review it by requesting reviews and/or messaging them directly. The ensuing discussion may result in proposed changes, which should be addressed through additional commits.
 
 Please remind people to keep feedback and comments to the PR on GitHub if possible, as it is otherwise likely that the author will have to repeat himself multiple times. Of course, if you need to ask a question in private, do so instead.
 
