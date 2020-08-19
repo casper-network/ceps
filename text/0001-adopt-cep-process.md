@@ -53,7 +53,7 @@ Note that the process is somewhat free-form, this very first CEP already deviate
 
 [drawbacks]: #drawbacks
 
-The one danger is that we are just creating a situation where all the existing ways of discussing ideas mentioned in the introduction persist and this just creates yet another one. We are relying on this process being adopted, if that fails, this repo should be dissolved.
+The goal of this process is to unify and replace previous approaches on other content sharing platforms. If the other previous approaches are not abandoned in favor of this one, this attempt at unification will effectively be dead on arrival having merely exacerbated the problem it was meant to solve.  
 
 Another is potential growth of the process, making it become cumbersome. Any extension to this CEP itself should keep this in mind.
 
