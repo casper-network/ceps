@@ -73,14 +73,6 @@ The internal confluence or any other Wiki could also handle some of this process
 
 The docs repository is for outside-facing, polished documentation. People reading it are typically not concerned about new ideas that are still under discussion or not implemented yet, and do not want to read about refactorings of node internals.
 
-### Naming
-
-Alternative names were proposed, but rejected in favor of CEP, since it is a well known standard and does not restrict the domain of things discussed. It also does not make us sound self-important.
-
-* `CIP` (Casper Improvement Proposal)
-* `CEP` (Casper Enhancement Proposal)
-* `CRC` (Casper Request for Comments)
-
 ## Prior art
 
 [prior-art]: #prior-art
