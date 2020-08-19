@@ -83,4 +83,4 @@ The process is heavily based on [Rust's RFC process](https://github.com/rust-lan
 
 [future-possibilities]: #future-possibilities
 
-With a process in place, future work could include automating some tooling around the process, i.e. creating an automatic [mdbook](https://github.com/rust-lang/mdBook) and publishing it to GitHub pages. These things are not tackled in this CEP to keep it small and get the ball rolling quickly.
+Future work could include automating some tooling around the process, i.e. creating an automatic [mdbook](https://github.com/rust-lang/mdBook) and publishing it to GitHub pages. 
