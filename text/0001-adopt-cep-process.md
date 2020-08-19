@@ -79,12 +79,6 @@ The docs repository is for outside-facing, polished documentation. People readin
 
 The process is heavily based on [Rust's RFC process](https://github.com/rust-lang/rfcs) process, which seems to have worked well for the project. Other projects like NEAR [have adopted a copy of it](https://github.com/nearprotocol/NEPs/) as well.
 
-## Unresolved questions
-
-[unresolved-questions]: #unresolved-questions
-
-* Is CEP okay as a name, or do we need to disambiguate it with a custom name?
-
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
