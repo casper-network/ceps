@@ -26,7 +26,7 @@ Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albe
 
 [guide-level-explanation]: #guide-level-explanation
 
-Any CEP (short for "request for comments") starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create a CEP for these. However, if the discussions grows in size and requires feedback from multiple people, this is the process:
+Any CEP (short for "casper enhancement proposal") starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create a CEP for these. However, after some initial vetting, discussion should be moved into the CEP format using the following process:
 
 1. Fork the CEP repo at [casperlabs/ceps](https://github.com/casperlabs/ceps).
 2. Create a new branch for your CEP on your private repo, name it accordingly, e.g. `my-new-proposal`.
