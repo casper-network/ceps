@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-RFC PR: [casperlabs/rfcs#0002](https://github.com/casperlabs/rfcs/pull/0002)
+CEP PR: [casperlabs/ceps#0002](https://github.com/casperlabs/ceps/pull/0002)
 
 Currently there are multiple serialization formats in use inside the Rust node's storage and various networking protocols. This proposal outlines why they can (and should) all be replaced with [Bincode](https://crates.io/crates/bincode).
 
@@ -54,7 +54,7 @@ To make this even more seamless, the choice of encoding and setup will be hidden
 
 There are some drawbacks with this approach that stem not necessarily from `bincode` itself, but the approach to serialization as a whole.
 
-No versioning is applied to the serialization at all right now, and this is not addressed in this RFC. Changes in protocol, either by changing the data structures or the serialization method, will require some sort of version tag on the format. This should usually be addressed by the node during connection setup.
+No versioning is applied to the serialization at all right now, and this is not addressed in this CEP. Changes in protocol, either by changing the data structures or the serialization method, will require some sort of version tag on the format. This should usually be addressed by the node during connection setup.
 
 The same holds true for stored data; a single byte versioning tag should be sufficient to side-step these problems. It is worth mentioning that some other serialization formats like [ProtoBuf](https://developers.google.com/protocol-buffers) have this functionality built in, but we currently see very little use in backwards compatibility, as there is no incentive in running or supporting an outdated node on the network.
 
@@ -128,6 +128,6 @@ None at this time.
 
 [future-possibilities]: #future-possibilities
 
-**Compression** is not considered in this document. Any reasonable compression algorithm (e.g. GZIP) will make a large part of the repetitive fields used by Msgpack a moot point. Additionally, it will work well on non-variable length encoded integers. It is possible that different settings or serialization mechanisms could improve performance, so these should be revisited in the accompanying RFCs.
+**Compression** is not considered in this document. Any reasonable compression algorithm (e.g. GZIP) will make a large part of the repetitive fields used by Msgpack a moot point. Additionally, it will work well on non-variable length encoded integers. It is possible that different settings or serialization mechanisms could improve performance, so these should be revisited in the accompanying CEPs.
 
 **Profiling** should be done a few months down the line, regardless of the protocol chosen, to ensure the serialization layer is not a bottleneck.
