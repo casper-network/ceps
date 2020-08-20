@@ -67,7 +67,7 @@ Some of the existing infrastructure could accomodate this process at least parti
 
 ### Wiki/Confluence
 
-The internal confluence or any other Wiki could also handle some of this process, however they are typically lacking the sophisticated change tracking that is inherit in revision control systems like git. While this feature typically comes with a UX hit due to complexity, the fact that all people working on the project are familiar with developer tools makes this a non-issue.
+The internal confluence or any other Wiki could also handle some of this process, however they are typically lacking the sophisticated change tracking that is inherent in revision control systems like git. While this feature typically comes with a UX hit due to complexity, the fact that all people working on the project are familiar with developer tools makes this a non-issue.
 
 ### docs.casperlabs.io
 
