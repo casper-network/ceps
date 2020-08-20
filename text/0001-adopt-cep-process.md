@@ -41,7 +41,7 @@ The CEP now enters the discussion period. Invite people to review it by requesti
 
 Feedback and comments to the PR should be handled via GitHub to capture the discussion for later reference.
 
-Once a CEP is finished and has at least one approval, it can be merged. When deciding whose approvals are required for a merge, there is no hard rule - instead think about the teams impacted by this change and try to get at least one representative of each to sign off on this. If you do not know whom to invite, ask anyone in the project for a suitable reviewer.
+The initial guidance for acceptance is that once a CEP is finished and has at least two approvals from core developers it can be merged. As the project and this process matures, this guidance is expected to be replaced with a more formal requirement.
 
 The prescribed process ends here. How proposed features and changes make it into the product is currently unspecified.
 
