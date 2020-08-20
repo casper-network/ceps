@@ -20,7 +20,7 @@ Typical usecases are the discussion of refactoring or design decisions of the so
 
 By introducing a little bit of formality, we hope to keep these designs fun and stave off the introduction of more restrictive processes. Creating CEPs should be easy using Markdown and GitHub, tools that everyone is already familiar with.
 
-We are largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albeit simplified. This document will tell you all you need to know about creating a CEP.
+Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albeit simplified, this document will tell you all you need to know about creating a CEP.
 
 ## How to create a CEP
 
