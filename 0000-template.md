@@ -51,7 +51,7 @@ Why should we *not* do this?
 - What other designs have been considered and what is the rationale for not choosing them?
 - What is the impact of not doing this?
 
-A very important thing to list here is ideas that were discarded in the process, as these tend to crop up again after a while. Describing them here saves time as it allows people discussing those ideas again in the future to point to refer to this document.
+A very important thing to list here is ideas that were discarded in the process, as these tend to crop up again after a while. Describing them here saves time as it allows people discussing those ideas again in the future to refer to this document.
 
 ## Prior art
 
