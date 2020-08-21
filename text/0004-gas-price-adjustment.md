@@ -28,13 +28,6 @@ The algorithm sets a `BASE_PRICE` for every block, which the included transactio
 
 The update can be either a percent increase or decrease of `BASE_PRICE`, specified by an `ADJUSTMENT_RATE`. To decide on the direction of the change, we make use of the fullnesses of blocks from the preceding adjustment period. We map the array of fullnesses to a single value called `FULLNESS` (details on how to compute this are given below). Then, if `FULLNESS` is greater than `TARGET_FULLNESS`, we increase the price. Otherwise, we decrease the price.
 
-Explain the proposal as if it was already approved and implemented. That generally means:
-
-- Introducing new named concepts.
-- Explaining the feature largely in terms of examples.
-
-For implementation-oriented CEPs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy CEPs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
-
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
