@@ -12,7 +12,7 @@ Make specifications, ideas and implementation guidelines more developer friendly
 
 [motivation]: #motivation
 
-To standardize on a single unified process for capturing and specifying proposals for enhancements to our software. 
+To standardize on a single unified process for capturing and specifying proposals for enhancements to our software.
 
 There is a need for a reasonably lightweight process to discuss and adopt ideas, not only on the tech side, but governance and economics as well. We want this process to serve those behind these ideas and those implementing them first, instead of being caught in project management tooling. If possible, it should also be friendly to outside contributors, setting a low barrier for them to contribute feedback or their own ideas.
 
@@ -53,7 +53,7 @@ Note that the process is somewhat free-form, this very first CEP already deviate
 
 [drawbacks]: #drawbacks
 
-The goal of this process is to unify and replace previous approaches on other content sharing platforms. If the other previous approaches are not abandoned in favor of this one, this attempt at unification will effectively be dead on arrival having merely exacerbated the problem it was meant to solve.  
+The goal of this process is to unify and replace previous approaches on other content sharing platforms. If the other previous approaches are not abandoned in favor of this one, this attempt at unification will effectively be dead on arrival having merely exacerbated the problem it was meant to solve.
 
 Another is potential growth of the process, making it become cumbersome. Any extension to this CEP itself should keep this in mind.
 
@@ -83,4 +83,4 @@ The process is heavily based on [Rust's RFC process](https://github.com/rust-lan
 
 [future-possibilities]: #future-possibilities
 
-Future work could include automating some tooling around the process, i.e. creating an automatic [mdbook](https://github.com/rust-lang/mdBook) and publishing it to GitHub pages. 
+Future work could include automating some tooling around the process, i.e. creating an automatic [mdbook](https://github.com/rust-lang/mdBook) and publishing it to GitHub pages.
