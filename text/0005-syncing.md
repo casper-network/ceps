@@ -85,14 +85,16 @@ Since downloading the whole linear chain (and most importantly, the deploys) is 
 
 If we choose to synchronize Global State directly though, the above won't work. We need to be able to create active eras just by looking at the Global State. This should also be fairly trivial since PoS contract can track past eras, current ones and future (auctions already executed but era not yet started). We can use information from the cache and create instances of eras that are still active.
 
-Once whole linear chain is "consumed", we need to synchronize DAG(s) of still active eras.
-
 **Necessary work:**
 
 1. Start a node with the trusted hash
 2. Ask peers for the initial block from the linear chain.
 3. Synchronize Global State at the post-state hash of the initial block.
 4. Validate correctness of the Global State with the post-state hash from the initial block.
+
+
+---------------------
+Once whole linear chain is "consumed" and state is built-up, we need to synchronize DAG(s) of still active eras.
 
 ### Synchronizing DAG(s) ###
 
@@ -108,3 +110,5 @@ If we want to fully sync the DAG(s) before transitioning from the synchronizing 
 * joining node should send `GetTips` message to its peers for all active eras
 * once `panorama`(s) are received, sender should then start requesting for dependencies in a depth-first manner 
 * when syncing `panorama`(s) is done, transition to an active node
+
+
