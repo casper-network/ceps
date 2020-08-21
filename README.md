@@ -1,3 +1,1 @@
-# RFCs
-
-This is an empty repository. Content will follow soon.
+text/0001-adopt-cep-process.md
