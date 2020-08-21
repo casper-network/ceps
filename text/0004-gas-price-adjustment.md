@@ -57,7 +57,7 @@ The update can be either a percent increase or decrease of `BASE_PRICE`, specifi
 
 ### Adjustment Process
 
-For the `n`-th adjustment period, all finalized blocks with a timestamp in the range `[n*ADJUSTMENT_PERIOD, (n+1)*ADJUSTMENT_PERIOD]` are considered. The amount of gas used by each one is collected in an array `gas_used_array`. `FULLNESS` for the `n`-th period is computed as:
+For the `n`-th adjustment period, all finalized blocks with a timestamp in the range `[n*ADJUSTMENT_PERIOD, (n+1)*ADJUSTMENT_PERIOD]` are considered. The total amount of gas used in each one is collected in an array `gas_used_array`. `FULLNESS` for the `n`-th period is computed as:
 
 ```python
 FULLNESS = DENOMINATOR * median(gas_used_array) / BLOCK_GAS_LIMIT
