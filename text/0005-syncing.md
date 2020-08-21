@@ -39,7 +39,7 @@ With this context in mind, we arrive at the conclusion that in order for current
 
 Given all the above:
 
-> Active node needs to know whole DAGs of all active (bonded) eras.
+> Active node needs to know whole DAGs of all active (bonded) eras to correctly participate in the protocol.
 
 ## How to synchronize ##
 
