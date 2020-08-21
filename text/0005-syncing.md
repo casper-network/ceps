@@ -49,30 +49,6 @@ Before we start accepting consensus messages we need to learn what are the curre
 
 A node is started with an initial hash of the linear chain block (hash of the finalized block) that it gets from a trusted source (a friend, blockchain explorer, CasperLabs organization, newspaper). This block needs to be younger than the unbonding period (era in which it was created is still active). Otherwise, node is not guaranteed to receive consensus messages that will allow it advance the chain. Also, we cannot trust messages created in already inactive (unbonded) eras.
 
-#### Variant A ####
-
-Once we receive the finalized block we started the node with, we check if we have all of its dependencies (parent block, deploys) and if not we ask peers for them. This process is repeated recursively until we have downloaded all of the dependencies and we can start executing deploys from the linear chain (starting from the oldest one).
-
-**Necessary work:**
-
-1. Start a node with the trusted hash.
-2. Ask peers for the initial block from the linear chain.
-3. Synchronize all missing dependencies.
-4. Execute deploys from the linear chain in the order of them appearing in the linear chain.
-
-#### Variant B ####
-
-Since downloading the whole linear chain (and most importantly, the deploys) is a time-consuming operation, a faster alternative would be to just sync the Global State at the initial hash. Global State is a merkle trie so it's easily splittable and has an easy way of verifying its correctness (compare root hashes).
-
-**Necessary work:**
-
-1. Start a node with the trusted hash
-2. Ask peers for the initial block from the linear chain.
-3. Synchronize Global State at the post-state hash of the initial block.
-4. Validate correctness of the Global State with the post-state hash from the initial block.
-
-### Synchronizing DAG(s) ###
-
 #### Prerequisites ####
 
 1. Add `era_id` to `BlockHeader`
@@ -86,7 +62,16 @@ Normal way of operation of an active node is that Consensus component will send 
 * `era_id` (doesn't yet have but it should)
 * `Vec<SystemTransaction>`
 
-#### Variant A (as defined in previous section) #### 
+#### Variant A ####
+
+Once we receive the finalized block we started the node with, we check if we have all of its dependencies (parent block, deploys) and if not we ask peers for them. This process is repeated recursively until we have downloaded all of the dependencies and we can start executing deploys from the linear chain (starting from the oldest one).
+
+**Necessary work:**
+
+1. Start a node with the trusted hash.
+2. Ask peers for the initial block from the linear chain.
+3. Synchronize all missing dependencies.
+4. Execute deploys from the linear chain in the order of them appearing in the linear chain.
 
 `BlockExecutor` sees whether it's a `switch_block` and whether it should run an auction for era `era_id + AUCTION_DELAY` . As a result of execution, it will produce a `Block` instance (that is a block of the linear chain) but also an event `NextEraValidators(finalized_block.era_id + 1, Set<Validator>)` that informs Consensus about the next era validators. Consensus component will use new validators (and random bits from blocks between booking block and key block of the next era) and create an instance of new era.
 
@@ -96,9 +81,20 @@ Obviously, over the course of synchronization some eras will become obsolete but
 
 #### Variant B ####
 
+Since downloading the whole linear chain (and most importantly, the deploys) is a time-consuming operation, a faster alternative would be to just sync the Global State at the initial hash. Global State is a merkle trie so it's easily splittable and has an easy way of verifying its correctness (compare root hashes).
+
 If we choose to synchronize Global State directly though, the above won't work. We need to be able to create active eras just by looking at the Global State. This should also be fairly trivial since PoS contract can track past eras, current ones and future (auctions already executed but era not yet started). We can use information from the cache and create instances of eras that are still active.
 
 Once whole linear chain is "consumed", we need to synchronize DAG(s) of still active eras.
+
+**Necessary work:**
+
+1. Start a node with the trusted hash
+2. Ask peers for the initial block from the linear chain.
+3. Synchronize Global State at the post-state hash of the initial block.
+4. Validate correctness of the Global State with the post-state hash from the initial block.
+
+### Synchronizing DAG(s) ###
 
 #### Variant A (quick-n-dirty) ####
 
