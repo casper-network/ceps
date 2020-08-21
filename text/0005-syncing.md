@@ -71,10 +71,6 @@ Since downloading the whole linear chain (and most importantly, the deploys) is 
 3. Synchronize Global State at the post-state hash of the initial block.
 4. Validate correctness of the Global State with the post-state hash from the initial block.
 
-**NOTE:**
-
-In this variant, node won't have deploys that were proposed in the blocks that build up the Global State.
-
 ### Synchronizing DAG(s) ###
 
 #### Prerequisites ####
@@ -90,11 +86,17 @@ Normal way of operation of an active node is that Consensus component will send 
 * `era_id` (doesn't yet have but it should)
 * `Vec<SystemTransaction>`
 
+#### Variant A (as defined in previous section) #### 
+
 `BlockExecutor` sees whether it's a `switch_block` and whether it should run an auction for era `era_id + AUCTION_DELAY` . As a result of execution, it will produce a `Block` instance (that is a block of the linear chain) but also an event `NextEraValidators(finalized_block.era_id + 1, Set<Validator>)` that informs Consensus about the next era validators. Consensus component will use new validators (and random bits from blocks between booking block and key block of the next era) and create an instance of new era.
 
 Same mechanism can be used in a node that is catching up – it will use `Block`s from the linear chain to build up its Global State via `BlockExecutor` (we need a mechanism of turning `Block` into `FinalizedBlock` as that's the input that `BlockExecutor` understands) and create new eras. 
 
 Obviously, over the course of synchronization some eras will become obsolete but the assumption is that eras are deactivated/removed by a separate mechanism. For example, `BlockExecutor` component already knows about the unbonding delay so it could send an event to a consensus component that it should deactivate an era (or if consensus component needs this knowledge it could deactivate old eras by itself).
+
+#### Variant B ####
+
+If we choose to synchronize Global State directly though, the above won't work. We need to be able to create active eras just by looking at the Global State. This should also be fairly trivial since PoS contract can track past eras, current ones and future (auctions already executed but era not yet started). We can use information from the cache and create instances of eras that are still active.
 
 Once whole linear chain is "consumed", we need to synchronize DAG(s) of still active eras.
 
