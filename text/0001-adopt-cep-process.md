@@ -45,9 +45,9 @@ The initial guidance for acceptance is that once a CEP is finished and has at le
 
 The prescribed process ends here. How proposed features and changes make it into the product is currently unspecified.
 
-### Free-form
+### Deviations
 
-Note that the process is somewhat free-form, this very first CEP already deviates from the template. The latter, like the pirate code, should be seen as more of a guideline than a hard rule.
+Deviations from the template should be avoided when possible, but ultimately this is a set of guidelines and a convention; minor deviations are acceptable where called for.
 
 ## Drawbacks
 
