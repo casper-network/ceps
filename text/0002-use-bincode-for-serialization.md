@@ -28,7 +28,7 @@ The [Bincode](https://crates.io/crates/bincode) format used to have no answers f
 
 * Invariant over endianness
 * Stable across minor versions
-* Secure against untrusted inputs (no undefined bevavior)
+* Secure against untrusted inputs (no undefined behavior)
 * Protecting against memory-exhaustion (provided it is configured correctly)
 * Space efficient (with varint encoding enabled)
 
