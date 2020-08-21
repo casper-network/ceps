@@ -66,13 +66,13 @@ For implementation-oriented CEPs (e.g. for node internals), this section should 
 
 For the `n`-th adjustment period, all finalized blocks with a timestamp in the range `[n*ADJUSTMENT_PERIOD, (n+1)*ADJUSTMENT_PERIOD]` are considered. The amount of gas used by each one is collected in an array `gas_used_array`. `FULLNESS` for the `n`-th period is computed as:
 
-```
+```python
 FULLNESS = DENOMINATOR * median(gas_used_array) / BLOCK_GAS_LIMIT
 ```
 
 Then, a system transaction can be executed in any block proposed after `(n+1)*ADJUSTMENT_PERIOD`, which updates `BASE_PRICE` according to:
 
-```
+```python
 if FULLNESS > TARGET_FULLNESS:
     new_base_price = BASE_PRICE * (DENOMINATOR + ADJUSTMENT_RATE) / DENOMINATOR
 else:
@@ -88,7 +88,7 @@ This sets the new `BASE_PRICE` for the `n+1`-th adjustment period. The process r
 
 For each transaction included in a block, the transaction's `MAX_GAS_PRICE - PRICE_PREMIUM` MUST be greater than the block's `BASE_PRICE`. The paying signer will end up paying
 
-```
+```python
 transaction_fee = (BASE_PRICE + PRICE_PREMIUM) * GAS_SPENT
 ```
 
