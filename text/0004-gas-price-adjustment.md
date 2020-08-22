@@ -39,12 +39,12 @@ The update can be either a percent increase or decrease of `BASE_PRICE`, specifi
 
 ### Protocol Parameters
 
-- `INITIAL_BASE_PRICE`: The value of `BASE_PRICE` at genesis. Value: TBD.
+- `INITIAL_BASE_PRICE`: The value of `BASE_PRICE` at genesis. Also the *minimum value* for `BASE_PRICE`. Value: TBD.
 - `ADJUSTMENT_RATE`: The rate at which `BASE_PRICE` can move up or down per day. Value: `10_000_000_000` (1%).
 - `DENOMINATOR`: Fractions will be represented as trillionths of 1. Value: `1_000_000_000_000`.
 - `BLOCK_GAS_LIMIT`: Maximum gas allowed in a block. Value: TBD.
 - `TARGET_FULLNESS`: The value which will determine whether `BASE_PRICE` should move up or down. Value: `650_000_000_000` (65%).
-- `MIN_BASE_PRICE`: The minimum `BASE_PRICE` that is allowed for in the protocol. Value: TBD.
+- `MIN_FINALIZED_BLOCKS`: The minimum number of blocks that must be finalized in an adjustment period. Otherwise, a fail-safe is triggered. Value: TBD.
 
 ### Transaction Fields
 
@@ -71,7 +71,7 @@ if FULLNESS > TARGET_FULLNESS:
 else:
     new_base_price = BASE_PRICE * DENOMINATOR / (DENOMINATOR + ADJUSTMENT_RATE)
 
-if new_base_price > MIN_BASE_PRICE:
+if new_base_price > INITIAL_BASE_PRICE:
     BASE_PRICE = new_base_price
 ```
 
@@ -84,6 +84,17 @@ For each transaction included in a block, the transaction's `MAX_GAS_PRICE - PRI
 ```python
 transaction_fee = (BASE_PRICE + PRICE_PREMIUM) * GAS_SPENT
 ```
+
+### Fail-safe for Sustained Failure of Finalization
+
+In the event of a sustained finalization failure, where there are too few finalized blocks in an adjustment period, `BASE_PRICE` resets to `INITIAL_BASE_PRICE`:
+
+```python
+if len(gas_used_array) < MIN_FINALIZED_BLOCKS:
+    BASE_PRICE = INITIAL_BASE_PRICE
+```
+
+This is to increase the speed of recovery from a catastrophic failure, by enabling as many users as possible to transact. We choose the value of `INITIAL_BASE_PRICE` low enough, so that resetting practically results in a floating price regime. That is, until the platform recovers from the failure and the algorithm catches up with the market price.
 
 ## Drawbacks
 
