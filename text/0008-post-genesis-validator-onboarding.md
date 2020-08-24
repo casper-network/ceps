@@ -12,7 +12,7 @@ At genesis, it is assumed that a validator set of sufficient integrity will exis
 - honest validators voluntarily leaving;
 - byzantine validators being forcibly ejected.  
 
-This CEP focusses upon the process of **securely** onboarding new validators.  It highlights the non-trivial security, infrastructure, engagement & token considerations of doing so.  It does so whilst considering 3 distinct onboarding use cases: 
+This CEP focusses upon the process of **securely** onboarding new validators.  It frames such a process within non-trivial security, infrastructure, engagement & token contextual considerations.  In particular it foccusses upon the following 3 use cases: 
 
 - a validator acting on the behalf of themselves;
 - a validator acting on the behalf of themselves & delegators;
