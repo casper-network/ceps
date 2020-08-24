@@ -6,7 +6,19 @@
 
 CEP PR: [casperlabs/ceps#0009](https://github.com/casperlabs/ceps/pull/0008)
 
-At genesis, it is assumed that a validator set of sufficient integrity will exist so as to **safely** bootstrap the network, i.e. the emphasis upon launch is correctness not throughput.  Post-genesis, the active validator set will organically mutate in response to either: new validators being granted permission to join; honest validators voluntarily leaving; byzantine validators being forcibly ejected.  Expansion of the validator set is bounded by a protocol imposed ceiling, such a ceiling serves so as to counterbalance participation and performance.  
+At genesis, it is assumed that a validator set of sufficient integrity will exist so as to **safely** bootstrap the network, i.e. the emphasis upon launch is correctness not throughput.  Post-genesis, the active validator set will organically mutate in response to either: 
+
+- new validators being granted permission to join;
+- honest validators voluntarily leaving;
+- byzantine validators being forcibly ejected.  
+
+This CEP focusses upon the process of **securely** onboarding new validators.  It highlights the non-trivial security, infrastructure, engagement & token considerations of doing so.  It does so whilst considering 3 distinct onboarding use cases: 
+
+- a validator acting on the behalf of themselves;
+- a validator acting on the behalf of themselves & delegators;
+- a validator acting on behalf of delegators only.
+
+Expansion of the validator set is bounded by a protocol imposed ceiling, such a ceiling serves to balance participation and performance.  
 
 ## Motivation
 
