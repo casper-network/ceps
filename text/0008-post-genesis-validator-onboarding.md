@@ -18,7 +18,11 @@ This CEP focusses upon the process of **securely** onboarding new validators.  I
 - a validator acting on the behalf of themselves & delegators;
 - a validator acting on behalf of delegators only.
 
-The discussions assume that expansion of the validator set is bounded by a protocol imposed ceiling, such a ceiling acts as a trade of between network participation and performance.  From a threat model perspective they assume that the genesis and post-genesis validators sets are populated with byzantine validators.  From a crypto-economic perspective they assume that active markets exist for the underlying CLX token, but that those markets are unregulated, i.e. we assume that AML/KYC policies cannot be provably applied.
+The discussions assume the following:
+
+- that the validator set is bounded by a protocol imposed ceiling, such a ceiling acts as a trade of between network participation and performance;
+- that both the genesis and post-genesis validators sets are populated with byzantine validators;
+- that whilst active markets exist for the underlying CLX token, they are assumed to be unregulated and hence AML/KYC assertions cannot be made.
 
 ## Motivation
 
