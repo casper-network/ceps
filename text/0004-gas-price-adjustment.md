@@ -124,10 +124,12 @@ As far as the author is informed, there has been no precedent to this type of pr
 
 [unresolved-questions]: #unresolved-questions
 
-TBD
+- Would a validator cartel emerge and follow price manipulation strategies for prolonged periods, such as fabricating demand, or proposing empty blocks?
+- How successful would the algorithm be at absorbing price volatility throughout the day? Would there be much need for price premiums?
+- Would the algorithm render the platform too expensive for "normal" use, or too inefficient (too much empty block space due to high price)?
 
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
-TBD
+- We can use two price adjustment algorithms in tandem: one that adjusts day-by-day (which we propose above) and one that adjusts block-by block, similar to EIP-1559. The former enables long-term averaged price discovery, whereas the latter would enable instantaneous price discovery, and determine the value of the premium at times of congestion. With the two algorithms working in tandem, we *could* in practice eliminate the need for *any* user input regarding gas price. However, since there is no infallible algorithm for price regulation, we would still need an option to pay a secondary premium on top of the algorithm-controlled premium.
