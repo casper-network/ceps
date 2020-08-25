@@ -12,9 +12,9 @@ Gas price is regulated algorithmically. A price floor exists and adjusts daily, 
 
 [motivation]: #motivation
 
-Gas prices are known to be subject to high volatility both in the short term and the long term. This is due to a combination of factors such as inelastic supply, [daily demand cycle](https://solmaz.io/2019/10/21/gas-price-fee-volatility/) and shifting trends.
+Gas prices are known to be subject to high volatility both in the short term and the long term. This is due to a combination of factors such as inelastic supply, [daily demand cycle](https://solmaz.io/2019/10/21/gas-price-fee-volatility/) and shifting trends. CasperLabs sees these issues with volatility as a key barrier to the adoption of public blockchain infrastructure by businesses. It is also recognized that price stability alone is not enough, and scalability is also a core concern in this arena.
 
-During times of high demand for a blockchain, one can observe prices change up to 10-100x in a matter of hours. A floating gas price and the absence of a reference point exacerbates the situation. Such volatility makes it difficult for dapp providers and users to plan ahead their expenses.
+During times of high demand for a blockchain, one can observe prices change up to 10-100x in a matter of hours. A floating gas price and the absence of a reference point exacerbates the situation. Such volatility makes it difficult for dapp providers and users to budget for their expenses.
 
 We introduce a simple control algorithm in the spirit of [EIP-1559](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md), and aim to absorb majority of intraday volatility. Whereas EIP-1559 specifies block-by-block gas price adjustment, this proposal specifies a variant which does it day-by-day. The price floor adjusts at a relatively slower rate, i.e. 1-2% per day. This way, we aim for the platform to autonomously discover the price that fits the overall demand. By setting the right parameters, we aim to minimize congestions and keep prices at a stable level in the short term.
 
@@ -49,7 +49,7 @@ The update can be either a percent increase or decrease of `BASE_PRICE`, specifi
 ### Transaction Fields
 
 - `PRICE_PREMIUM`: The price premium specified for a given transaction.
-- `MAX_GAS_PRICE`: The maximum gas price which the paying signer is willing to accept. The maximum `BASE_PRICE` they are willing to accept is compted as `MAX_GAS_PRICE - PRICE_PREMIUM`.
+- `MAX_GAS_PRICE`: The maximum gas price which the paying signer is willing to accept. The maximum `BASE_PRICE` they are willing to accept is computed as `MAX_GAS_PRICE - PRICE_PREMIUM`.
 
 ### Transaction Variables
 
