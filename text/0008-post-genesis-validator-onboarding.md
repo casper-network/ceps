@@ -1,4 +1,6 @@
-# Post Genesis Validator Onboarding
+
+
+# cep-0008:  Post Genesis Validator Onboarding
 
 ## Summary
 
@@ -6,13 +8,13 @@
 
 CEP PR: [casperlabs/ceps#0008](https://github.com/casperlabs/ceps/pull/0008)
 
-At genesis, it is assumed that a validator set of sufficient integrity will exist so as to **safely** bootstrap the network, i.e. the emphasis upon launch is correctness not throughput.  Post-genesis, the active validator set will organically mutate in response to either: 
+At genesis, it is assumed that a validator set of sufficient integrity will exist so as to **safely** bootstrap the network, i.e. the emphasis upon launch is correctness not throughput.  Post-genesis, the active validator set will mutate in response to one or all of the following events: 
 
-- new validators being granted permission to join;
+- new validators obtaining permission to join via an auction;
 - honest validators voluntarily leaving;
-- byzantine validators being forcibly ejected.  
+- byzantine validators being ejected by the protocol.  
 
-This CEP focusses upon the process of **securely** onboarding new validators.  It frames such a process within non-trivial security, infrastructure, engagement & token contextual considerations.  In particular it foccusses upon the following 3 use cases: 
+This CEP focusses upon the process of **securely** onboarding new validators.  It frames such a process within non-trivial security, infrastructure, engagement & token contextual considerations.  In particular it focusses upon the following 3 use cases: 
 
 - a validator acting on the behalf of themselves;
 - a validator acting on the behalf of themselves & delegators;
@@ -20,9 +22,14 @@ This CEP focusses upon the process of **securely** onboarding new validators.  I
 
 The discussions assume the following:
 
-- that the validator set is bounded by a protocol imposed ceiling, such a ceiling acts as a trade of between network participation and performance;
-- that both the genesis and post-genesis validators sets are populated with byzantine validators;
-- that whilst active markets exist for the underlying CLX token, they are assumed to be unregulated and hence AML/KYC assertions cannot be made.
+- that addressing compliance concerns such as Anti-Money Laundering (AML) or Combating the Financing of Terrorism (CFT) is in the long-term interest of the network.
+- that the number of validators within the set is bounded by a protocol imposed ceiling, such a ceiling seeks to find a counterbalance between network participation & performance;
+- that byzantine validators are present, even at genesis;
+- that whilst active markets exist for the network token, they are assumed to be unregulated.
+- that the network's crypto-economic security model is predicated upon so-called Proof-of-Stake (POS);
+- that via a smart contract, the network exposes an auction mechanism permitting prospective new validators' to signal an intent to participate.
+- that the network's governance mechanisms revolve around some form of so-called social consensus.
+- that it is in the interests of all network participants to adopt a pro-active approach to network-wide risk management;
 
 ## Motivation
 
@@ -30,11 +37,11 @@ The discussions assume the following:
 
 Why are we doing this? What use cases does it support? What is the expected outcome?
 
-On several levels it is absolutely essential that the protocol safely permits the validator set to organically grow above and beyond the genesis validator set.  It is inconceivable that the network does not support such a feature at genesis, i.e. it is an absolute & non-negotiable requirement of a minimal main-net.  Thus the motivation is crystal clear, it is that of a demonstrably healthy network.  Healthy from an operational, crypto-economic & (by extension) reputational perspective.  
+On several levels it is absolutely essential that the protocol safely permits the validator set to organically grow above and beyond the genesis validator set.  It is inconceivable that the network does not support such a feature at genesis, i.e. it is an absolute & non-negotiable requirement of a minimal main-net.  Thus the motivation is crystal clear, it is that of a **demonstrably** healthy network.  Healthy from an operational, crypto-economic & (by extension) reputational perspective.  
 
-The set of use cases this CEP touchees upon are many & diverse:
+The set of use cases this CEP touches upon are many & diverse:
 
-1.  The reputation of the network must be such that (new) validator's are willing to continue to take non-trivial risk in order to participate;
+1.  The reputation of the network must be such that (new) validator's are willing to continue to assume non-trivial risk in order to participate;
 
 2.  The ratio of staked to non-staked token supply has game theoretic dynamics & hence consequences;  
 
@@ -44,7 +51,44 @@ The set of use cases this CEP touchees upon are many & diverse:
 
 [guide-level-explanation]: #guide-level-explanation
 
+The proposal has two aspects that the mechanics of onboarding within a social consensus setting.  
 
+### 1. Formally establish & incentivise a validator association
+
+In a mundane sense a validator is simply an operator running node software incubated by CasperLabs.  However the act of doing so incurs a **risk** burden, a risk burden laden with non-negligible financial consequences.  Such risk revolves around the following (non-exhaustive) elements:
+
+- Existential issues with the node software - e.g. a hitherto undiagnosed fault;
+- Operational issues with the node deployment - e.g. a concerted DDOS attack;
+- Jurisdictional issues associated with the business context - e.g. differing litigation risk profiles.
+- Reputational issues within the social consensus context - e.g. cartel formation.
+
+In order to partially mitigate such risk, e.g. knowledge sharing, validators are effectively obliged to collaborate with each other.  Those acting in isolation are disempowered when compared to ad-hoc groups of validators acting in unison.  However such ad-hoc groups tend to form political cliques with **incoherent** strategic objectives.  Over time this landscape is unfit for the purpose of nurturing and stewarding a successful crypto-economic network.
+
+It is thus recommended that an association of Casper network validators is formally established, preferably in Switzerland.  Such an association will be endowed with reputational credibility and a degree of financial capital.  The overall long-term aim is for the association to become one pillar of a future on-chain governance strategy.  Association membership incurs both duties & responsibilities, all genesis validators will be **required** to be members of this association.
+
+To focus the minds of association members the initial objectives will be to:
+
+- draw up legally binding articles of association;
+- draft an initial constitution;
+- designate a working committee to explore a DAO;
+- formulate a certification program;
+
+In respect of creating a DAO, such a DAO will be built upon a set of smart contracts that manages, amongst other things, association membership.  Ultimately this DAO could be linked to the network's crypto-economic model - e.g. unless one is a member then one cannot participate in the auction process.
+
+### 2. Establish a validator certification program
+
+Prospective validators will be offered a certification program.  Such a program will seek to impart the values underpinning the network's identity whilst detailing the duties and responsibilities expected of a validator during the course of their active engagement with the network.
+
+It will revolve around a training program combined with a series of community inductions.  The operational component of the training program will focus upon the mechanics of securely and safely operating a validator node.  The reputational component will focus upon how to participate within the social consensus process.  
+
+### 3. Partner with one or more hardware wallet providers
+
+Develop a validator specific application 
+ 
+
+
+
+It is proposed 
 
 Explain the proposal as if it was already approved and implemented. That generally means:
 
@@ -69,7 +113,8 @@ The section should return to the examples given in the previous section, and exp
 
 [drawbacks]: #drawbacks
 
-Why should we *not* do this?
+1. The proposals outlined in this CEP are potentially problematic from a political & jurisdictional perspective.  The crypto space is unique in that attracts a fair number of non-regulated entities, such entities may very likely be put off by the idea of mandatory association membership.
+2. The notion that validators can be classified in some respect, e.g. regulated | certified | other, requires some form of arbiter.  This is problematic if, for example, the arbiter is found to be byzantine.  
 
 ## Rationale and alternatives
 
