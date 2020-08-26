@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0004](https://github.com/casperlabs/ceps/pull/0004)
+CEP PR: [casperlabs/ceps#0007](https://github.com/casperlabs/ceps/pull/0007)
 
 Gas price is regulated algorithmically. A price floor exists and adjusts daily, based on fullnesses of blocks from the previous day, in order to absorb volatility and reduce congestion.
 
@@ -53,7 +53,7 @@ The update can be either a percent increase or decrease of `BASE_PRICE`, specifi
 
 ### Transaction Variables
 
-- `GAS_SPENT`: The total gas spent by a given transaction.
+- `GAS_USED`: The total gas used by a given transaction.
 
 ### Adjustment Process
 
@@ -82,7 +82,7 @@ This sets the new `BASE_PRICE` for the `n+1`-th adjustment period. The process r
 For each transaction included in a block, the transaction's `MAX_GAS_PRICE - PRICE_PREMIUM` MUST be greater than the block's `BASE_PRICE`. The paying signer will end up paying
 
 ```python
-transaction_fee = (BASE_PRICE + PRICE_PREMIUM) * GAS_SPENT
+transaction_fee = (BASE_PRICE + PRICE_PREMIUM) * GAS_USED
 ```
 
 ### Fail-safe for Sustained Failure of Finalization
