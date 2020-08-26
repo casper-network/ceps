@@ -71,8 +71,7 @@ if FULLNESS > TARGET_FULLNESS:
 else:
     new_base_price = BASE_PRICE * DENOMINATOR / (DENOMINATOR + ADJUSTMENT_RATE)
 
-if new_base_price > INITIAL_BASE_PRICE:
-    BASE_PRICE = new_base_price
+BASE_PRICE = max(new_base_price, INITIAL_BASE_PRICE)
 ```
 
 This sets the new `BASE_PRICE` for the `n+1`-th adjustment period. The process repeats the same way for every adjustment period.
