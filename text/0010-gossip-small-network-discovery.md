@@ -52,7 +52,7 @@ An example scenario is laid out here:
 1. The network is again fully connected, with nodes that want to send messages to `B` eventually dropping them if they have not detected its failure yet.
 1. `B` rejoins, connecting to `A`.
 1. `B` gossips its address, but the gossip does not reach `C`. This causes `A` and `D` to connect to `B`.
-1. The network will be fully connected once a repeat gossip from `B` reaches `C` and `C` and `D` gossips their address reaching `B`.
+1. The network will be fully connected once a repeat gossip from `B` reaches `C` and `C` and `D` gossip their address reaching `B`.
 
 ## Reference-level explanation
 
