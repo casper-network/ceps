@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#10](https://github.com/casperlabs/ceps/pull/10)
 
 The `small_net` networking component has a built-in in mechanism for node discovery that should be replaced by using the tested, central gossiping component for more robustness and simpler implementation.
 
