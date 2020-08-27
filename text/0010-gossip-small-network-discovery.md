@@ -41,7 +41,7 @@ An example scenario is laid out here:
 
 1. The first node, `A`, starts up, without any bootstrapping nodes. It just opens a listening port, waiting for connections.
 2. `B` and `C` are started, with `A` as the bootstrapping node. They both connect to `A`, thus can now send messages to `A`, but will not receive any from it.
-3. `A` gossips its address, causing no change, since `B` and `C` already know `A`s address from bootstrapping.
+3. `A` gossips its address, causing no change, `A` has no outgoing connections. `B` and `C` already know `A`s address from bootstrapping regardless.
 4. `B` and `C` gossip their addresses, causing `A` to connect to `B` and `C`, `B` to `C` and `C` to `B`.
 5. The network is now fully connected.
 6. `D` connects with `B` and `C` as bootstrapping nodes.
