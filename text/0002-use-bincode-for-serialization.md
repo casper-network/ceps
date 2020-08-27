@@ -122,7 +122,7 @@ All the protocols listed above. Most other projects reviewed seem to use one of 
 
 [unresolved-questions]: #unresolved-questions
 
-None at this time.
+* `ToBytes`/`FromBytes` comparison. The execution engine uses a high-speed custom serialization method not based on serde that is currently faster than an attempted comparable serde-using implementation. We did not switch it out for a serde variant, as the performance degradation resulting from the switch was too big. However, `ToBytes`/`FromBytes` was not considered for this particular area, as the flexibility of serde was ranked much higher than a 2-3X speed-up for deserialization in some of the edge cases. Additionally it is unclear (not benchmarked) if the custom serialization is faster than the bincode serde implementation.
 
 ## Future possibilities
 
