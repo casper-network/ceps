@@ -69,7 +69,7 @@ Connections are "naturally" garbage connected by being selected for gossiping; u
 
 [drawbacks]: #drawbacks
 
-The previous discovery implementation aimed for an instant, complete and reliable full connection between all nodes, while this replacements delays this by up to $2 (n + \textrm{gossipDelay})$.
+The previous discovery implementation aimed for an instant, complete and reliable full connection between all nodes, while this replacement delays this by up to $2 (n + \textrm{gossipDelay})$.
 
 Additionally it increases the burden on the network by gossiping addresses, instead of storing them on each node.
 
