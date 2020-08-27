@@ -26,7 +26,7 @@ This CEP suggest replacing a large portion of the `small_net` components state a
 2. When successly connected to a peer through an outgoing connection, it adds the outgoing connection to the internal connection map. This map is keyed by NodeID (derived from the public key presented), containing queues for outgoing messages.
 
    This is _all_ the connection-related state `small_net` retains.
-3. Failed or closed outgoing connections are not retried and their respective entries remove from the connection map.
+3. Failed or closed outgoing connections are not retried and their respective entries removed from the connection map.
 4. All incoming connections are accepted, as long as they have a valid node id. They are treated as stateless and distinct from outgoing connections, triggering an announcement on a received message (this is unchanged from the current implementation).
 5. Every `n` seconds, each node gossips its own address.
 6. Upon receiving a gossiped address, the node will attempt to connect to it once.
