@@ -63,7 +63,7 @@ Connection upgrades are handled as regular events instead of separate tasks to s
 
 Any connection is tagged with an internal, monotonically increasing ID to disambiguate it, new connections with a lower ID than an established connection are ignored/closed immediately. Similarly, close/fail events only remove connections with their respective IDs. Even in the case of completely random reordering of all events, this ensures that at worst we track a dead connection to a node for a while (in the case where a connection is closed immediately and the close event overtook the open event).
 
-Connections are "naturally" garbage connected by being selected for gossiping; upon trying to send a message to a closed connection, a "connection closed" event is generated if the outgoing message fails.
+Connections are "naturally" garbage collected by being selected for gossiping; upon trying to send a message to a closed connection, a "connection closed" event is generated if the outgoing message fails.
 
 ## Drawbacks
 
