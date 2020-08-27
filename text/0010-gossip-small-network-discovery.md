@@ -23,7 +23,7 @@ This CEP suggest replacing a large portion of the `small_net` components state a
 `small_net` is updated as follows:
 
 1. Each node starts up by initiating a connection to one or more *bootstrap* addresses set through the configuration.
-2. When successly connected to a peer through an outgoing connection, it adds the outgoing connection to the internal connection map. This map is keyed by NodeID (derived from the public key presented), containing queues for outgoing messages.
+2. When successfully connected to a peer through an outgoing connection, it adds the outgoing connection to the internal connection map. This map is keyed by NodeID (derived from the public key presented), containing queues for outgoing messages.
 
    This is _all_ the connection-related state `small_net` retains.
 3. Failed or closed outgoing connections are not retried and their respective entries removed from the connection map.
