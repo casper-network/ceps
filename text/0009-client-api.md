@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0009](https://github.com/casperlabs/ceps/pull/9)
 
 This describes the client-facing API of the Casper Node.  It will be used by all clients interacting
 with a Casper Node, including the Rust client, the Python client and Clarity.
