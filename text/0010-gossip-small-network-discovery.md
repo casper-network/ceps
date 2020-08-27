@@ -40,18 +40,19 @@ This proposal does away with *endpoints* entirely, as no node ever does outgoing
 An example scenario is laid out here:
 
 1. The first node, `A`, starts up, without any bootstrapping nodes. It just opens a listening port, waiting for connections.
-2. `B` and `C` are started, with `A` as the bootstrapping node. They both connect to `A`, thus can now send messages to `A`, but will not receive any from it.
-3. `A` gossips its address, causing no change, `A` has no outgoing connections. `B` and `C` already know `A`s address from bootstrapping regardless.
-4. `B` and `C` gossip their addresses, causing `A` to connect to `B` and `C`, `B` to `C` and `C` to `B`.
-5. The network is now fully connected.
-6. `D` connects with `B` and `C` as bootstrapping nodes.
-7. `B` drops from the network.
-8. `A` gossips its address, causing `D` to connect to `A`.
-9. `D` gossips its address, causing `A` and `C` to connect to `D`.
-10. The network is again fully connected, with nodes that want to send messages to `B` eventually dropping them if they have not detected its failure yet.
-11. `B` rejoins, connecting to `A`.
-12. `B` gossips its address, but the gossip does not reach `C`. This causes `A` and `D` to connect to `B`.
-13. The network will be fully connected once a repeat gossip from `B` reaches `C`.
+1. `B` and `C` are started, with `A` as the bootstrapping node. They both connect to `A`, thus can now send messages to `A`, but will not receive any from it.
+1. `A` gossips its address, causing no change, `A` has no outgoing connections. `B` and `C` already know `A`s address from bootstrapping regardless.
+1. `B` and `C` gossip their addresses, causing `A` to connect to `B` and `C`, `B` to `C` and `C` to `B`.
+1. The second time `B` and `C` gossip their address, it is being relaid via `A` to `C` and `B` respectively.
+1. The network is now fully connected.
+1. `D` connects with `B` and `C` as bootstrapping nodes.
+1. `B` drops from the network.
+1. `D` gossips its address, causing `A` and `C` to connect to `D`.
+1. `A` gossips its address, causing `D` to connect to `A`.
+1. The network is again fully connected, with nodes that want to send messages to `B` eventually dropping them if they have not detected its failure yet.
+1. `B` rejoins, connecting to `A`.
+1. `B` gossips its address, but the gossip does not reach `C`. This causes `A` and `D` to connect to `B`.
+1. The network will be fully connected once a repeat gossip from `B` reaches `C` and `C` and `D` gossips their address reaching `B`.
 
 ## Reference-level explanation
 
