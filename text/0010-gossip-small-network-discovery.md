@@ -89,4 +89,4 @@ Very few prior art (except the existing implementation) was considered for this,
 
 [future-possibilities]: #future-possibilities
 
-The future for the networking layer is likely a complete replacement with either an off-the-shelf solution or a custom implementation that does not need to maintain a fully connected network with two TLS connections per graph edge. This is out of scope of this CEP.
+The future for the networking layer is likely a complete replacement with either an off-the-shelf solution (e.g. [libp2p](https://libp2p.io/)) or a custom implementation ([Kamdelia](https://en.wikipedia.org/wiki/Kademlia)) that does not need to maintain a fully connected network with two TLS connections per graph edge. This is out of scope of this CEP.
