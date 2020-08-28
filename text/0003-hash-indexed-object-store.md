@@ -314,7 +314,7 @@ pub async fn gossip_objects(self, objects: Vec<Object>);
 
 
 ### Fetching
-
+Under this proposed model, we no longer require a generic fetcher component; a single statically typed fetcher can handle all objects. The existing functionality can be retained with some minor alterations such as the `fetch_object` function described below . 
 The fetcher component also loses its type parameter, similar to the gossiper.
 
 ```rust
