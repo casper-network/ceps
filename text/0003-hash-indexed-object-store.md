@@ -570,7 +570,7 @@ All these questions should be answered before this RFC is merged.
 
 [future-possibilities]: #future-possibilities
 
-While not covered in detail in this RFC, these changes lay the groundwork for exciting future possiblities:
+While not covered in detail in this CEP, this proposal also lays the groundwork for future possibilities:
 
 ### CDNs
 
