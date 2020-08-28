@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0011](https://github.com/casperlabs/ceps/pull/0011)
 
 Users need to own *storage tokens* (STR) to store data in the global state. The *STR contract* handles the minting and burning of STR. It is minted at a constant rate for each deposited CASPER. The same rate holds for redeeming and burning it. STR can be automatically minted during transaction execution, or it can be minted manually.
 
