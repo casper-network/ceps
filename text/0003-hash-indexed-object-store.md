@@ -605,7 +605,7 @@ Fetching the associated global state again just becomes a recursive (ideally CDN
 
 This is analogous to a "shallow clone" of a Git repository.
 
-As a whole, this topic is fairly complex and definitely warrants its own RFC.
+However, that is a fairly complex topic and beyond the scope of this CEP.
 
 ### Garbage collection
 
