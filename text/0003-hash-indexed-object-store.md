@@ -38,7 +38,7 @@ For example a Block may reference a number of Deploys by hash, which in turn may
 
 This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference WASM blobs.
 
-### Serialization
+Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network. 
 
 Every object can be serialized to be sent across the network, which also means it can be stored in storage. In general, any serialized object is prefixed with a short tag indicating its type, regardless of the chosen serialization format.
 
