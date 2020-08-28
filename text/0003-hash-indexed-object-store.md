@@ -297,7 +297,7 @@ Additionally, if WASM blocks are to be split off, these will need to be fetched 
 
 ### Gossiping
 
-The gossiper undergoes a few changes starting with no more generics. Existing functionality can be kept and the component can conditionally announce objects that are incoming deploys still.
+Under this proposed model, we no longer require a generic gossiper component; a single statically typed gossiper can handle all objects. The existing functionality can be kept, with some allowed specialization around announcements (such as an incoming deploy received announcement). 
 
 The gossiper supports an effect in the form of
 
