@@ -310,7 +310,6 @@ The gossiper supports an effect in the form of
 pub async fn gossip_objects(self, objects: Vec<Object>);
 ```
 
-The algorithm works otherwise similar to how it works now.
 
 ### Fetching
 
