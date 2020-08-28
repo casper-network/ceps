@@ -1,4 +1,5 @@
-# Title
+# Replace use of blake2 hashing with blake3
+
 https://github.com/CasperLabs/ceps/pull/8
 
 ## Summary
