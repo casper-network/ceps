@@ -352,7 +352,7 @@ variant and implementing variations of these inside the consensus component. Thi
 [drawbacks]: #drawbacks
 The proposed changes might negatively affect the contract runtime component's performance. This is still open to discovery, see [unresolved questions](#unresolved-questions).
 The biggest issue is that changes might affect execution engine performance negatively. This is still open to discovery, see [unresolved questions](#unresolved-questions).
-
+This proposal represents a sweeping, cross cutting, and not easily iterable change affecting many components. 
 There is a considerable effort required to update all components and the change might not be easy to implement incrementally.
 
 The whole change to the execution engine may be prohibitive because of external dependencies, i.e. consumers of said execution engine that are not our node. This _might_ be worked around with a trait that abstracts the coupling between `Object` and components away.
