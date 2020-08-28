@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#0003](https://github.com/casperlabs/ceps/pull/0003)
 
-There is a variety of "objects" floating around in our codebase at the moment: Deploys, WASM blobs, Blocks, DAG nodes and others. By standardizing them into a [Git](https://git-scm.com)-inspired object model we can simplify our networking, gossiping, retrieval, and storage logic greatly.
+There are a variety of "objects" defined in various parts of the platform's code base (such as Deploys, WASM blobs, Blocks, and DAG nodes). This proposal recommends standardizing all such objects using a [Git](https://git-scm.com)-inspired object model with the intent of unifying and simplifying the platform's networking, gossiping, retrieval, check pointing, and storage logic.
 
 ## Motivation
 
