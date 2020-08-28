@@ -34,7 +34,7 @@ Every *object* that our node handles has common properties, namely:
 
 * It can be serialized to binary storage.
 * It has a unique identifying hash that depends solely on its contents.
-* It may reference other objects.
+For example a Block may reference a number of Deploys by hash, which in turn may reference WASM blobs by hash.
 
 This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference WASM blobs.
 
