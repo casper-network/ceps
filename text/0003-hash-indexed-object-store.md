@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#0003](https://github.com/casperlabs/ceps/pull/0003)
 
-There are a variety of "objects" defined in various parts of the platform's code base (such as Deploys, WASM blobs, Blocks, and DAG nodes). This proposal recommends standardizing all such objects using a [Git](https://git-scm.com)-inspired object model with the intent of unifying and simplifying the platform's networking, gossiping, retrieval, check pointing, and storage logic.
+There are a variety of "objects" defined in various parts of the platform's code base (such as Deploys, Wasm blobs, Blocks, and DAG nodes). This proposal recommends standardizing all such objects using a [Git](https://git-scm.com)-inspired object model with the intent of unifying and simplifying the platform's networking, gossiping, retrieval, check pointing, and storage logic.
 
 ## Motivation
 
@@ -34,9 +34,9 @@ Every *object* that our node handles has common properties, namely:
 
 * It can be serialized to binary storage.
 * It has a unique identifying hash that depends solely on its contents.
-For example a Block may reference a number of Deploys by hash, which in turn may reference WASM blobs by hash.
+For example a Block may reference a number of Deploys by hash, which in turn may reference Wasm blobs by hash.
 
-This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference WASM blobs.
+This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference Wasm blobs.
 
 Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network. 
 
@@ -81,7 +81,7 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 ...
 ```
 
-Code refers to another object that contains the WASM code.
+Code refers to another object that contains the Wasm code.
 
 ## Reference-level explanation
 
@@ -289,13 +289,13 @@ pub async fn put_objects(self, objects: Vec<Object>) -> Vec<ObjectHash>;
 
 The `ObjectStore` continues to use LMDB as a backend, but calculates keys upfront (we might also consider writing to a temporary key and renaming it) and stores the object under a precalculated key. For convenience, given a proper `Hash` trait implementation for `ObjectHash`, a hashmap might be returned.
 
-The recursive `_with_dependencies` retrieval functions allows fetching an entire subtree, which is useful when getting a block from storage. For instance, all contained deploys (`max_depth` >= 1) and their WASM (`max_depth` is >= 2) could be fetched alongside of a block, saving event round trips.
+The recursive `_with_dependencies` retrieval functions allows fetching an entire subtree, which is useful when getting a block from storage. For instance, all contained deploys (`max_depth` >= 1) and their Wasm (`max_depth` is >= 2) could be fetched alongside of a block, saving event round trips.
 
 ### Execution engine
 
 The execution engine is going to require a changes, namely in the hashing function. All values it executes will need to be wrapped in an object enum before being stored/hashed. The exact impact of this is unknown, see the section on [unresolved questions](#unresolved-questions).
 
-Additionally, if WASM blocks are to be split off, these will need to be fetched separately. If any of these solution provide to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
+Additionally, if Wasm blocks are to be split off, these will need to be fetched separately. If any of these solution provide to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
 
 ### Gossiping
 
@@ -571,7 +571,7 @@ Open questions with this approach is who puts data on the CDN in the first place
 
 * An easy first take is to upload daily snapshots of the whole chain ourselves. This already considerably reduces the burden on the network when new nodes are joining.
 * Another approach is to allow any node to push objects to the CDN. This might require a plausibility check (i.e. show that the object is reachable from genesis) and thus specialized software.
-* Clients could also upload WASM blocks to a CDN beforehand, making the actual deploy really small.
+* Clients could also upload Wasm blocks to a CDN beforehand, making the actual deploy really small.
 
 Note that none of this is strictly required as all the CDN functionality is strictly optional with regards to the correct operation of the network.
 
@@ -590,11 +590,11 @@ A feature currently on the roadmap becomes almost a non-issue with this approach
 
 Combined with pack files, a snapshot or *checkpoint* of a node is just a specific Block plus all of its dependencies in a single file.
 
-### WASM deduplication
+### Wasm deduplication
 
-A good thing to factor out from Deploys is the WASM code blobs. We might also do away with DeployHeaders entirely if the biggest part of the Deploy is now given by reference instead of by value. 
+A good thing to factor out from Deploys is the Wasm code blobs. We might also do away with DeployHeaders entirely if the biggest part of the Deploy is now given by reference instead of by value. 
 
-With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple WASM blobs in a single deploy; in a good design, an installed WASM blob would be found under the same hash in both the deploy and the global state.
+With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple Wasm blobs in a single deploy; in a good design, an installed Wasm blob would be found under the same hash in both the deploy and the global state.
 
 External storage for a node could be added, e.g. if node operators want to reduce disk pressure, the node could support offloading of objects to a store like [S3](https://aws.amazon.com/s3/), [Google Storage](https://cloud.google.com/storage) or [minio](https://min.io/). This essentially gives the node operators heaps of possibilities to scale out their infrastructure, without tying the chain to any of these providers --- these are all optional optimizations.
 
