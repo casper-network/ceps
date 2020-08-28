@@ -593,9 +593,9 @@ Combined with packfiles, a snapshot or *checkpoint* of a node is just a specific
 
 A good thing to factor out from deploys is the WASM code blob, this may mean to do away with deploy headers entirely if the biggest part of the deploy is now given by reference instead of by value. With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple WASM blobs in a single deploy; in a good design, an installed WASM blob would be found under the same hash in both the deploy and the global state.
 
-### Offloading
+### Offloading / Archiving
 
-External storage for a node could be added, e.g. if node operators want to reduce disk pressure, the node could support offloading of objects to a store like [S3](https://aws.amazon.com/s3/), [Google Storage](https://cloud.google.com/storage) or [minio](https://min.io/). This essentially gives the node operators heaps of possibilties to scale out their infrastructure, without tying the chain to any of these providers --- these are all optional optimizations.
+Support for external storage of older data could be added to allow node operators to reduce disk pressure. Offloading of objects to a store like [S3](https://aws.amazon.com/s3/), [Google Storage](https://cloud.google.com/storage) or [minio](https://min.io/) would offer node operators a significant (but optional) tool for scaling their infrastructure, without tying the chain itself to any specific service provider.
 
 ### Storing post state hashes
 
