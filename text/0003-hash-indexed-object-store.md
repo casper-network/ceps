@@ -12,7 +12,7 @@ There are a variety of "objects" defined in various parts of the platform's code
 
 [motivation]: #motivation
 
-Nodes attempting to join an existing network must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases.
+Nodes attempting to join an existing network with knowledge of a recent, trusted block hash must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases.
 
 With the current node architecture, this approach would require separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). Additionally the storage component would need to namespace according to each type and component developers would need to remember which effect to call for each type. However, the core logic would remain the same for all such operations.
 
