@@ -587,7 +587,7 @@ It is entirely possible to implement pack files as just a serialization of `Hash
 
 A feature currently on the roadmap becomes almost a non-issue with this approach; snapshotting or *checkpointing*, i.e. the ability to start a node without having to download all content from the network, requires no code modification in the sense that if objects are identified by immutable hashes, the local database can simply check if they are present to avoid redownloading them.
 
-Combined with packfiles, a snapshot or *checkpoint* of a node is just a specific block with all its dependencies in a single block file.
+Combined with pack files, a snapshot or *checkpoint* of a node is just a specific Block plus all of its dependencies in a single file.
 
 ### WASM deduplication
 
