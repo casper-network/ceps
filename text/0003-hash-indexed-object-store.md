@@ -152,6 +152,11 @@ impl Object {
         self.serialize(&mut NullWriter)
     }
 }
+```
+
+_NOTE: the custom iterator made necessary by the design of `iter_outgoing` does not require heap allocations._
+
+```
 
 /// An object that supports iteration over its dependencies.
 pub trait OutIterable {
