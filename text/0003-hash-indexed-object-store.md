@@ -609,7 +609,7 @@ As a whole, this topic is fairly complex and definitely warrants its own RFC.
 
 ### Garbage collection
 
-Over time, the node will accumulate some dead weight, especially if the DAG is also stored inside the object store. A garbage collector can be run periodically to remove these keys from the object store backend. This process is also similar to Git, which considers any object pointed by a ref (like `HEAD`, branches or tags) worth keeping and eliminates those objects that are unreachable from any of these *tips*.
+An operating node will accumulate no longer used data over time, especially if DAG state is periodically persisted. A garbage collector should be run periodically to remove unreachable tips, allowing disk recovery. 
 
 When designing this feature, there may be a chance to build in a "shallow" node mode where only the latest global state and minimal history is kept to reduce disk space.
 
