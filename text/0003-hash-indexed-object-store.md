@@ -293,7 +293,7 @@ The recursive `_with_dependencies` retrieval functions allows fetching an entire
 
 ### Execution engine
 
-The execution engine is going to require a changes, namely in the hashing function. All values it executes will need to be wrapped in an object enum before being stored/hashed. The exact impact of this is unknown, see the section on [unresolved questions](#unresolved-questions).
+Additionally, if WASM blocks are to be split off, these will need to be fetched separately. If any of these solutions prove to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
 
 Additionally, if Wasm blocks are to be split off, these will need to be fetched separately. If any of these solution provide to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
 
