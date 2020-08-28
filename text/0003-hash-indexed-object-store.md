@@ -56,7 +56,9 @@ It also allows storage and hash verification by other tools that are unaware of 
 
 Any properly typed object in memory provides a method for iterating over all of its *dependencies*. In graph terms this is an iterator over all outgoing edges.
 
-With this functionality, the logic of fetching dependent objects is moved out of the business logic components and into the fetcher. Even "validation" (verifying all references parts are available) happens at this point, this consumes the entire current logic of the block validator.
+With this functionality, the logic of fetching dependent objects is moved out of the business logic components and into the fetcher. Verifying all referenced dependencies are available is subsumed into the fetcher as well. 
+
+_NOTE: this would render the current block validator component obsolete._
 
 Other components can decide if they want to fetch or fetch recursive, optionally specifying a peer that is required to provide the specific missing parts when asked.
 
