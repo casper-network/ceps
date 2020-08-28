@@ -299,7 +299,7 @@ Additionally, if WASM blocks are to be split off, these will need to be fetched 
 
 Under this proposed model, we no longer require a generic gossiper component; a single statically typed gossiper can handle all objects. The existing functionality can be kept, with some allowed specialization around announcements (such as an incoming deploy received announcement). 
 
-The gossiper supports an effect in the form of
+In addition to the existing gossiper functionality, the proposed universal gossiper component would need to support a `gossip_objects` effect as described below.
 
 ```rust
 /// Gossip a set of objects.
