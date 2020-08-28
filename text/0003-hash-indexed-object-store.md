@@ -188,9 +188,9 @@ impl Iterator for ObjectOutIter {
 
 This implementation will likely require the implementation of three utility types, a `NullWriter` that just discards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
 
-Note that the hash type is hardcoded to keep things simple for now.
+_NOTE: hash type is hard coded to simplify the example._
 
-Let's implement this for the provisionary `Block` type. Note that the custom iterator is required by our design of `iter_outgoing`, but it does not require any heap allocations:
+EXAMPLE: `Block` type implementation.
 
 ```rust
 pub struct BlockHeader {
