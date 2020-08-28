@@ -599,7 +599,7 @@ External storage for a node could be added, e.g. if node operators want to reduc
 
 Support for external storage of older data could be added to allow node operators to reduce disk pressure. Offloading of objects to a store like [S3](https://aws.amazon.com/s3/), [Google Storage](https://cloud.google.com/storage) or [minio](https://min.io/) would offer node operators a significant (but optional) tool for scaling their infrastructure, without tying the chain itself to any specific service provider.
 
-### Storing post state hashes
+Post state hashes refer to global state, which already forms a tree structure. If the nodes were to store a post state hash inside each block, a client could download only the chain until genesis as additional verification, but then know that the post state hash is correct.
 
 Fetching the associated global state again just becomes a recursive (ideally CDN-powered, at least pack supported) download of the remaining hashes. This will result in automatic "pruning", since outdated/overwritten data is not retrieved.
 
