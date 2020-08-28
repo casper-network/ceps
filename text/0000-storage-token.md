@@ -47,13 +47,22 @@ TBD
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-TBD
+
+As mentionioned in [Motivation](#motivation), Ethereum implements the one-time payment model for storage. This is as simple as it gets. However, blockchain storage space is a common good, and users should not be able to occupy it indefinitely, for free. The gas refund mechanism provides incentives for freeing up, but it doesn't solve the problem of perpetual growth of global state.
+
+To facilitate a more efficient allocation of storage, we came up with two alternatives:
+
+- **Storage rent:** Users continuously pay a fixed fee per byte stored in the global state. This creates direct incentives for deleting redundant data. However, it is hard to design for edge cases, such as what would happen if an account defaults on a payment. It would probably call for a deletion, equivalent to the defaulted amount. But one can never determine fairly which part of a user's data should be deleted, due to how storage works.
+- **Storage token:** This proposal, which brings the benefits of the gas refund mechanism, but also leverages scarcity of CASPER to solve the problem of perpetual growth. Also, gas refund only allows for redeeming storage space for gas, which is to be used in that instant. However with storage token, storage space is redeemed for CASPER, which can be kept for other purposes.
+
+Due to issues with edge cases and problematic UX of storage rent, we decided to go with storage token.
+
 
 ## Prior art
 
 [prior-art]: #prior-art
 
-TBD
+Ethereum's one-time payment and gas refund mechanism has already been explained in the previous sections. We use this section to mention [GasToken](https://gastoken.io/), a token on Ethereum which exploits the refund mechanism in order to get a cheaper gas price. It provides users a streamlined way of using up storage, so that it can be redeemed at a later point for cheaper gas. Although it gives the illusion of "stored gas", it actually takes advantage of the inefficiency of the gas refund mechanism. For that reason, there is a limit to the amount that can be saved by using it.
 
 ## Unresolved questions
 
