@@ -591,7 +591,9 @@ Combined with packfiles, a snapshot or *checkpoint* of a node is just a specific
 
 ### WASM deduplication
 
-A good thing to factor out from deploys is the WASM code blob, this may mean to do away with deploy headers entirely if the biggest part of the deploy is now given by reference instead of by value. With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple WASM blobs in a single deploy; in a good design, an installed WASM blob would be found under the same hash in both the deploy and the global state.
+A good thing to factor out from Deploys is the WASM code blobs. We might also do away with DeployHeaders entirely if the biggest part of the Deploy is now given by reference instead of by value. 
+
+With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple WASM blobs in a single deploy; in a good design, an installed WASM blob would be found under the same hash in both the deploy and the global state.
 
 ### Offloading / Archiving
 
