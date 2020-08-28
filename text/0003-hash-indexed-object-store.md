@@ -12,7 +12,7 @@ There are a variety of "objects" defined in various parts of the platform's code
 
 [motivation]: #motivation
 
-Nodes attempting to join an existing network must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases. 
+Nodes attempting to join an existing network must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases.
 
 With the current node architecture, this approach would require separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). Additionally the storage component would need to namespace according to each type and component developers would need to remember which effect to call for each type. However, the core logic would remain the same for all such operations.
 
@@ -37,6 +37,8 @@ Every *object* that our node handles has common properties, namely:
 For example a Block may reference a number of Deploys by hash, which in turn may reference Wasm blobs by hash.
 
 This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference Wasm blobs.
+
+### Serialization
 
 Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network. 
 
@@ -182,9 +184,9 @@ impl Iterator for ObjectOutIter {
 
     // ...
 }
-This implementation will likely require the implementation of three utility types, a `NullWriter` that just discards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
+```
 
-This implementation will likely require the implementation of three utility types, a `NullWriter` that just dicards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
+This implementation will likely require the implementation of three utility types, a `NullWriter` that just discards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
 
 Note that the hash type is hardcoded to keep things simple for now.
 
@@ -299,8 +301,6 @@ The execution engine is going to require a change, namely in the hashing functio
 
 Additionally, if Wasm blocks are to be split off, these will need to be fetched separately. If any of these solutions prove to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
 
-Additionally, if Wasm blocks are to be split off, these will need to be fetched separately. If any of these solution provide to be infeasible, passing around a wrapper around LMDB like we do now is still feasible to keep these operations speedy.
-
 ### Gossiping
 
 Under this proposed model, we no longer require a generic gossiper component; a single statically typed gossiper can handle all objects. The existing functionality can be kept, with some allowed specialization around announcements (such as an incoming deploy received announcement). 
@@ -316,10 +316,9 @@ In addition to the existing gossiper functionality, the proposed universal gossi
 pub async fn gossip_objects(self, objects: Vec<Object>);
 ```
 
-
 ### Fetching
-Under this proposed model, we no longer require a generic fetcher component; a single statically typed fetcher can handle all objects. The existing functionality can be retained with some minor alterations such as the `fetch_object` function described below . 
-The fetcher component also loses its type parameter, similar to the gossiper.
+
+Under this proposed model, we no longer require a generic fetcher component; a single statically typed fetcher can handle all objects. The existing functionality can be retained with some minor alterations such as the `fetch_object` function described below .
 
 ```rust
 /// Retrieve an object from storage or the network.
@@ -354,8 +353,9 @@ variant and implementing variations of these inside the consensus component. Thi
 ## Drawbacks
 
 [drawbacks]: #drawbacks
+
 The proposed changes might negatively affect the contract runtime component's performance. This is still open to discovery, see [unresolved questions](#unresolved-questions).
-The biggest issue is that changes might affect execution engine performance negatively. This is still open to discovery, see [unresolved questions](#unresolved-questions).
+
 This proposal represents a sweeping, cross cutting, and not easily iterable change affecting many components. 
 There is a considerable effort required to update all components and the change might not be easy to implement incrementally.
 
@@ -604,11 +604,11 @@ External storage for a node could be added, e.g. if node operators want to reduc
 
 Support for external storage of older data could be added to allow node operators to reduce disk pressure. Offloading of objects to a store like [S3](https://aws.amazon.com/s3/), [Google Storage](https://cloud.google.com/storage) or [minio](https://min.io/) would offer node operators a significant (but optional) tool for scaling their infrastructure, without tying the chain itself to any specific service provider.
 
+### Storing post state hashes
+
 Post state hashes refer to global state, which already forms a tree structure. If the nodes were to store a post state hash inside each block, a client could download only the chain until genesis as additional verification, but then know that the post state hash is correct.
 
 Fetching the associated global state again just becomes a recursive (ideally CDN-powered, at least pack supported) download of the remaining hashes. This will result in automatic "pruning", since outdated/overwritten data is not retrieved.
-
-Fetching the associated global state again just becomes a recursive (ideally CDN-powered, at least pack supported) download of the remaining hashes. This willl result in automatic "pruning", since outdated/overwritten data is not retrieved.
 
 This is analogous to a "shallow clone" of a Git repository.
 
