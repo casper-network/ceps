@@ -621,4 +621,4 @@ Storage could keep a cache of recently used objects and use `Rc`s or `Arcs` to p
 
 ### Persisting networking state
 
-Should the networking component to be reworked to gossip data for node discovery, this data will need to be stored as well. It is conceivable that this might be stored to speed up a rejoin-process. This does, however, require a bit of indexing on the storage component's part, as there is currently no way to find all items of a specific object type.
+If the networking component were reworked to gossip data for node discovery, this data would need to be stored as well. It is also conceivable that this might have the happy side effect of speeding up the ability of a disconnected node to rejoin the network. This does, however, require a bit of indexing on the storage component's part, as there is currently no way to find all items of a specific object type.
