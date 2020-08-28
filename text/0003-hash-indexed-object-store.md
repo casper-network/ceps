@@ -239,7 +239,7 @@ impl<'a> Iterator for IterState<'a> {
 }
 ```
 
-This is all we need to be able to store and send arbitrary objects. We add convenience methods for our known types here:
+_NOTE: The above logic is necessary to store and send arbitrary objects using this proposed model; the following logic describes optional convenience methods implemented on `Object` to improve the ergonomics for component developers._
 
 ```rust
 impl Object {
