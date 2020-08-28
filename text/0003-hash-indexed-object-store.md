@@ -350,7 +350,7 @@ variant and implementing variations of these inside the consensus component. Thi
 ## Drawbacks
 
 [drawbacks]: #drawbacks
-
+The proposed changes might negatively affect the contract runtime component's performance. This is still open to discovery, see [unresolved questions](#unresolved-questions).
 The biggest issue is that changes might affect execution engine performance negatively. This is still open to discovery, see [unresolved questions](#unresolved-questions).
 
 There is a considerable effort required to update all components and the change might not be easy to implement incrementally.
