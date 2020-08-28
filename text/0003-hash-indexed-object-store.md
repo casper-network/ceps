@@ -12,7 +12,9 @@ There is a variety of "objects" floating around in our codebase at the moment: D
 
 [motivation]: #motivation
 
-One possible implementation of a mechanism for a new node joining the network is to provide it with a block and have it download all parents and dependencies up until the well-known genesis block.
+Nodes attempting to join an existing network must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases. 
+
+Another possible approach for a new node joining the network would be to provide the newly joining node with a more current block from a trusted source. The new node could run the chain backwards from that block, downloading all parents and dependencies until reaching the genesis block (which is trivially identifiable as it has no parent).
 
 With the current node architecture, this approach would require quite a few component instances: Separate instantiations of the gossiper and fetcher components for each type involved, which at the minimum are block and deploy if not counting DAG nodes. Storage needs to namespace according to types and component developers need to remember which effect to call for each. During all of this, the core logic remains the same for all IO operations of these different types though.
 
