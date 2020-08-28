@@ -180,7 +180,7 @@ impl Iterator for ObjectOutIter {
 
     // ...
 }
-```
+This implementation will likely require the implementation of three utility types, a `NullWriter` that just discards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
 
 This implementation will likely require the implementation of three utility types, a `NullWriter` that just dicards data, a `HashWriter` and a `HashReader` that pass input through but update an internal hash each time `write` is called.
 
