@@ -613,7 +613,7 @@ However, that is a fairly complex topic and beyond the scope of this CEP.
 
 An operating node will accumulate no longer used data over time, especially if DAG state is periodically persisted. A garbage collector should be run periodically to remove unreachable tips, allowing disk recovery. 
 
-When designing this feature, there may be a chance to build in a "shallow" node mode where only the latest global state and minimal history is kept to reduce disk space.
+For performance reasons, garbage collection may be run online, that is during normal operation. It should be feasible to keep a cache of all reachable object hashes in memory and keep it up-to-date separately, especially given our serialized access due to the reactor architecture. With this in place, once the list is complete and guaranteed to be continuously kept up-to-date, the garbage collector can start walking all keys and eliminate unreachable ones.
 
 For performance reasons, garbage collection may be run online, that is during normal operation. It should be feasible to keep a cache of all reachable object hashes in memory and keep it up-to-date seperately, especially given our serialized access due to the reactor architecture. With this in place, once the list is completey and guaranteed to be continuously kept up-to-date, the garbage collector can start walking all keys and eliminate unreachable ones.
 
