@@ -18,7 +18,7 @@ Another possible approach for a new node joining the network would be to provide
 
 With the current node architecture, this approach would require quite a few component instances: Separate instantiations of the gossiper and fetcher components for each type involved, which at the minimum are block and deploy if not counting DAG nodes. Storage needs to namespace according to types and component developers need to remember which effect to call for each. During all of this, the core logic remains the same for all IO operations of these different types though.
 
-If we instead unified using the Git-inspired object model this CEP recommends, the logic would be drastically simplified, depending upon the combination of a unique hash and a data type tag to properly identify each chunk of data rather than type semantics.
+In addition to improved ease of use for component developers, this approach would also simplify snap shotting and data shipping, and lend itself more easily to external caching (see [Future possibilities](#future-possibilities)).
 
 As a result, our IO layer will be greatly simplified, as well as its usage. Possible gains are easier snapshotting, DB handling and shipping data around in general. Speed-ups through external caching become very real (see [Future possibilities](#future-possibilities)).
 
