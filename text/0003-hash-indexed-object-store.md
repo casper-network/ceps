@@ -263,7 +263,7 @@ impl Object {
 
 ### Storage
 
-The storage component (there is only a single one now) turns into an `ObjectStore`, with only a few effects left:
+Using this proposed model, the storage component decomplects into a single `ObjectStore`, with a simplified set of effects.
 
 ```rust
 /// Retrieve multiple objects.
