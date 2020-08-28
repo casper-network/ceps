@@ -601,7 +601,7 @@ Support for external storage of older data could be added to allow node operator
 
 ### Storing post state hashes
 
-Post state hashes refer to global state, which already forms a tree structure. If the blocks were to store a post state hash inside each block, a client could download only the chain until genesis as additional verification, but then know that the post state hash is correct.
+Fetching the associated global state again just becomes a recursive (ideally CDN-powered, at least pack supported) download of the remaining hashes. This will result in automatic "pruning", since outdated/overwritten data is not retrieved.
 
 Fetching the associated global state again just becomes a recursive (ideally CDN-powered, at least pack supported) download of the remaining hashes. This willl result in automatic "pruning", since outdated/overwritten data is not retrieved.
 
