@@ -128,7 +128,7 @@ impl Object {
         Ok((value, hash))
     }
 
-    /// Serialize an object, calculation hash while doing so.
+    /// Serialize an object, calculating hash while doing so.
     fn serialize_into<W: Write>(&self, writer: W) -> Result<ObjectHash, ObjectError> {
         let opts = bincode_opts();
         let mut hw = HashWriter512::new(writer);
