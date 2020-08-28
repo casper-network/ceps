@@ -287,7 +287,7 @@ pub async fn put_objects(self, objects: Vec<Object>) -> Vec<ObjectHash>;
 
 The `ObjectStore` continues to use LMDB as a backend, but calculates keys upfront (we might also consider writing to a temporary key and renaming it) and stores the object under a precalculated key. For convenience, given a proper `Hash` trait implementation for `ObjectHash`, a hashmap might be returned.
 
-The recursive `_with_dependencies` retrieval functions allows fetching a whole subtree, which is useful when getting a block from storage - all the deploys (`max_depth` >= 1) and their WASM (`max_depth` is >= 2) can be fetched alongside with it. This saves a lot of event roundtrips.
+The recursive `_with_dependencies` retrieval functions allows fetching an entire subtree, which is useful when getting a block from storage. For instance, all contained deploys (`max_depth` >= 1) and their WASM (`max_depth` is >= 2) could be fetched alongside of a block, saving event round trips.
 
 ### Execution engine
 
