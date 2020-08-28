@@ -617,7 +617,7 @@ For performance reasons, garbage collection may be run online, that is during no
 
 ### In-memory deduplication
 
-Storage could keep a cache of recently used objects and use `Rc`s or `Arcs` to pass these around. This is usefuly because it is likely that a recently received deploy will make its way into a block in the near future. Having an unified mechanism that works for any kind of object makes implementing this case a good investment, as it will immediately benefit the whole system.
+Storage could keep a cache of recently used objects and use `Rc`s or `Arcs` to pass these around. This is useful because it is likely that a recently received Deploy will make its way into a Block in the near future. Having a unified mechanism that works for any kind of object makes implementing this case a good investment, as it will immediately benefit the platform.
 
 ### Persisting networking state
 
