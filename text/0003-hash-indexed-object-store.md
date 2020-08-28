@@ -81,11 +81,11 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 ...
 ```
 
-Code refers to another object that contains the Wasm code.
-
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
+
+_NOTE: this section assumes adoption of [casperlabs/ceps#0002](https://github.com/casperlabs/ceps/pull/0002)_
 
 First, we introduce a trait for object types:
 
