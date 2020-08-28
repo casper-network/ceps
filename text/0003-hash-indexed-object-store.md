@@ -101,7 +101,7 @@ type ObjectError = bincode::Error;
 const OBJECT_SIZE_LIMIT: usize = 32 * 1024 * 1024;
 
 /// Set appropriate bincode opts.
-// Note: Depends on RFC-2
+// Note: Depends on CEP-2
 #[inline]
 fn bincode_opts() -> impl bincode::config::Options {
     bincode::options()
@@ -386,7 +386,7 @@ We can keep the fetcher and gossiper generic to reuse more of the existing code.
 
 [prior-art]: #prior-art
 
-The main inspiration for this RFC is how [Git](https://git-scm.com) stores its object files. Most of these internals can be found in the [Git Internals section of the Pro Git Book](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain), but a short tour is included here.
+The main inspiration for this CEP is how [Git](https://git-scm.com) stores its object files. Most of these internals can be found in the [Git Internals section of the Pro Git Book](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain), but a short tour is included here.
 
 ### A short but illustrative tour through Git
 
@@ -564,7 +564,7 @@ Git stores different types of objects indexed by hashes, compressed in a very si
 * Do we serialize hashes or contents?
 * Do we store DAG nodes statically or dynamically (`Box<dyn ...>`)?
 
-All these questions should be answered before this RFC is merged.
+All these questions should be answered before this CEP is merged.
 
 ## Future possibilities
 
