@@ -91,8 +91,6 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 
 _NOTE: this section assumes adoption of [casperlabs/ceps#0002](https://github.com/casperlabs/ceps/pull/0002)_
 
-First, we introduce a trait for object types:
-
 ```rust
 type ObjectHash = Sha512;
 type ObjectError = bincode::Error;
@@ -152,7 +150,33 @@ impl Object {
         self.serialize(&mut NullWriter)
     }
 }
+
+#[derive(Debug)]
+struct ImmutableObject {
+    /// Create an immutable object from
+    fn from_object(object: Object) -> Result<Self, ObjectError> {
+        ImmutableObject {
+            hash: object.calc_hash()
+            object,
+        }
+    }
+
+    /// Get the object hash.
+    fn hash(&self) -> ObjectHash {
+        self.hash
+    }
+
+    /// Get actual object.
+    fn object(&self) -> &Object {
+        &self.object
+    }
+}
+
+// not shown: Serialize and Deserialize implementations that forward to the inner
+// `Object`'s serializaiton and deserialization methods.
 ```
+
+`ImmutableObject` should be the norm for loaded and stored objects, construction of actual `Object`s is likely only going to happen when they are constructed from parts. A `create_unchecked` method can be added to `ImmutableObject` for loading objects from storage, but it is advantageous to hash even loaded objects for extra durability.
 
 _NOTE: the custom iterator made necessary by the design of `iter_outgoing` does not require heap allocations._
 
@@ -279,20 +303,19 @@ Using this proposed model, the storage component decomplects into a single `Obje
 /// Retrieve multiple objects.
 // This method always uses the heap, since a single is already quite large.
 // Does not return any dependencies, may return less objects than requested.
-pub async fn get_objects(self, object_hash: Vec<ObjectHash>) -> HashMap<ObjectHash, Object>;
+pub async fn get_objects(self, object_hash: Vec<ObjectHash>) -> HashMap<ObjectHash, ImmutableObject>;
 
 /// Retrieve multiple objects, including their dependencies.
 ///
 /// If specified, stops at a specific depth. Returns `None` if any requested
 /// object was incomplete until `max_depth`.
-pub async fn get_objects_with_dependencies(self, object_hash: Vec<ObjectHash>, max_depth: Option<NonZeroUsize>) -> Option<HashMap<ObjectHash, Object>>>;
+pub async fn get_objects_with_dependencies(self, object_hash: Vec<ObjectHash>, max_depth: Option<NonZeroUsize>) -> Option<HashMap<ObjectHash, ImmutableObject>>>;
 
 /// Store multiple objects.
 ///
 /// Objects are stored in the reverse order given, so dependencies should be
-/// listed behind the actual object. Always recalculates object hashes for
-/// consistency reasons.
-pub async fn put_objects(self, objects: Vec<Object>) -> Vec<ObjectHash>;
+/// listed behind the actual object.
+pub async fn put_objects(self, objects: Vec<ImmutableObject>);
 ```
 
 The `ObjectStore` continues to use LMDB as a backend, but calculates keys upfront (we might also consider writing to a temporary key and renaming it) and stores the object under a precalculated key. For convenience, given a proper `Hash` trait implementation for `ObjectHash`, a hashmap might be returned.
