@@ -574,7 +574,11 @@ While not covered in detail in this CEP, this proposal also lays the groundwork 
 
 ### CDNs
 
-Since retrieving objects is just a matter of fetching by hash, we can leverage a CDN, for example via HTTP. Whenever a node needs an object `435abcf`, it can try to `GET http://casper.cdn.net/objects/435abcf` first. If found, we just saved the network the burden of sending the missing piece. This is not limited to the "official" CDN, validators are free to run one themselves, we may even add mechanisms to discover them.
+As under this proposal, retrieving objects is simply a matter of fetching by hash, it would be possible to trivially leverage a CDN to shift a significant amount of data servicing load off of operating nodes. 
+
+For instance, consider a node that needs an object identified by the hash `435abcf`. If an HTTP based CDN were available, that node could attempt to `GET http://casper.cdn.net/objects/435abcf` first before asking other nodes on the network to provide that data. 
+
+This would not require a single centralized CDN either, validators or other parties could run their own CDN. Going a step further, we might even add a mechanism to discover available CDNs.
 
 Open questions with this approach is who puts data on the CDN in the first place:
 
