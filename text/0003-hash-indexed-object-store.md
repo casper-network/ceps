@@ -222,7 +222,7 @@ impl<'a> OutIterable for &'a BlockHeader {
     }
 }
 
-impl<'a> Iterator for IterState<'a> {
+impl<'a> Iterator for BlockHeaderIter<'a> {
     type Item = ObjectHash;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -231,15 +231,15 @@ impl<'a> Iterator for IterState<'a> {
         *self = match *self {
             BlockHeaderIter::Parent(block) => {
                 rv = block.parent_hash.clone();
-                IterState::RootState(block)
+                BlockHeaderIter::RootState(block)
             }
             BlockHeaderIter::RootState(block) => {
                 rv = block.root_state.clone();
-                IterState::ConsensusData(block, 0)
+                BlockHeaderIter::ConsensusData(block, 0)
             }
             BlockHeaderIter::ConsensusData(block, idx) if idx < block.consensus_data.len() => {
                 rv = block.consensus_data[idx].clone();
-                IterState::ConsensusData(block, idx + 1)
+                BlockHeaderIter::ConsensusData(block, idx + 1)
             }
             BlockHeaderIter::ConsensusData(block, idx)
             | BlockHeaderIter::Done => BlockHeaderIter::Done,
