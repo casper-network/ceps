@@ -239,7 +239,7 @@ impl<'a> Iterator for IterState<'a> {
             }
             BlockHeaderIter::ConsensusData(block, idx) if idx < block.consensus_data.len() => {
                 rv = block.consensus_data[idx].clone();
-                IterState::ConsensusData(block, idx+1)
+                IterState::ConsensusData(block, idx + 1)
             }
             BlockHeaderIter::ConsensusData(block, idx)
             | BlockHeaderIter::Done => BlockHeaderIter::Done,
