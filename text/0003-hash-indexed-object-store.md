@@ -284,13 +284,6 @@ impl Object {
         }
     }
 
-    fn as_block_mut(&mut self) -> Option<&mut Block> {
-        match self {
-            Object::Block(ref mut block) => Some(block),
-            _ => None
-        }
-    }
-
     // ...
 }
 ```
@@ -624,6 +617,14 @@ It is entirely possible to implement pack files as just a serialization of `Hash
 A feature currently on the roadmap becomes almost a non-issue with this approach; snapshotting or *checkpointing*, i.e. the ability to start a node without having to download all content from the network, requires no code modification in the sense that if objects are identified by immutable hashes, the local database can simply check if they are present to avoid redownloading them.
 
 Combined with pack files, a snapshot or *checkpoint* of a node is just a specific Block plus all of its dependencies in a single file.
+
+### Finality signature
+
+Finality signatures at first glance are an example of a "graph node" that points in the wrong direction: Each signature points to exactly one block, but they will not all be available at the time the block itself is created and its hash finalized. This would usually leave each signature "floating" around, not being a dependency of the block it points to.
+
+A possible solution to this problem is to define a window `k` during which finality signatures for a block can be attached to its child blocks. As an example, if block `n` is created, finality signatures for this block may be part of any block `(n+1)...(n+k)`.
+
+As a result, finality signatures of previous blocks are associated and hashed with later blocks.
 
 ### Wasm deduplication
 
