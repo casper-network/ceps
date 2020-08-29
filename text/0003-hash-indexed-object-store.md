@@ -40,7 +40,7 @@ This is common to everything we handle, for example a block will reference a num
 
 ### Serialization
 
-Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network. 
+Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network.
 
 A type tag helps disambiguate objects whose serialization may be the same under a given format, and can also be used to avoid conflicts across different node versions. One byte should be sufficient to cover all of our use cases (one value could be reserved for future expansion if necessary).
 
@@ -58,7 +58,7 @@ It also allows storage and hash verification by other tools that are unaware of 
 
 Any properly typed object in memory provides a method for iterating over all of its *dependencies*. In graph terms this is an iterator over all outgoing edges.
 
-With this functionality, the logic of fetching dependent objects is moved out of the business logic components and into the fetcher. Verifying all referenced dependencies are available is subsumed into the fetcher as well. 
+With this functionality, the logic of fetching dependent objects is moved out of the business logic components and into the fetcher. Verifying all referenced dependencies are available is subsumed into the fetcher as well.
 
 _NOTE: this would render the current block validator component obsolete._
 
@@ -308,7 +308,7 @@ Additionally, if Wasm blocks are to be split off, these will need to be fetched 
 
 ### Gossiping
 
-Under this proposed model, we no longer require a generic gossiper component; a single statically typed gossiper can handle all objects. The existing functionality can be kept, with some allowed specialization around announcements (such as an incoming deploy received announcement). 
+Under this proposed model, we no longer require a generic gossiper component; a single statically typed gossiper can handle all objects. The existing functionality can be kept, with some allowed specialization around announcements (such as an incoming deploy received announcement).
 
 In addition to the existing gossiper functionality, the proposed universal gossiper component would need to support a `gossip_objects` effect as described below.
 
@@ -361,7 +361,7 @@ variant and implementing variations of these inside the consensus component. Thi
 
 The proposed changes might negatively affect the contract runtime component's performance. This is still open to discovery, see [unresolved questions](#unresolved-questions).
 
-This proposal represents a sweeping, cross cutting, and not easily iterable change affecting many components. 
+This proposal represents a sweeping, cross cutting, and not easily iterable change affecting many components.
 There is a considerable effort required to update all components and the change might not be easy to implement incrementally.
 
 The whole change to the execution engine may be prohibitive because of external dependencies, i.e. consumers of said execution engine that are not our node. This _might_ be worked around with a trait that abstracts the coupling between `Object` and components away.
@@ -574,9 +574,9 @@ While not covered in detail in this CEP, this proposal also lays the groundwork 
 
 ### CDNs
 
-As under this proposal, retrieving objects is simply a matter of fetching by hash, it would be possible to trivially leverage a CDN to shift a significant amount of data servicing load off of operating nodes. 
+As under this proposal, retrieving objects is simply a matter of fetching by hash, it would be possible to trivially leverage a CDN to shift a significant amount of data servicing load off of operating nodes.
 
-For instance, consider a node that needs an object identified by the hash `435abcf`. If an HTTP based CDN were available, that node could attempt to `GET http://casper.cdn.net/objects/435abcf` first before asking other nodes on the network to provide that data. 
+For instance, consider a node that needs an object identified by the hash `435abcf`. If an HTTP based CDN were available, that node could attempt to `GET http://casper.cdn.net/objects/435abcf` first before asking other nodes on the network to provide that data.
 
 This would not require a single centralized CDN either, validators or other parties could run their own CDN. Going a step further, we might even add a mechanism to discover available CDNs.
 
@@ -605,7 +605,7 @@ Combined with pack files, a snapshot or *checkpoint* of a node is just a specifi
 
 ### Wasm deduplication
 
-A good thing to factor out from Deploys is the Wasm code blobs. We might also do away with DeployHeaders entirely if the biggest part of the Deploy is now given by reference instead of by value. 
+A good thing to factor out from Deploys is the Wasm code blobs. We might also do away with DeployHeaders entirely if the biggest part of the Deploy is now given by reference instead of by value.
 
 With some changes to the deploy format or smart contract tooling, it may be possible to reference multiple Wasm blobs in a single deploy; in a good design, an installed Wasm blob would be found under the same hash in both the deploy and the global state.
 
@@ -625,7 +625,7 @@ However, that is a fairly complex topic and beyond the scope of this CEP.
 
 ### Garbage collection
 
-An operating node will accumulate no longer used data over time, especially if DAG state is periodically persisted. A garbage collector should be run periodically to remove unreachable tips, allowing disk recovery. 
+An operating node will accumulate no longer used data over time, especially if DAG state is periodically persisted. A garbage collector should be run periodically to remove unreachable tips, allowing disk recovery.
 
 For performance reasons, garbage collection may be run online, that is during normal operation. It should be feasible to keep a cache of all reachable object hashes in memory and keep it up-to-date separately, especially given our serialized access due to the reactor architecture. With this in place, once the list is complete and guaranteed to be continuously kept up-to-date, the garbage collector can start walking all keys and eliminate unreachable ones.
 
