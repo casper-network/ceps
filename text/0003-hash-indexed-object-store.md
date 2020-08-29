@@ -83,7 +83,7 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 ...
 ```
 
-Code refers to another object that contains the Wasm code.
+`code` refers to another object that contains the Wasm code.
 
 ## Reference-level explanation
 
