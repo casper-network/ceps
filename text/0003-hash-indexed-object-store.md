@@ -156,8 +156,7 @@ impl Object {
 
 _NOTE: the custom iterator made necessary by the design of `iter_outgoing` does not require heap allocations._
 
-```
-
+```rust
 /// An object that supports iteration over its dependencies.
 pub trait OutIterable {
     type OutIter : Iterator<Item=ObjectHash>;
