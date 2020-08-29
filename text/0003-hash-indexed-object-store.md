@@ -200,7 +200,7 @@ EXAMPLE: `Block` type implementation.
 pub struct BlockHeader {
     parent_hash: ObjectHash,
     root_state_hash: ObjectHash,
-    consensus_data: Vec<ObjectHash>,
+    deploys: Vec<ObjectHash>,
     era: u64,
     proofs: Vec<Signature>,
 }
@@ -209,7 +209,7 @@ pub struct BlockHeader {
 enum BlockHeaderIter<'a> {
     Parent(&'a Block),
     RootState(&'a Block),
-    ConsensusData(&'a Block, usize),
+    Deploys(&'a Block, usize),
     Done,
 }
 
@@ -234,13 +234,13 @@ impl<'a> Iterator for BlockHeaderIter<'a> {
             }
             BlockHeaderIter::RootState(block) => {
                 rv = block.root_state.clone();
-                BlockHeaderIter::ConsensusData(block, 0)
+                BlockHeaderIter::Deploys(block, 0)
             }
-            BlockHeaderIter::ConsensusData(block, idx) if idx < block.consensus_data.len() => {
-                rv = block.consensus_data[idx].clone();
-                BlockHeaderIter::ConsensusData(block, idx + 1)
+            BlockHeaderIter::Deploys(block, idx) if idx < block.deploys.len() => {
+                rv = block.deploys[idx].clone();
+                BlockHeaderIter::Deploys(block, idx + 1)
             }
-            BlockHeaderIter::ConsensusData(block, idx)
+            BlockHeaderIter::Deploys(block, idx)
             | BlockHeaderIter::Done => BlockHeaderIter::Done,
         };
 
