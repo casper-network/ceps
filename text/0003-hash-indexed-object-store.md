@@ -372,7 +372,7 @@ The whole change to the execution engine may be prohibitive because of external 
 
 ### Hashing without serialization
 
-One alternative is to not hash serialized contents of objects, but have every object provide hashing functionality itself. This has the advantage of being a little cheaper should an object in memory need to be hashed without being serialized; however this is likely a rare occurence. It also makes the objects independent of the serialization method chosen and might reduce changes needed inside the execution engine.
+One alternative is to not hash serialized contents of objects, but have every object provide hashing functionality itself. This has the advantage of being a little cheaper should an object in memory need to be hashed without being serialized; however this is likely a rare occurrence. It also makes the objects independent of the serialization method chosen and might reduce changes needed inside the execution engine.
 
 The drawback is that hashing now has to be implemented for each object on its own, but more importantly it is possible to accidentally introduce security issues by forgetting to include a field in a hash after changing it. Any occurence of such a bug is likely to result in a security issue, as it allows crafting two different specimen of an object with the same hash.
 
