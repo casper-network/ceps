@@ -127,6 +127,15 @@ This, of course, is not entirely accurate - by attaching a hash of the global st
 
 The proposed unified object model makes it trivial to download the global state by simply asking another node (or external caches, see [Future possibilities](#future-possibilities)) for the object referenced by `post_state_hash`. In the case depicted, the node which has Block, will download ParentBlock and the referenced GlobalState1, then apply both Deploys and check if the output is the same as the GlobalState2.
 
+## Loose ends
+
+Graph traversal is simple if a known starting point is available, e.g. when beginning from a trusted block that forms a root of the pseudo-tree used in an operation. Some objects are more "dynamic", they are added after the fact and point to existing objects, which must remain immutable.
+
+* Low levels of this "dynamicism" can be worked around by **introducing refs**. A newly created block has a parent dependency that points in the "wrong direction": From the perspective of a node that has a single trusted block as an ancestor of the new block, there is no connection. By keeping and updating refs like `refs/latest`, we keep multiple handles into the DAG, ensuring we do not miss these.
+
+* Small design changes can be made to allow **attaching loose ends to future DAG nodes**. An example is laid out in the [Finality Signatures](#finality-signatures) part of [Future possibilities](#future-possibilities) section.
+
+
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
@@ -660,13 +669,20 @@ A feature currently on the roadmap becomes almost a non-issue with this approach
 
 Combined with pack files, a snapshot or *checkpoint* of a node is just a specific Block plus all of its dependencies in a single file.
 
-### Finality signature
+### Finality signatures
 
-Finality signatures at first glance are an example of a "graph node" that points in the wrong direction: Each signature points to exactly one block, but they will not all be available at the time the block itself is created and its hash finalized. This would usually leave each signature "floating" around, not being a dependency of the block it points to.
+[finality-signature]: #finality-signatures
+
+Finality signatures at first glance are an example of a "graph node" that points in the wrong direction: Each signature points to exactly one block, but they will not all be available at the time the block itself is created and its hash finalized. This would usually leave each signature "floating" around, not being a dependency of the block it points to:
+
+!["Floating" finality signatures](../diagrams/0008-finality-sigs-a.png)
 
 A possible solution to this problem is to define a window `k` during which finality signatures for a block can be attached to its child blocks. As an example, if block `n` is created, finality signatures for this block may be part of any block `(n+1)...(n+k)`.
 
-As a result, finality signatures of previous blocks are associated and hashed with later blocks.
+As a result, finality signatures of previous blocks are associated and hashed with later blocks:
+
+![Rounded-up finality signatures](../diagrams/0008-finality-sigs-b.png)
+
 
 ### Wasm deduplication
 
