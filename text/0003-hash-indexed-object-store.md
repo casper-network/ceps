@@ -135,6 +135,12 @@ Graph traversal is simple if a known starting point is available, e.g. when begi
 
 * Small design changes can be made to allow **attaching loose ends to future DAG nodes**. An example is laid out in the [Finality Signatures](#finality-signatures) part of [Future possibilities](#future-possibilities) section.
 
+* _Highly dynamic loose ends_ are still pose an [open question](#unresolved-questions). An example are votes on the consensus DAG, which likely cannot be rolled up like finality signatures (see above). The [Unresolved Questions](#unresolved-questions) handles this in more details.
+
+* *Substitutable nodes*, that is node that can be supplanted by another, are also still an issue that for the [Unresolved Questions](#unresolved-questions) section.
+
+This can be summarized by stating the object store model is well-known for the chain DAG, but open questions remain with respects to the consensus DAG.
+
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
@@ -626,10 +632,21 @@ Git stores different types of objects indexed by hashes, compressed in a very si
 [unresolved-questions]: #unresolved-questions
 
 * What is the actual impact on the execution engine?
-* Do we serialize hashes or contents?
+
 * Do we store DAG nodes statically or dynamically (`Box<dyn ...>`)?
 
-All these questions should be answered before this CEP is merged.
+* How to handle _highly dynamic loose ends_. These occur whenever a DAG has a lot of entry points. An example are votes in the consensus DAG (see below).
+
+* *Substitutable nodes* also require a good solution (see example below).
+
+* Should be adopt the object model for the chain DAG, postponing the updates for the consensus DAG to a seperate, more detailed CEP.
+
+TODO (@marc-casperlabs): Write out explanation of figure and possible solutions below, including equivalence relation for nodes.
+
+#![Example for highly dynamic and substitutable nodes](../diagrams/0008-highly-dynamic-substitutable.png)
+
+### Example issues with the Consensus DAG
+
 
 ## Future possibilities
 
