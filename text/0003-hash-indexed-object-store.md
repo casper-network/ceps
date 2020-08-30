@@ -106,6 +106,17 @@ The new object store component is just a large key-value store, which stores a n
 
 In addition, it also stores references under their name, prefixed with `refs/`, as the prefix can never be part of a hex-formatted hash, thus automatically namespacing objects and refs.
 
+## Type safety
+
+An often brought up concern is the perceived type-safety loss by having a generic *object* as the central focus of this CEP. However, this is addressed by the following factors:
+
+* Every serialized object carries a type annotation in its hashed serialization, thus the kind of an object is always known at runtime.
+* Objects can be subjected to checked downcasts, e.g. an `as_block(&self) -> Option<&Block>` method that will only return a `Some` if the object in question is indeed a block.
+* The API for retrieving can conveniently allow specificying a type and roll up downcast errors into the retrieval error type. As an example, a method `get_object_from_storage<T>(&self) -> Result<T, Error>` can be called with `T = Object` for no downcasts or a `T = Block` if a block is expect, combining "not found" and "wrong errors" in `Error`.
+* Objects can still be passed around in their downcast form, only being upcast at IO barriers like storage or networking.
+
+Overall the amount of type safety retained or even added is firmly in the hand of the implementor of this CEP.
+
 ## Global State
 
 The motivational section mentions that joining requires an up-to-date copy of the global state, which can only be built by replaying all deploys starting at Genesis.
