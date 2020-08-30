@@ -680,7 +680,7 @@ An obvious question with this approach would be, who puts data on a CDN in the f
 * An easy first implementation would be an opt-in (via config.toml) behavior for a node instance to upload daily snapshots of the entire chain to a target CDN, and an opt-in behavior to use one or more CDN's. CasperLabs operated nodes would operate a CDN and opt-in to both options using our own CDN. Node operators who trust use could opt-in to use the CDN we provide. Those who do not are free to wire up their own CDN if they like.
 * This minimal version would considerably reduce the burden on the network of new nodes joining, at the cost of periodic activity spikes on nodes pushing snapshots to a CDN.
 * Another approach is to allow any node to push objects to a CDN. This might require a plausibility check (i.e. show that the object is reachable from genesis) and thus would need some specialized software to enable.
-* Clients could also upload Wasm blocks to a CDN beforehand, making the actual deploy really small.
+* Clients could also upload Wasm blocks to a CDN beforehand, significantly reducing the size of a referencing Deploy.
 
 _NOTE: the described CDN functionality would be strictly optional with regards to the correct operation of the network._
 
