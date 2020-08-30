@@ -135,7 +135,6 @@ Graph traversal is simple if a known starting point is available, e.g. when begi
 
 * Small design changes can be made to allow **attaching loose ends to future DAG nodes**. An example is laid out in the [Finality Signatures](#finality-signatures) part of [Future possibilities](#future-possibilities) section.
 
-
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
@@ -682,7 +681,6 @@ A possible solution to this problem is to define a window `k` during which final
 As a result, finality signatures of previous blocks are associated and hashed with later blocks:
 
 ![Rounded-up finality signatures](../diagrams/0008-finality-sigs-b.png)
-
 
 ### Wasm deduplication
 
