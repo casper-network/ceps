@@ -39,6 +39,8 @@ Below is a **simplified** example, in which we look at a fictional blockchain wi
 
 Here the hash of Block2 (`a1b2c3d`) is enough to retrieve Block2, from which all other data can be reached. The Wasm1 blob that is shared between Deploy2 and Deploy3 is what prevents this graph from being a tree.
 
+_NOTE: This example does not show the consensus dag or global state root hash, see below for more information_
+
 ### Serialization
 
 Every object recognized by the platform can trivially be serialized, prefixed with a type tag, and sent across the network or stored. The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
@@ -81,6 +83,28 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 ```
 
 `code` refers to another object that contains the Wasm code.
+
+## Chain vs consensus DAG
+
+The term *DAG* is overloaded in this CEP, we refer to the DAG of the consensus algorithm als the *consensus DAG*, while using the term *chain DAG* for the graph structure that consists of Blocks, Deploys and similar structures.
+
+The consensus DAG is structure parallel to the chain DAG, while there may be "soft" references between the two, they are not made hard dependencies to avoid having to preserve the full consensus DAG for a specific era forever
+
+## Refs
+
+In this example given earlier in this section, a specific hash was designated as the starting point (`a1b2c3d` in the figure). Similar to Git references (tags/branches), we introduce these *refs*, which map a name to a hash.
+
+A good example is for a ref is `refs/trusted`, which refers to the latest block that the node considers as finalized and valid, i.e. trustworthy. Should the node crash, it will resume operation by ensuring it has all the dependencies of `refs/trusted` and checking whether it is still inside the unbonding period (further details on node rejoining are out of scope for this CEP, see [CEP5](https://github.com/CasperLabs/ceps/pull/5) instead).
+
+Building on this idea, `refs/latest` can refer to the latest block created known by the node, which may be newer than `refs/trusted`.
+
+The immediate gain is that different kinds of information retrieval can be standardized as well by asking other nodes for refs instead of adding custom network message. For example, should a node want to catch up with the network, it requests `refs/trusted` from another node through a generic "retrieve ref" interface as opposed to a specialized "retrieve latest block hash".
+
+## Storage
+
+The new object store component is just a large key-value store, which stores a number of serialized objects under their hash.
+
+In addition, it also stores references under their name, prefixed with `refs/`, as the prefix can never be part of a hex-formatted hash, thus automatically namespacing objects and refs.
 
 ## Reference-level explanation
 
@@ -350,9 +374,9 @@ Here we employ the same `max_depth` limiter as we do with the storage itself.
 
 It is worth noting that given a current block hash `h`, calling `fetch_object(h, None, some_peer)` will eventually fetch the entire state required to join the network!
 
-### DAG/Consensus
+### Consensus DAG
 
-There are two ways of embedding consensus-related DAG data into the system, either the object format accompanies every single type of supported consensus with an enum variant, or a generic variant is used.
+There are two ways of embedding consensus DAG data into the system, either the object format accompanies every single type of supported consensus with an enum variant, or a generic variant is used.
 
 The first alternative is not as a bad as it sounds; while it does constitute a leaky abstraction, it improves the general robustness of the system, which will know how to reject invalid node types and can handle them "properly" inside its storage.
 
