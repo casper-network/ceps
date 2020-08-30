@@ -100,6 +100,8 @@ Building on this idea, `refs/latest` can refer to the latest block created known
 
 The immediate gain is that different kinds of information retrieval can be standardized as well by asking other nodes for refs instead of adding custom network message. For example, should a node want to catch up with the network, it requests `refs/trusted` from another node through a generic "retrieve ref" interface as opposed to a specialized "retrieve latest block hash".
 
+Additionally some updates can be modelled as ref updates. If a node has created another block it can broadcast an update to its `refs/latest` ref, causing other nodes to fetch it. This is not unlike how origins work in a Git repository, except that updates are propagated automatically.
+
 ## Storage
 
 The new object store component is just a large key-value store, which stores a number of serialized objects under their hash.
@@ -641,12 +643,21 @@ Git stores different types of objects indexed by hashes, compressed in a very si
 
 * Should be adopt the object model for the chain DAG, postponing the updates for the consensus DAG to a seperate, more detailed CEP.
 
-TODO (@marc-casperlabs): Write out explanation of figure and possible solutions below, including equivalence relation for nodes.
+### Example issues with the consensus DAG
 
 #![Example for highly dynamic and substitutable nodes](../diagrams/0008-highly-dynamic-substitutable.png)
 
-### Example issues with the Consensus DAG
+The figure above shows an example of highly dynamic loose ends in the form of votes; there will be a latest vote for each validator. One possible solution is to define a ref per validator (from the perspective of a node) and update it accordingly when receiving an announcement of an updated ref.
 
+The votes themselves form a DAG structure, albeit one with more shared nodes than the typical chain DAG as they refer to other votes as well as blocks simultaneously.
+
+One issue is that retrievel cannot be breadth-first to defend against certain classes of attacks on the consensus algorithm, instead they should be depth first with checks in between. To implement this either the fetcher can be extended to provide the appropriate hooks or can be instructed to fetch nodes non-recursively, keeping the ordering and verification logic inside the consensus component. The latter would still benefit from retrieval improvement and automatic storage, even when fetching objects one-by-one.
+
+The other issue shown is substitutable nodes in the consensus DAG, here Evidence1 is a stand in. If a node receives evidence against a validator, it is not required to produce this particular evidence when forwarding but may substitute different evidence against said validator it already possess.
+
+This poses a problem for recursive downloads, but may potentially be solved by formally introducing equivalency for nodes: If nodes in a DAG can be marked as equivalent (and said equivalency checked), a node that is pressed to produce a specific node A may be allowed to produce B instead, provided A ~ B ("A is equivalent to B").
+
+Whether or not this logic is confined to the consensus component and not exposed via the publically visible graph, or if the graph supports weak associations or even equivalent links to other nodes is yet to be determined.
 
 ## Future possibilities
 
