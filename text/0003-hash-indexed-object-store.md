@@ -106,6 +106,16 @@ The new object store component is just a large key-value store, which stores a n
 
 In addition, it also stores references under their name, prefixed with `refs/`, as the prefix can never be part of a hex-formatted hash, thus automatically namespacing objects and refs.
 
+## Global State
+
+The motivational section mentions that joining requires an up-to-date copy of the global state, which can only be built by replaying all deploys starting at Genesis.
+
+This, of course, is not entirely accurate - by attaching a hash of the global state's *root hash* (named *post state hash* when the hash is the result of the execution of a set of deploys from the current block), this process can be cut short:
+
+![Diagram depicting the relationship between previous post state hashes, blocks and deploys](../diagrams/0008-global-state.png)
+
+The proposed unified object model makes it trivial to download the global state by simply asking another node (or external caches, see [Future possibilities](#future-possibilities)) for the object referenced by `post_state_hash`. In the case depicted, the node which has Block, will download ParentBlock and the referenced GlobalState1, then apply both Deploys and check if the output is the same as the GlobalState2.
+
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
