@@ -675,7 +675,7 @@ For instance, consider a node that needs an object identified by the hash `435ab
 
 This would not require a single centralized CDN either, validators or other parties could run their own CDN. Going a step further, we might even add a mechanism to discover available CDNs.
 
-Open questions with this approach is who puts data on the CDN in the first place:
+An obvious question with this approach would be, who puts data on a CDN in the first place?
 
 * An easy first take is to upload daily snapshots of the whole chain ourselves. This already considerably reduces the burden on the network when new nodes are joining.
 * Another approach is to allow any node to push objects to the CDN. This might require a plausibility check (i.e. show that the object is reachable from genesis) and thus specialized software.
