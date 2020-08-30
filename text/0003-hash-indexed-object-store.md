@@ -12,15 +12,11 @@ There are a variety of "objects" defined in various parts of the platform's code
 
 [motivation]: #motivation
 
-Nodes attempting to join an existing network with knowledge of a recent, trusted block hash must accumulate sufficient data to "catch up" to the network's current state. The current default model would require a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; however this becomes increasingly problematic as the block height of the network increases.
+Nodes attempting to join an existing network with knowledge of a recent, trusted block hash must accumulate sufficient data to "catch up" to the network's current state. The current default model requires a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; becoming increasingly problematic as the block height of the network increases.
 
-With the current node architecture, this approach would require separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). Additionally the storage component would need to namespace according to each type and component developers would need to remember which effect to call for each type. However, the core logic would remain the same for all such operations.
+This approach also requires separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). The storage component needs to namespace according to each type and component developers need to remember which effect to call for each type, while the core logic would remain the same for all such operations.
 
-In addition to improved ease of use for component developers, this approach would also simplify snap shotting and data shipping, and lend itself more easily to external caching (see [Future possibilities](#future-possibilities)).
-
-As a result, our IO layer will be greatly simplified, as well as its usage. Possible gains are easier snapshotting, DB handling and shipping data around in general. Speed-ups through external caching become very real (see [Future possibilities](#future-possibilities)).
-
-Taking this one step further, we can express the tree structure given through hash references independent of the objects type as well, moving more IO logic away from business components.
+This CEP proposes a unified architecture for most data related to the node. In addition to improved ease of use for component developers, this approach would also simplify snapshotting and data shipping, and lend itself more easily to external caching (see [Future possibilities](#future-possibilities)).
 
 ## Guide-level explanation
 
