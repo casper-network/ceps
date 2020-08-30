@@ -6,17 +6,17 @@
 
 CEP PR: [casperlabs/ceps#0003](https://github.com/casperlabs/ceps/pull/0003)
 
-There are a variety of "objects" defined in various parts of the platform's code base (such as Deploys, Wasm blobs, Blocks, and DAG nodes). This proposal recommends standardizing all such objects using a [Git](https://git-scm.com)-inspired object model with the intent of unifying and simplifying the platform's networking, gossiping, retrieval, check pointing, and storage logic.
+There are a variety of _objects_ defined in various parts of the node's code base, such as Deploys, Wasm blobs, Blocks, and DAG nodes. This proposal recommends standardizing all such objects using a [Git](https://git-scm.com)-inspired object model with the intent of unifying and simplifying the platform's networking, gossiping, retrieval, check pointing, and storage logic.
 
 ## Motivation
 
 [motivation]: #motivation
 
-Nodes attempting to join an existing network with knowledge of a recent, trusted block hash must accumulate sufficient data to "catch up" to the network's current state. The current default model requires a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; becoming increasingly problematic as the block height of the network increases.
+A good motivating example for this change is the synchronization/rejoining process: Nodes attempting to join an existing network with knowledge of a recent, trusted block hash must accumulate sufficient data to "catch up" to the network's current state. The current default model requires a new node to start from genesis and attempt to catch up by acquiring and executing each block in order; which becomes increasingly problematic as the block height of the network increases.
 
-This approach also requires separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). The storage component needs to namespace according to each type and component developers need to remember which effect to call for each type, while the core logic would remain the same for all such operations.
+This approach also requires separate instances of the gossiper and fetcher components for each type involved (Block and Deploy at a minimum, perhaps also DAG nodes). The storage component needs to namespace according to each type and component developers need to remember which effect to call for each type, while the core logic remains the same for all such operations.
 
-This CEP proposes a unified architecture for most data related to the node. In addition to improved ease of use for component developers, this approach would also simplify snapshotting and data shipping, and lend itself more easily to external caching (see [Future possibilities](#future-possibilities)).
+This CEP proposes a unified, Git-inspired architecture for most data related to the node. In addition to improved ease of use for component developers, this approach also simplifies snapshotting and data shipping, and lend itself more easily to external caching (see [Future possibilities](#future-possibilities)).
 
 ## Guide-level explanation
 
@@ -24,19 +24,51 @@ This CEP proposes a unified architecture for most data related to the node. In a
 
 (It is recommended to read the [prior art](#prior-art) section beforehand)
 
-Every *object* that our node handles has common properties, namely:
+Every *object* that our node handles, e.g. a Block or Deploy, has common properties, namely:
 
 * It can be serialized to binary storage.
-* It has a unique identifying hash that depends solely on its contents.
-For example a Block may reference a number of Deploys by hash, which in turn may reference Wasm blobs by hash.
+* It has a unique identifying hash that depends solely on its contents. For example a Block may reference a number of Deploys by hash, which in turn may reference Wasm blobs by hash.
 
-This is common to everything we handle, for example a block will reference a number of deploys, which in turn reference Wasm blobs.
+We propose to unify these objects into a single type (or alternative trait), replacing the IO and network-related components with instances that work with generic objects only.
+
+Most of these objects will form a tree as a result, with edges expressed by hashes. As a **simplified** example, we will look at a fictional blockchain with three blocks G(genesis), B1, B2, with B1 and B2 each containing two deploys, D1..D4. Two of those deploys contain large Wasm blops to be executed. B1 also happens to be a switch block, containing a list of validators for era 3 (Vs3):
+
+```asciiart
+                      +------+
+                      |      |
+                      |      |
+                      |  Vs3 |
+               +------>      |
+               |      |      |
+               |      +------+
+               |
+               |
++----+       +-+--+      +----+
+|    |       |    |      |    |
+| G  <-------+ B1 <------+ B2 |
+|    |       |    |      |    |
++----+       +-+-++      +-+-++
+               | |         | |
+       +-------+ |      +--+ +--+
+       |         |      |       |
+     +-v--+  +---v+  +--v-+  +--v-+
+     | D1 |  | D2 |  | D3 |  | D4 |
+     +----+  ++---+  +---++  +----+
+              |          |
+              |          |
+         +----v-+       +v-----+
+         |      |       |      |
+         |  W1  |       |  W2  |
+         |      |       |      |
+         +------+       +------+
+
+```
 
 ### Serialization
 
-Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network.
+Every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network or stored. The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
 
-The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
+
 
 ### Hashing
 
