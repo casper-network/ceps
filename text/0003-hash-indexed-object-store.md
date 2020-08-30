@@ -173,7 +173,7 @@ struct ImmutableObject {
 }
 
 // not shown: Serialize and Deserialize implementations that forward to the inner
-// `Object`'s serializaiton and deserialization methods.
+// `Object`'s serialization and deserialization methods.
 ```
 
 `ImmutableObject` should be the norm for loaded and stored objects, construction of actual `Object`s is likely only going to happen when they are constructed from parts. A `create_unchecked` method can be added to `ImmutableObject` for loading objects from storage, but it is advantageous to hash even loaded objects for extra durability.
