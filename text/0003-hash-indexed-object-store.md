@@ -39,7 +39,7 @@ Below is a **simplified** example, in which we look at a fictional blockchain wi
 
 Here the hash of Block2 (`a1b2c3d`) is enough to retrieve Block2, from which all other data can be reached. The Wasm1 blob that is shared between Deploy2 and Deploy3 is what prevents this graph from being a tree.
 
-_NOTE: This example does not show the consensus dag or global state root hash, see below for more information_
+_NOTE: This example does not show the consensus DAG or global state root hash, see below for more information_
 
 ### Serialization
 
