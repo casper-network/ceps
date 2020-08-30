@@ -42,8 +42,6 @@ This is common to everything we handle, for example a block will reference a num
 
 Using the proposed model, every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network.
 
-A type tag helps disambiguate objects whose serialization may be the same under a given format, and can also be used to avoid conflicts across different node versions. One byte should be sufficient to cover all of our use cases (one value could be reserved for future expansion if necessary).
-
 The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
 
 ### Hashing
