@@ -338,7 +338,7 @@ impl Object {
 }
 ```
 
-### Storage
+### Storage implementation
 
 Using this proposed model, the storage component decomplects into a single `ObjectStore`, with a simplified set of effects.
 
