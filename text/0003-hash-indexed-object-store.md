@@ -688,7 +688,7 @@ _NOTE: the described CDN functionality would be strictly optional with regards t
 
 We could opt to implement pack files, to further optimize and most notably reduce total round trips. This is a non-trivial optimization, but offers significant benefits. For instance, it is easy to imagine a new node receiving a pack file that contains all Blocks (without dependencies) all the way back to genesis; that node could then fetch other information as required.
 
-A pack is just a collection of objects, so importing one into a node should be (disk space not withstanding) strictly a benefit to the node. In the absence of CDNs, pack files can be used to speed up inter-node downloads.
+A pack is just a collection of objects, so importing one into a node should be (disk space not withstanding) strictly a benefit to the node. This idea is also somewhat orthogonal to CDN usage, as even if we did not opt to support CDNs a pack file format could still be used to speed up inter-node downloads.
 
 It is entirely possible to implement pack files as just a serialization of `HashMap<ObjectHash, Object>`.
 
