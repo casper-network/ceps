@@ -682,12 +682,11 @@ An obvious question with this approach would be, who puts data on a CDN in the f
 * Another approach is to allow any node to push objects to a CDN. This might require a plausibility check (i.e. show that the object is reachable from genesis) and thus would need some specialized software to enable.
 * Clients could also upload Wasm blocks to a CDN beforehand, making the actual deploy really small.
 
-Note that none of this is strictly required as all the CDN functionality is strictly optional with regards to the correct operation of the network.
+_NOTE: the described CDN functionality would be strictly optional with regards to the correct operation of the network._
 
 ### Git-style pack files
 
-We may copy the idea of pack files, saving us some roundtrips. This is the first more complicated feature, but a node joining could easily happen to find a pack file that contains the
-blocks (without deploy contents) all the way up to genesis. It will then fetch other information as required.
+We could opt to implement pack files, to further optimize and most notably reduce total round trips. This is a non-trivial optimization, but offers significant benefits. For instance, it is easy to imagine a new node receiving a pack file that contains all Blocks (without dependencies) all the way back to genesis; that node could then fetch other information as required.
 
 A pack is just a collection of objects, so importing one into a node should be (disk space not withstanding) strictly a benefit to the node. In the absence of CDNs, pack files can be used to speed up inter-node downloads.
 
