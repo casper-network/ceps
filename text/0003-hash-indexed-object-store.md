@@ -44,7 +44,7 @@ The tag should be kept short, one byte should be plenty to cover all of our usec
 
 ### Hashing
 
-Object hashes are always Blake2b256 hashes, as these are already in use by the execution engine. It is imperative that we standardize on one kind of hash for all objects, even though the actual hash algorithm is less important (see also: https://github.com/CasperLabs/ceps/pull/8).
+Object hashes are always Blake2b256 hashes, as these are already in use by the execution engine. It is imperative that we standardize on one kind of hash for all objects, even though the actual hash algorithm is less important (see also: <https://github.com/CasperLabs/ceps/pull/8>).
 
 The hash value is derived solely from the serialized representation of the object, including its tag. This has the advantage that hashes can be checked without deserializing the object, even progressively while downloading it from a peer if necessary.
 
