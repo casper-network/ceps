@@ -147,6 +147,8 @@ This can be summarized by stating the object store model is well-known for the c
 
 [reference-level-explanation]: #reference-level-explanation
 
+The following implementation is an example, but in no means the final form. The scope of the change is too big to be completely and finally be captured in this CEP.
+
 _NOTE: this section assumes adoption of [casperlabs/ceps#0002](https://github.com/casperlabs/ceps/pull/0002)_
 
 ```rust
