@@ -31,44 +31,17 @@ Every *object* that our node handles, e.g. a Block or Deploy, has common propert
 
 We propose to unify these objects into a single type (or alternative trait), replacing the IO and network-related components with instances that work with generic objects only.
 
-Most of these objects will form a tree as a result, with edges expressed by hashes. As a **simplified** example, we will look at a fictional blockchain with three blocks G(genesis), B1, B2, with B1 and B2 each containing two deploys, D1..D4. Two of those deploys contain large Wasm blops to be executed. B1 also happens to be a switch block, containing a list of validators for era 3 (Vs3):
+These objects will form a directed, acyclic graph as a result, with edges expressed by hashes. Resources can be referred to multiple times to deduplicate them directly in the graph structure, although this property prevents the graph from being a proper tree rooted in the latest block.
 
-```asciiart
-                      +------+
-                      |      |
-                      |      |
-                      |  Vs3 |
-               +------>      |
-               |      |      |
-               |      +------+
-               |
-               |
-+----+       +-+--+      +----+
-|    |       |    |      |    |
-| G  <-------+ B1 <------+ B2 |
-|    |       |    |      |    |
-+----+       +-+-++      +-+-++
-               | |         | |
-       +-------+ |      +--+ +--+
-       |         |      |       |
-     +-v--+  +---v+  +--v-+  +--v-+
-     | D1 |  | D2 |  | D3 |  | D4 |
-     +----+  ++---+  +---++  +----+
-              |          |
-              |          |
-         +----v-+       +v-----+
-         |      |       |      |
-         |  W1  |       |  W2  |
-         |      |       |      |
-         +------+       +------+
+Below is a **simplified** example, in which we look at a fictional blockchain with three blocks (Gensesis, Block1, Block2), two of which containing two Deploys each. Some of these Deploys refer to Wasm-Blocks, one of which is shared. Block1 also happens to be a switch block, containing a list of validators for era 5:
 
-```
+![Simple example graph](../diagrams/0008-example.png)
+
+Here the hash of Block2 (`a1b2c3d`) is enough to retrieve Block2, from which all other data can be reached. The Wasm1 blob that is shared between Deploy2 and Deploy3 is what prevents this graph from being a tree.
 
 ### Serialization
 
-Every object recognized by the platform could trivially be serialized, prefixed with a type tag, and sent across the network or stored. The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
-
-
+Every object recognized by the platform can trivially be serialized, prefixed with a type tag, and sent across the network or stored. The tag should be kept short, one byte should be plenty to cover all of our usecases (we will reserve one value for future expansion if necessary).
 
 ### Hashing
 
@@ -86,7 +59,7 @@ With this functionality, the logic of fetching dependent objects is moved out of
 
 _NOTE: this would render the current block validator component obsolete._
 
-Other components can decide if they want to fetch or fetch recursive, optionally specifying a peer that is required to provide the specific missing parts when asked.
+Other components can decide if they want to fetch or fetch recursive, specifying a peer that is required to provide the specific missing parts when asked.
 
 Put into "pseudo-git" representation, this fictional format would look like this
 
