@@ -1,6 +1,6 @@
 # Title
 
-## Client API of Casper Node
+## Casper Node: Client Facing API
 
 [summary]: #summary
 
@@ -34,6 +34,12 @@ While this may complicate things somewhat for clients, perhaps especially for Cl
 node software to be focused on its core responsibilities: accepting deploys, reaching consensus on
 their order, executing them and persisting changes to global state and the blockchain.
 
+Until we are able to provision some form of middleware which will be able to subscribe to nodes'
+event streams, and to which clients can direct their queries for metadata around deploy execution,
+the node will retain limited information in the deploy store as an interim measure.
+
+This information will be held as metadata associated with a given deploy and will include the cost
+of execution along with execution results.
 
 ## Reference-level explanation
 
@@ -46,44 +52,42 @@ A new component named `SseServer` will handle client subscriptions and sending S
 component's name specifically doesn't include the term "Event" to try and avoid confusion with the
 existing multitude which relate specifically to the interaction between reactors and components.
 
+The two servers will share the same listening address, with a path differentiating the two.
+
 All messages from the node will include the API version.  This will allow the client to ensure it's
 working against a compatible version of the node software.
 
 ### RPCs
 
-| Path    | Method  | Params                           | Success Response                                                 |
-|-------- |-------- |--------------------------------- |----------------------------------------------------------------- |
-| /deploy | "put"   | [JSON-encoded deploy]            | API version                                                      |
-| /deploy | "get"   | [hex-encoded deploy hash]        | API version + JSON-encoded deploy                                |
-| /block  | "get"   | [hex-encoded block hash] or none | API version + JSON-encoded block                                 |
-| /query  | "state" | { "block_hash": \<HEX STRING\> or null, "key": \<HEX STRING\>, "path": ["key1", "key2", etc], "type": \<STRING\> } | CLValue |
-| /query  | "peers" | none                             | API version + list of node IDs (not validator IDs) and endpoints |
-| /query  | "all"   | none                             | API version + list of peers + the latest block                   |
+The path for RPCs is `/rpc`
 
-Note: For /block "get", if no params are passed, the latest block is returned.
+| Method               | Params                           | Success Response                                                 |
+|--------------------- |--------------------------------- |----------------------------------------------------------------- |
+| "account_put_deploy" | [JSON-encoded deploy]            | API version                                                      |
+| "chain_get_block"    | [hex-encoded block hash] or none | API version + JSON-encoded block                                 |
+| "state_get_item"     | { "block_hash": \<HEX STRING\> or null, "key": \<HEX STRING\>, "path": ["key1", "key2", etc], "type": \<STRING\> } | CLValue |
+| "info_get_deploy"    | [hex-encoded deploy hash]        | API version + JSON-encoded deploy info                           |
+| "info_get_peers"     | none                             | API version + list of node IDs (not validator IDs) and endpoints |
+| "info_get_status"    | none                             | API version + list of peers + the latest block                   |
 
-Note: For /query "state", if "block_hash" is null, the latest block will be used.  The "type" must be
-one of "hash", "uref", or "address".  The returned value on success will be `CLValue`, serialized
+Note: For "chain_get_block", if no params are passed, the latest block is returned.
+
+Note: For "state_get_item", if "block_hash" is null, the latest block will be used.  The "type" must
+be one of "hash", "uref", or "address".  The returned value on success will be `CLValue`, serialized
 using `ToBytes`, then hex-encoded.
 
 
 ### Event stream
 
-The path for the event stream is `/events`.  It will support a query string with the following
-optional components:
+The path for the event stream is `/events`.  It will send all events to all subscribers from the
+moment they subscribe (i.e. no historical events will be sent).
 
-* `subscription=[comma-separated list of event types]` where the available event types are
-    * `block_finalized`
-    * `block_added`
-    * `deploy_added`
-    * `deploy_requeued`
-    * `deploy_discarded`
-    * `deploy_finalized`
-    * `deploy_processed`
-    * `deploy_orphaned`
-* alternatively, `subscription=all` implies subscribing to all available event types
-* `accounts=[comma-separated list of hex-encoded accounts]` to filter by the listed accounts
-* `deploy_hashes=[comma-separated list of hex-encoded deploy hashes]` to filter by the listed deploys
+the available event types are
+* `block_finalized`
+* `block_added`
+* `deploy_finalized`
+* `deploy_processed`
+* `deploy_added`
 
 The events corresponding to these subscriptions are as close as possible to those currently defined
 in [info.proto](https://github.com/CasperLabs/CasperLabs/blob/cd2e80286d4172c9d2e73a2c1f1271b2961a7527/protobuf/io/casperlabs/casper/consensus/info.proto#L91-L161).
@@ -103,7 +107,8 @@ each) until the requested deploy state has been reached, at which point the clie
 
 [drawbacks]: #drawbacks
 
-* Clients will not be able to receive as rich information in response to requests for information as they currently do.
+* Clients will not be able to receive as rich information in response to requests for information as
+they currently do, although this can be viewed as more of a trade-off than an actual drawback.
 
 
 ## Rationale and alternatives
@@ -129,6 +134,13 @@ This would increase the complexity of node and decrease the performance.  It wou
 memory and disk resources.  It seems like a better solution to offload that to a separate process
 designed specifically to handle that information.
 
+* Events sent via the event stream could be filtered by the node rather than by the clients.  This
+would be more convenient for clients, but places the corresponding burden on the node.  It may be
+that future middleware can filter for clients, but for now it's better to keep the node's
+responsibilities as minimal as possible.  This approach also allows clients to create filters as
+coarse- or fine-grained as they need, rather than having the choice of filters imposed upon them by
+the node.
+
 
 ## Prior art
 
@@ -138,12 +150,13 @@ The existing Scala node is the best example of prior art.  While relevant in man
 proposed API here does not require persisting extraneous data purely to satisfy client requests for
 that data.
 
+There are also several other blockchain projects offering similar APIs, for example [Polkadot](https://polkadot.js.org/api/substrate/rpc.html).
 
 ## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-Is the proposed API going to be usable in particular by Clarity?
+None at this time.
 
 
 ## Future possibilities
