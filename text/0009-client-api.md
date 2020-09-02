@@ -82,17 +82,13 @@ using `ToBytes`, then hex-encoded.
 The path for the event stream is `/events`.  It will send all events to all subscribers from the
 moment they subscribe (i.e. no historical events will be sent).
 
-the available event types are
-* `block_finalized`
-* `block_added`
-* `deploy_finalized`
-* `deploy_processed`
-* `deploy_added`
+| Event            | Triggered by                                                           | Includes                                                  |
+|----------------- |----------------------------------------------------------------------- |---------------------------------------------------------- |
+| block_finalized  | `EraSupervisor` when creating a new `FinalizedBlock`                   | all included `DeployHash`es                               |
+| block_added      | `LinearChain` once the block has been stored                           | `BlockHash` and `BlockHeader`                             |
+| deploy_processed | `BlockExecutor` after each deploy is executed and transforms committed | `DeployHash`, all execution results and the commit result |
 
-The events corresponding to these subscriptions are as close as possible to those currently defined
-in [info.proto](https://github.com/CasperLabs/CasperLabs/blob/cd2e80286d4172c9d2e73a2c1f1271b2961a7527/protobuf/io/casperlabs/casper/consensus/info.proto#L91-L161).
-
-The first message returned will be the API version.  All subsequent ones will be JSON-encoded events.
+The first message sent by the server to any new subscriber will be the API version.  All subsequent ones will be JSON-encoded events.
 
 ### Use case
 
@@ -151,6 +147,7 @@ proposed API here does not require persisting extraneous data purely to satisfy 
 that data.
 
 There are also several other blockchain projects offering similar APIs, for example [Polkadot](https://polkadot.js.org/api/substrate/rpc.html).
+
 
 ## Unresolved questions
 
