@@ -55,7 +55,7 @@ The proposal revolves around the mechanics of onboarding within a social consens
 
 ### 1. Establish a Casper Validator Association (CVA)
 
-Whilst in a mundane sense a validator is simply an operator running node software incubated by CasperLabs, the act of doing so incurs a **risk** burden, a risk burden laden with non-negligible financial consequences.  Such risk revolves around the following (non-exhaustive) elements:
+The risk aspects of running running a validator node revolves around the following (non-exhaustive) elements:
 
 - Existential issues with the node software - e.g. a hitherto undiagnosed fault;
 - Operational issues with the node deployment - e.g. a concerted DDOS attack;
