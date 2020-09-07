@@ -75,7 +75,7 @@ Association membership incurs both duties & responsibilities.  To focus the mind
 
 ### 2. Establish a VDAO - i.e. validator DAO 
 
-To formalise & reinforce the collaborative and by extension trust aspects of the validator association it is proposed to consider designing a validator DAO, aka a VDAO.  Such a DAO will be a set of smart contracts permitting validators to confidentially submit either proofs or commitments.  Submitted information would be visible to other association members and would thus act as a trust amplifier.   
+To reinforce the collaborative aspects of the validator association it is proposed to consider designing a validator DAO, aka a VDAO.  Such a DAO will be a set of smart contracts permitting validators to confidentially submit either proofs or commitments.  Submitted information would be visible to other association members and would thus act as a trust amplifier.   
 
 Proof submissions would revolve around legally binding documents addressing KYC, compliance & regulatory concerns.  The objective of these submissions is to reinforce the notion that the network is AML/CFT intolerant.  The legally binding aspect of such submissions within the context of a volunatry association is admittedly somewhat problematic, however registering the association as a Swiss entity might be helpful in this respect.
 
