@@ -108,7 +108,9 @@ Developing this feature set is a non-trivial task and one best performed in coll
 
 The Casper network has a few nice features in respect of account management.  These features could be leveraged and perhaps augmented so as to provide a more sophisticated validator experience in respect of PoS auction participation and node operation.  An enhanced experience becomes increasingly relevant for validator's operating potentially several nodes.
 
-According to the technical documentation an account has a set of **associated keys** each of 
+According to the technical documentation an account has a set of **weighted associated keys** to which the account owner can delegate deploy signing permissions.  The weights are used to derive action thresholds - when the weights of the key(s) used to preform an action exceed the action threshold then the action is execution.  Currently there are 2 supported action types: deploys & account recovery.
+
+It is hereby proposed to add a 3rd action type, namely '**submit auction bid**'.  This will enable a validator to decouple the account key from the PoS auction participation key.  Mapping keys to well defined roles is best practise in respect of key SecOps.
 
 ## Reference-level explanation
 
