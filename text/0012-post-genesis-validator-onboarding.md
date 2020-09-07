@@ -8,15 +8,15 @@
 
 CEP PR: [casperlabs/ceps#0012](https://github.com/casperlabs/ceps/pull/0012)
 
-Trust in the security & integrity of the Casper network is a necessary precursor to its success.  Addressing, and being seen to be addressing, AML/CFT concerns, is a pillar of establishing such trust.  Protocol level controls, augmented by off-chain social consensus mechanisms, must serve to bring such AML/CFT concerns to the foreground.  Failure to do so will reduce the risk appetite, and hence capital allocation, of prospective network investors (small & large).
+A permission-less network operating within the context of unregulated markets naturally attracts significant scepticism in respect of AML/CFT concerns.   Establishing a deep degree of trust in the security & integrity of the Casper network is a necessary precursor to its success.  Thus protocol mechanisms augmented by a form of off-chain social consensus, must be seen to bring such AML/CFT concerns to the foreground.  Failure to do so will reduces risk appetite, and hence capital allocation, of prospective network investors (small & large).
 
-Nowhere are the above facts more pertinent than when permitting new entities to onboard as network validators. At genesis, the validator set is assumed to be of sufficient integrity so as to **safely** bootstrap the network, i.e. the emphasis at launch is correctness not throughput.  However post-genesis, the validator set will mutate at a fairly regular cadence in response to one or all of the following events: 
+Nowhere are the above facts more pertinent than when permitting new entities to onboard as network validators.  At genesis, the validator set is assumed to be of sufficient integrity so as to **safely** bootstrap the network, i.e. the emphasis at launch is correctness not throughput.  However post-genesis, the validator set will mutate at a fairly regular cadence in response to one or all of the following events: 
 
 - new validators obtaining permission to join via an auction;
 - honest validators voluntarily leaving;
 - byzantine validators being ejected by the protocol.  
 
-This CEP focusses upon the process of **securely** onboarding new validators.  It frames such a process within non-trivial security, infrastructure, engagement & token contextual considerations.  In particular it focusses upon the following 3 use cases: 
+This CEP reviews the process of **securely** onboarding new validators.  It frames such a process within non-trivial security, infrastructure & token-economics considerations.  It focusses upon the following 3 use cases: 
 
 - a validator acting on the behalf of themselves;
 - a validator acting on the behalf of themselves & delegators;
@@ -30,14 +30,12 @@ The discussions assume the following:
 - that whilst active markets exist for the network token, they are assumed to be unregulated.
 - that the network's crypto-economic security model is predicated upon so-called Proof-of-Stake (POS);
 - that via a smart contract, the network exposes an auction mechanism permitting prospective new validators' to signal an intent to participate.
-- that the network's governance mechanisms revolve around some form of so-called social consensus.
+- that the network's governance mechanisms revolve around off-chain social consensus.
 - that it is in the interests of all network participants to adopt a pro-active approach to network-wide risk management;
 
 ## Motivation
 
 [motivation]: #motivation
-
-Why are we doing this? What use cases does it support? What is the expected outcome?
 
 On several levels it is imperative that the protocol safely permits the validator set to organically grow above and beyond the genesis validator set.  It is inconceivable that the network does not support such a feature at genesis, i.e. it is an absolute & non-negotiable requirement of a minimal viable main-net.  Thus the motivation is crystal clear, it is that of a **demonstrably** healthy network.  Healthy from an operational, crypto-economic & (by extension) reputational perspective.  
 
@@ -53,18 +51,18 @@ The set of use cases this CEP touches upon are many & diverse:
 
 [guide-level-explanation]: #guide-level-explanation
 
-The proposal revolves around the mechanics of onboarding within a social consensus setting.  It describes several mechanisms that validators may wish to take advantage of so as to onboard in manner befitting a potentially multi-billion dollar network.  Whilst each mechanism is hereby described at a relatively high-level, the proposal as a whole is meant to stimulate broader conversations between stakeholders and is not to be considered in any way definitive. 
+The proposal revolves around the mechanics of onboarding within a social consensus setting and describes several mechanisms that validators may wish to take advantage of so as to onboard in a manner befitting a potentially multi-billion dollar network.  
 
 ### 1. Establish a Casper Validator Association (CVA)
 
-In a mundane sense a validator is simply an operator running node software incubated by CasperLabs.  However the act of doing so incurs a **risk** burden, a risk burden laden with non-negligible financial consequences.  Such risk revolves around the following (non-exhaustive) elements:
+Whilst in a mundane sense a validator is simply an operator running node software incubated by CasperLabs, the act of doing so incurs a **risk** burden, a risk burden laden with non-negligible financial consequences.  Such risk revolves around the following (non-exhaustive) elements:
 
 - Existential issues with the node software - e.g. a hitherto undiagnosed fault;
 - Operational issues with the node deployment - e.g. a concerted DDOS attack;
 - Jurisdictional issues associated with the business context - e.g. differing litigation risk profiles.
 - Reputational issues within the social consensus context - e.g. cartel formation.
 
-Blockchains are in essence a solution to a co-ordination problem, and a rational risk mitigation strategy dictates that validators collaborate with each other.  For example timely information sharing over well defined communication channels is one such example of collaboration.  Validators acting in isolation are effectively disempowered when compared to ad-hoc groups of validators acting in unison.  However such ad-hoc groups tend to coalesce into political cliques, this is problematic as such cliques focus upon tactical objectives at the expense of **coherent** longer-term strategic objectives.  It is the contention of this CEP author that this landscape is unfit for the purpose of nurturing and stewarding a successful crypto-economic network over the long-term, i.e. decadal timeframe.
+Blockchains are in essence a solution to a co-ordination problem, and a rational risk mitigation strategy dictates that validators collaborate with each other.  Timely information sharing over well defined communication channels is one such example of collaboration.  Validators operating in isolation are effectively disempowered when compared to ad-hoc groups of validators acting in unison.  However such ad-hoc groups tend to coalesce into political cliques, which is problematic as such cliques focus upon tactical objectives at the expense of **coherent** longer-term strategic objectives.  It is the contention of this CEP author that this landscape is unfit for the purpose of nurturing and stewarding a successful crypto-economic network over the long-term, i.e. decadal timeframe.
 
 It is thus recommended that an association of Casper Validator Association is formally established, preferably in Switzerland.  Such an association will be endowed with reputational credibility and (a degree of) financial capital.  All genesis validators will be **required** to be members of this association.  The overall long-term aim is for the association to become one pillar upon which a future on-chain governance strategy can be implemented.  
 
@@ -72,6 +70,7 @@ Association membership incurs both duties & responsibilities.  To focus the mind
 
 - draw up legally binding articles of association;
 - draft an initial constitution;
+- establish a VDAO (see below);
 - formulate a certification program (see below);
 
 ### 2. Establish a VDAO - i.e. validator DAO 
@@ -174,6 +173,6 @@ In respect of enhanced validator key management:
 
 [future-possibilities]: #future-possibilities
 
-1. In respect of addressing AML/CFT concerns, a future possibility is a feature whereby accounts **provably** tainted to be associated with criminal activity can be either frozen or marked as tainted.  The network's core account model could be updated to include a 'reject tainted accounts' setting.  If set to true then the network would implicitly reject transactions associated with tainted accounts.
+1.  Freeze accounts **provably** tainted to be associated with criminal activity.  The network's core account model could be updated to include a 'reject tainted accounts' setting.  If set to true then the network would implicitly reject transactions associated with tainted accounts.
 
-2. In respect of key management adoption of an ECC key type with native support of multi-sig at the signing level is perhaps desirable.  This would bring the Casper network in line with other recently launched networks.
+2. Adopt ECC Key Algorithms with in-built multi-sig support.  This would bring the Casper network in line with other recently launched networks.
