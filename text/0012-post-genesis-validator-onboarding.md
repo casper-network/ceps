@@ -85,7 +85,7 @@ In due course, participation in this VDAO could be linked to the network's on-ch
 
 ### 3. Establish a validator certification program
 
-A validator certification program will seek to impart the values underpinning the network's identity whilst detailing the duties & responsibilities expected of a validator during the course of their active engagement with the network.  It will revolve around a training program combined with a series of community inductions.  
+A validator certification program serves to impart the values underpinning the network's identity whilst detailing the duties & responsibilities expected of a validator during the course of their active engagement with the network.  It will revolve around a training program combined with a series of community inductions.
 
 The operational component of the training program will focus upon the mechanics of securely and safely operating a validator node.  The reputational component will focus upon participation within the wider social consensus process.  The technical component will focus upon imparting information regarding node software design & behavioural analysis.  The governance component will focus upon detailing the range of potential scenarios in which governance mechanisms impact upon operational concerns and how to respond to those scenarios in a timely manner.  
 
@@ -93,7 +93,7 @@ The certification program would be available online.  The content might be a mix
 
 ### 4. Partner with cold wallet providers
 
-In order to onboard a prospective validator must by necessity obtain a sufficient amount of the network's token so as to successfully participate in the on-chain validator slot auction process.  Obtaining a sufficient amount of the network token requires participating as a buyer at one or more market venues such as exchanges, OTC desks and/or brokerages.  The end result of such participation is a **high-value** account upon the Casper network.
+In order to onboard, a prospective validator must obtain a sufficient amount of the network's token, either directly or via delegation.  In the case of directly acquisition, this will involve participating as a buyer at one or more market venues such as exchanges, OTC desks and/or brokerages.  In the case of acquisition via delegation, this will involve (at minumum) signifcant marketing and/or networking.  Either way the end result of such participation is a **high-value** account upon the Casper network.
 
 Such an account is by definition extremely sensitive from a security perspective.  Both access to and usage of the account will be highly constrained and must be auditable.  A so-called cold wallet would be the natural means via which the account would be managed.  Ideally such a wallet would support:
 
