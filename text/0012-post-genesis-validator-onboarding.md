@@ -75,13 +75,13 @@ Association membership incurs both duties & responsibilities.  To focus the mind
 
 ### 2. Establish a VDAO - i.e. validator DAO 
 
-To reinforce the collaborative aspects of the validator association it is proposed to consider designing a validator DAO, aka a VDAO.  Such a DAO will be a set of smart contracts permitting validators to confidentially submit either proofs or commitments.  Submitted information would be visible to other association members and would thus act as a trust amplifier.   
+To reinforce the collaborative aspects of the validator association it is proposed to consider designing a validator DAO, aka a VDAO.  Such a VDAO will be a set of smart contracts permitting validators to confidentially submit either proofs or commitments.  Submitted information would be visible to other association members and would thus act as a trust amplifier.   
 
 Proof submissions would revolve around legally binding documents addressing KYC, compliance & regulatory concerns.  The objective of these submissions is to reinforce the notion that the network is AML/CFT intolerant.  The legally binding aspect of such submissions within the context of a volunatry association is admittedly somewhat problematic, however registering the association as a Swiss entity might be helpful in this respect.
 
 Commitment submissions are less black & white than proof submissions.  For example one might draft a commitment such as, "Members of this association will not support network activities that skew market pricing such as wash trading, front-running ...etc."  Such commitments aim to nudge the validators towards a shared set of values and goals that are clearly signalled to all network participants.  Entities engaging in such activities will thus be duly forewarned that the network operators, whilst perhaps unable to prevent such activities, will not tolerate them if and when proven to occur.  Thus commitments may act as deterrents.  
 
-In due course, participation in this VDAO could be linked to the network's on-chain crypto-economic model.  I.E. the VDAO will act as an on-chain record of the degree of commitment a validator has to the network's integrity.  Such commitment could be reflected in the Proof-of-Stake rewards distribution scheme.  
+In due course, participation in this VDAO could be linked to the network's on-chain crypto-economic model.  I.E. the VDAO will act as an on-chain record of the degree to which a validator self-identifies & aligns with the network's integrity.  This information could be leveraged by the Proof-of-Stake rewards distribution scheme.  
 
 ### 3. Establish a validator certification program
 
