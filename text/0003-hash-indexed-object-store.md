@@ -643,7 +643,7 @@ Git stores different types of objects indexed by hashes, compressed in a very si
 
 * *Substitutable nodes* also require a good solution (see example below).
 
-* Should be adopt the object model for the chain DAG, postponing the updates for the consensus DAG to a seperate, more detailed CEP.
+* Should we adopt the object model for the chain DAG, postponing the updates for the consensus DAG to a separate, more detailed CEP.
 
 ### Example issues with the consensus DAG
 
