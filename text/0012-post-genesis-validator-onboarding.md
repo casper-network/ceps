@@ -1,6 +1,6 @@
 
 
-# cep-0012:  Post Genesis Validator Onboarding
+# cep-0012:  Casper Validators Association
 
 ## TLDR;
 
@@ -34,7 +34,7 @@ This CEP considers the process of onboarding new validators.  It frames such a p
 
 The discussions assume the following:
 
-- that addressing compliance concerns AML or CFT is in the long-term interest of the network;
+- that addressing AML/CFT compliance concerns is in the long-term interest of the network;
 - that the number of active validators is bounded by a protocol imposed ceiling;
 - that byzantine validators are present, even at genesis;
 - that whilst active markets exist for the network token, they are assumed to be mostly unregulated;
