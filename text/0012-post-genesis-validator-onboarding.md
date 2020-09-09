@@ -151,10 +151,8 @@ The impact of not forming an association is that political cliques will inevitab
 
 [prior-art]: #prior-art
 
-In respect of a validator association:
-
-- Due to it's potential reach, the Libra project has been forced to think deeply upon the regulatory setting within which the network operators conduct business.  
-- The Tezos network has a strong validator community that has effectively self organised over time.
+- Due to it's potential reach, the Libra project has been forced to think deeply upon the regulatory setting within which the network operators conduct business.  It has formed [an association](https://libra.org/en-US/white-paper/#the-libra-association) in order to navigate a complex regulatory landscape.
+- The Tezos network has a strong validator community that has effectively self organised over time.  
 
 ## Future possibilities
 
