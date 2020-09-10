@@ -212,7 +212,7 @@ impl Object {
 }
 
 #[derive(Debug)]
-struct ImmutableObject {
+impl ImmutableObject {
     /// Create an immutable object from
     fn from_object(object: Object) -> Result<Self, ObjectError> {
         ImmutableObject {
