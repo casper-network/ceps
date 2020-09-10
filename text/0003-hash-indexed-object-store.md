@@ -88,7 +88,7 @@ code 8257512c1a16fbc4ad536d1603d6c8fdfe9f05a1b3d537e0b17770e0de01a43b
 
 The term *DAG* is overloaded in this CEP, we refer to the DAG of the consensus algorithm als the *consensus DAG*, while using the term *chain DAG* for the graph structure that consists of Blocks, Deploys and similar structures.
 
-The consensus DAG is structure parallel to the chain DAG, while there may be "soft" references between the two, they are not made hard dependencies to avoid having to preserve the full consensus DAG for a specific era forever
+The consensus DAG is structure parallel to the chain DAG, while there may be "soft" references between the two, they are not made hard dependencies to avoid having to preserve the full consensus DAG for a specific era forever.
 
 ## Refs
 
