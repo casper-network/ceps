@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0013](https://github.com/CasperLabs/ceps/pull/13)
 
 Clarity is expected to be the main conduit for user interaction with the auction system. This proposal suggests a number of basic monitoring and interactive workflows, with corresponding UI elements, that users should have available at mainnet launch.
 
