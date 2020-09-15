@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0014](https://github.com/casperlabs/ceps/pull/0014)
 
 The Casper Network has a native currency, called Casper, and denoted by the ticker symbol CSPR.
 
