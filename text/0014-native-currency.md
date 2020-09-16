@@ -33,6 +33,14 @@ We represent all Casper related quantities in terms of motes at the implementati
 
 The initial supply of Casper at mainnet launch will be 10 billion. The issuance schedule is out of the scope of this proposal.
 
+### Ortography and Usage
+
+Casper, CSPR and mote are all singular and always used without the plurality suffix -s.
+
+- Casper is always to be used with capital C: 100 Casper.
+- CSPR is always to be used with all capital letters: 100 CSPR.
+- Mote is used as a common noun, so the first letter is capitalized only when necessary, like at the beginning of a sentence: 100 mote.
+
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
