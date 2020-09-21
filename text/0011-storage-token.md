@@ -22,7 +22,7 @@ Here, we propose an alternative model which leverages the scarcity of CSPR to li
 
 [guide-level-explanation]: #guide-level-explanation
 
-Every bit of data stored in the global state is associated with an account. Accounts must hold storage tokens in order to store data, denoted internally by the symbol STR. STR is indivisible and is the smallest denomination of itself. 1 STR gives its holder the right to store 1 byte of data.
+Every byte of data stored in the global state belongs to an account. Accounts must hold storage tokens in order to store data, denoted internally by the symbol STR. STR is indivisible and is the smallest denomination of itself. 1 STR gives its holder the right to store 1 byte of data.
 
 When a user uses a smart contract and ends up storing data, STR is transferred from the user, to the account associated with the smart contract. Then, if they end up freeing storage in a subsequent transaction, they receive back STR, which they can redeem for CSPR.
 
