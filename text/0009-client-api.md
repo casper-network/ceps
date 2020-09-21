@@ -79,16 +79,52 @@ using `ToBytes`, then hex-encoded.
 
 ### Event stream
 
-The path for the event stream is `/events`.  It will send all events to all subscribers from the
-moment they subscribe (i.e. no historical events will be sent).
+The path for the event stream is `/events`.
 
-| Event            | Triggered by                                                           | Includes                                                  |
-|----------------- |----------------------------------------------------------------------- |---------------------------------------------------------- |
-| block_finalized  | `EraSupervisor` when creating a new `FinalizedBlock`                   | all included `DeployHash`es                               |
-| block_added      | `LinearChain` once the block has been stored                           | `BlockHash` and `BlockHeader`                             |
-| deploy_processed | `BlockExecutor` after each deploy is executed and transforms committed | `DeployHash`, all execution results and the commit result |
+| Event            | Triggered by                                                           | Includes                                            |
+|----------------- |----------------------------------------------------------------------- |---------------------------------------------------- |
+| block_finalized  | `EraSupervisor` when creating a new `FinalizedBlock`                   | `FinalizedBlock`                                    |
+| block_added      | `LinearChain` once the block has been stored                           | `BlockHash` and `BlockHeader`                       |
+| deploy_processed | `BlockExecutor` after each deploy is executed and transforms committed | `DeployHash`, `BlockHash` and all execution results |
 
-The first message sent by the server to any new subscriber will be the API version.  All subsequent ones will be JSON-encoded events.
+The first message sent by the server to any new subscriber will be the API version.  All subsequent ones will be JSON-encoded events with data as follows:
+
+```
+pub enum ServerSentEvent {
+    ApiVersion(Version),
+    BlockFinalized(FinalizedBlock),
+    BlockAdded {
+        block_hash: BlockHash,
+        block_header: BlockHeader,
+    },
+    DeployProcessed {
+        deploy_hash: DeployHash,
+        block_hash: BlockHash,
+        execution_result: ExecutionResult
+    }
+}
+```
+
+The server will index every event in a monotonically increasing manner.  This event ID will be
+provided to clients with each event.
+
+The server will maintain a [`tokio::sync::broadcast`](https://docs.rs/tokio/0.2.22/tokio/sync/broadcast/index.html)
+channel for the purposes of sending events to each subscribed client.  This acts as a buffer for a
+pre-specified number of events (the number will be added as a config option, set to 100 initially).
+If a client broadcast receiver lags to the point where the channel reports `RecvError::Lagged`, that
+client connection will be dropped.  In the future, we could look to support a client which can
+handle lost events (in which case we wouldn't need to drop a connection when the `Lagged` error is
+returned)
+
+Clients can optionally provide a `start_from=ID` query string when connecting in order to indicate
+that they want to receive events starting from the event_id supplied in the query string.  If this
+is still available in the buffer, all events from that one onwards will be provided.  If the buffer
+has already dropped that event, an error will be returned to the client.  If no such query string is
+passed, only events from the moment of connection will be provided to the client.
+
+It should be noted that this functionality appears to be able to be provided using only the `warp`
+and `tokio` crates.  There appears to be no need for a separate ring buffer of SSEs required at this
+time.
 
 ### Use case
 
