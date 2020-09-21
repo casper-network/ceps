@@ -82,7 +82,7 @@ Ethereum's one-time payment and gas refund mechanism has already been explained 
 
 [unresolved-questions]: #unresolved-questions
 
-TBD
+- *How to handle price changes:* Blindly increasing `STR_PRICE` might lead to a tricky situation, because there would not be enough CSPR collateral to redeem the existing STR supply. One would rather need to keep track of the price level certain data were stored at, so that they can be redeemed at the same price level which STR was then minted. The same problem applies to blindly decreasing `STR_PRICE`, because it is effectively the same as stealing collateral from existing STR holders.
 
 ## Future possibilities
 
