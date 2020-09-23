@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0017](https://github.com/casperlabs/ceps/pull/0017)
 
 A certain percentage of future block space is reserved and auctioned off. Said block space can only be filled by transactions signed by gas futures holders.
 
