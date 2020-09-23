@@ -30,7 +30,7 @@ X <= BLOCK_GAS_LIMIT - FUTURES_GAS_LIMIT
 
 where `X` is the total gas usage of transactions signed by users that do not hold gas futures. Blocks that do not fulfill this condition are deemed invalid.
 
-Gas futures are designated for consecutive periods of fixed length. In this proposal, we will focus on daily gas futures, but the same instrument can be extended to designate weekly, monthly, and so on. Gas futures are represented by tokens which are auctioned off continuously, some fixed duration preceding the futures date. (In this proposal, "futures" and "futures tokens" are used interchangeably.) These tokens will be designated in the format `GASYYYYMMDD`, and will be sold off in an on-chain auction `AUCTION_PERIOD` days before the futures date. In this proposal, we will assume `AUCTION_PERIOD = 180`, i.e. 6 months.
+Gas futures are designated for consecutive periods of fixed length. In this proposal, we will focus on daily gas futures, but the same instrument can be extended to designate weekly, monthly, and so on. Gas futures are represented by tokens which are auctioned off continuously, some fixed duration preceding the futures date. (In this proposal, "futures" and "futures tokens" are used interchangeably.) These tokens will be designated in the format `GASYYYYMMDD`, and will be sold off in an on-chain auction `GAS_AUCTION_PERIOD` days before the futures date. In this proposal, we will assume `GAS_AUCTION_PERIOD = 180`, i.e. 6 months.
 
 **Example:** Holders of the token `GAS20200901` will be able to include transactions on September 1, 2020 at the price they have agreed on at the auction. The auction takes place exactly 180 days before the delivery date, for the whole day, on March 5, 2020.
 
@@ -51,7 +51,7 @@ FUTURES_GAS_LIMIT[i] = BLOCK_GAS_LIMIT * FUTURES_SOLD[i] * FUTURES_SIZE / GAS_PE
 
 ### Auction
 
-The auction for `GASYYYYMMDD` begins at tick `X - AUCTION_PERIOD * TICKS_IN_DAY` where `X` is the tick corresponding to `YYYY-MM-DD` 00:00 in UTC, and `TICKS_IN_DAY = 24*60*60*1000` is the number of ticks in one day. The auction can go on until the whole quota is sold off.
+The auction for `GASYYYYMMDD` begins at tick `X - GAS_AUCTION_PERIOD * TICKS_IN_DAY` where `X` is the tick corresponding to `YYYY-MM-DD` 00:00 in UTC, and `TICKS_IN_DAY = 24*60*60*1000` is the number of ticks in one day. The auction can go on until the whole quota is sold off.
 
 The auction price is determined by the validators collectively, who announce the price they are willing to accept. The futures price is computed by taking a weighted average:
 
