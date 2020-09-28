@@ -102,16 +102,16 @@ Transfer tokens from `onwer` address to the multiple `recipients` addresses if r
 amount was approved before to be spend by the direct caller.
 The operation should decrement approved amount.
 ```rust
-fn transfer_from(owner: Address, recipient_amount_list: Vec<(Address, U512)>)
-
+fn batch_transfer_from(owner: Address, recipient_amount_list: Vec<(Address, U512)>)
+```
 
 ### Compare to ERC-20
 While very similar to ERC-20, this standard is a bit different:
 1. Methods: `name`, `symbol` and `decimals` are required.
 2. Names of arguments are part of the standard.
-3. Added batch versions of endpoints.
+3. Added batch versions of methods.
 
-# Reference-level explanation
+## Reference-level explanation
 ### Custom tokens
 We have successfully tested the implementation of ERC-20-based token.
 Code is available at https://github.com/CasperLabs/erc20. 
@@ -132,7 +132,7 @@ called `purses`. Each purse can have it's own balance. Each purse have
 unique token access, that allows for tokens spending. This token access 
 has to passed to contracts to send tokens.
 
-#### Scenario
+### Scenario
 Let's consider the most widely used scenario of interaction between two
 contracts: sending tokens from contract to contract. In this example we
 assume that:
@@ -145,7 +145,7 @@ assume that:
 
 Below code is pseudo-code.
 
-##### Purse-based Model.
+### Purse-based Model.
 In this example `TokenEx` implements purse-based model.
 ```rust
 [#casper_contract]
@@ -195,7 +195,7 @@ mod Vault {
 }
 ```
 
-##### Account-based Model.
+### Account-based Model.
 In this example `TokenEx` implements account-based model.
 ```rust
 [#casper_contract]
@@ -230,20 +230,29 @@ mod Vault {
 }
 ```
 
+
 Account-based model is better because:
 1. It doesn't require contracts and accounts to maintain purses in their 
    named keys space.
-2. Transferring tokens in a purse-based model creates a lot of empty purses, 
-   that can't really be deleted, but probably will never be reused. 
-   The solution for that might some sort of garbage collector, but that's 
-   just not a problem with the account-based model.
+2. Transferring tokens in a purse-based model creates a lot of empty purses, that 
+   probably will never be reused. The solution for that might some sort of 
+   garbage collector, but that's just not a problem with the account-based model.
 3. In most cases accounts and contracts will want to have all the tokens of one
    type in a single purse. That makes accounting much easier (also much cheaper).
-   Account-based model gives that by design.
+   Account-based model gives that by the design.
 4. Most of the platforms have token defined that way. Following that path,
-   makes it much easier for developers to implement their systems, because that's
+   makes it much easier for developers to implement smart contract, because that's
    what they already know.
 5. It will allow for much better Solidity portability via the Caspiler transpiler. 
+
+### Approve and Call Problem
+On Ethereum it is problematic for accounts to interact with contracts, that require
+tokens. The account has to first call the `approve` function, wait for it, to
+be executed and only then call desired contract's method.
+
+On Casper platform contracts can provide helper functions for accounts, that are executed
+in the account context. That helper function can easily aggregate multiple approves
+and contract calls into one call.
 
 ## Drawbacks and alternatives
 The alternative is to:
@@ -251,10 +260,13 @@ The alternative is to:
 2. Do not define any standard and see what would the community do.
 
 ## Prior art
+We point at ERC-20 a the main source of influence: https://eips.ethereum.org/EIPS/eip-20
 
 ## Unresolved questions
-It is useful if the interaction with contracts generates events, that describes 
+It is useful if the interaction with contracts generates events, that describe 
 what happened. Currently the Casper platform doesn't have that features, 
 so this standard will have to be updated in a future, when the shape of the event 
 functionality is known.
+
+The standard doesn't cover the upgradeability story. Maybe it should?
 
