@@ -75,7 +75,7 @@ we propose not to implement Contract Payment before the mainnet. It will be
 possible to add it later as an enhancement.
 
 ### Royalty Fee
-Another idea that was considered was Royaliry Fee for smart contract owner. As an user Alice 
+Another idea that was considered was Royalty Fee for smart contract owner. As an user Alice 
 would have to pay an additional fee for using a contract, that would go to the contract owner. 
 
 This feature is easy to implement on the smart contract layer inside the contract,
