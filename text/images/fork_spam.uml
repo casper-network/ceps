@@ -1,0 +1,27 @@
+/' -*- mode: plantuml; -*- '/
+
+@startuml
+
+participant Equivocator
+participant Node as "Honest Node"
+database Block
+
+Equivocator -> Node: Vote Spam #1
+Node -> Block: Vote Spam #1 (Stored)
+
+Equivocator -> Node: Vote Spam #2
+Node -> Block: Vote Spam #2 (Stored)
+
+Equivocator -> Node: Vote Spam #3
+Node -> Block: Vote Spam #3 (Stored)
+
+... ...
+
+Equivocator -> Node: Vote Spam #10000000000
+Node -> Block: Vote Spam #10000000000 (Stored)
+
+@enduml
+
+/' Local Variables: '/
+/' plantuml-output-type: png '/
+/' End: '/
