@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#19](https://github.com/casperlabs/ceps/pull/19)
 
-This CEP addresses a *Denial of Service* vulnerability that an equivocating node may execute.  It is possible for an equivocating node to potentially spam billions of faulty votes through the gossip network.  The current implementation does not check for this. It includes potentially all votes in the protocol state regardless of whether they are equivocating. This could result in blocks that are gigabytes or terabytes in size.  We propose to discard any vote by an equivocator except if it has another node as a dependency.
+This CEP addresses a *Denial of Service* vulnerability that an equivocating node may execute.  It is possible for an equivocating node to potentially spam billions of faulty votes through the gossip network.  The current implementation does not check for this. It includes potentially all votes in the protocol state regardless of whether they are equivocating. This could result in blocks that have gigabytes or terabytes of dependencies (referred to by other blocks). We propose to discard any vote by an equivocator except if it has another node as a dependency.
 
 
 [1]: https://github.com/xcthulhu/casper-node/blob/eae7c437819c1ee0f4f33e4373ff66fb5e98379a/node/src/components/consensus/highway_core/highway.rs#L195-L204
@@ -16,7 +16,7 @@ This CEP addresses a *Denial of Service* vulnerability that an equivocating node
 
 [motivation]: #motivation
 
-This CEP addresses a potential security threat.  The threat is a *Denial of Service* (DOS) attack. An equivocating node could spam the network with many faulty votes.  These would result in the node producing potentially very large blocks in the current implementation.  These large blocks could stop the network from processing nodes.
+This CEP addresses a potential security threat.  The threat is a *Denial of Service* (DOS) attack. An equivocating node could spam the network with many faulty votes.  These would result in the node producing block with a large number of dependencies in the current implementation.  These blocks with spam dependencies could stop the network from processing nodes. 
 
 ## Guide-level explanation
 
@@ -59,4 +59,4 @@ An alternate design would be to combine `components::consensus::highway_core::hi
 
 [unresolved-questions]: #unresolved-questions
 
-- Do we need to block spamming equivocators using the gossip network?
+- Do we need to disconnect spamming equivocators using the gossip network?
