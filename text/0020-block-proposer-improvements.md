@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0020](https://github.com/casperlabs/ceps/pull/0020)
 
 This CEP describes suggested modifications to the Block Proposer component designed to fix some of the known problems with it.
 
