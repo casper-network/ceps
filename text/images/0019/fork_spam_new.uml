@@ -5,7 +5,7 @@
 participant Equivocator
 participant Node1 as "(Deceived)\nHonest Node"
 participant Node2 as "Honest Node"
-database Block
+database State as "Protocol State"
 
 group A known equivocator's votes are discarded
   Equivocator -> Node2 !! : Vote Spam #1
@@ -23,7 +23,7 @@ group A cited equivocator's vote will be stored
 
   Equivocator -> Node1: Vote Spam #3
   Node1 -> Node2: Vote Spam #3 (cited)
-  Node2 -> Block: Vote Spam #3 (stored)
+  Node2 -> State: Vote Spam #3 (stored)
 
   rnote over Equivocator, Node1 #white
     An equivocator can't send spam to the

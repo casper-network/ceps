@@ -4,21 +4,21 @@
 
 participant Equivocator
 participant Node as "Honest Node"
-database Block
+database State as "Protocol State"
 
 Equivocator -> Node: Vote Spam #1
-Node -> Block: Vote Spam #1 (Stored)
+Node -> State: Vote Spam #1 (Stored)
 
 Equivocator -> Node: Vote Spam #2
-Node -> Block: Vote Spam #2 (Stored)
+Node -> State: Vote Spam #2 (Stored)
 
 Equivocator -> Node: Vote Spam #3
-Node -> Block: Vote Spam #3 (Stored)
+Node -> State: Vote Spam #3 (Stored)
 
 ... ...
 
 Equivocator -> Node: Vote Spam #10000000000
-Node -> Block: Vote Spam #10000000000 (Stored)
+Node -> State: Vote Spam #10000000000 (Stored)
 
 @enduml
 

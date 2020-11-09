@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#19](https://github.com/casperlabs/ceps/pull/19)
 
-This CEP addresses a *Denial of Service* vulnerability that an equivocating node may execute.  It is possible for an equivocating node to potentially spam billions of faulty votes through the gossip network.  The current implementation does not check for this. It includes potentially all votes in a block regardless of whether they are equivocating. This could result in blocks that are gigabytes or terabytes in size.  We propose to discard any vote by an equivocator except if it has another node as a dependency.
+This CEP addresses a *Denial of Service* vulnerability that an equivocating node may execute.  It is possible for an equivocating node to potentially spam billions of faulty votes through the gossip network.  The current implementation does not check for this. It includes potentially all votes in the protocol state regardless of whether they are equivocating. This could result in blocks that are gigabytes or terabytes in size.  We propose to discard any vote by an equivocator except if it has another node as a dependency.
 
 
 [1]: https://github.com/xcthulhu/casper-node/blob/eae7c437819c1ee0f4f33e4373ff66fb5e98379a/node/src/components/consensus/highway_core/highway.rs#L195-L204
@@ -24,15 +24,15 @@ This CEP addresses a potential security threat.  The threat is a *Denial of Serv
 
 *Fork spam* refers to when an equivocating node broadcasts many votes over the wire to its peers.
 
-Properly functioning nodes should not include this vote spam in blocks.  However, an exception is made if a spammed vote is referenced by another properly functioning node's vote.
+Properly functioning nodes should not include this vote spam in the protocol state.  However, an exception is made if a spammed vote is referenced by another properly functioning node's vote.
 
-The following UML diagram shows how an attacking equivocator will spam a node, resulting in a very large block with 10000000000 votes.
+The following UML diagram shows how an attacking equivocator will spam a node, resulting in a very large protocol state with 10000000000 votes.
 
-![Current Implementation Vulnerable To Fork Spam](images/fork_spam.svg)
+![Current Implementation Vulnerable To Fork Spam](images/0019/fork_spam.svg)
 
-After our proposed changes, an equivocator could at most once get a spammed vote included in a block.  They would have to deceive an honest node.  Here is an UML diagram showing how messages will be processed:
+After our proposed changes, an equivocator could at most once get a spammed vote included in the protocol state.  They would have to deceive an honest node.  Here is an UML diagram showing how messages will be processed:
 
-![Current Implementation Vulnerable To Fork Spam](images/fork_spam_new.svg)
+![Current Implementation Vulnerable To Fork Spam](images/0019/fork_spam_new.svg)
 
 For implementation-oriented CEPs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy CEPs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
 
