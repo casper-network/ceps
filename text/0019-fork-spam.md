@@ -42,9 +42,9 @@ For implementation-oriented CEPs (e.g. for node internals), this section should 
 
 Votes are to be annotated with equivocators if detected in [`components::consensus::highway_core::highway::Highway::pre_validate_vertex`][1]. Then, in [`components::consensus::protocols::highway::HighwayProtocol::handle_message`][2] votes are processed as follows:
 
-  1. If the vote is not from an equivocator, process as normal
-  2. If it's from an equivocator and from the future, discard
-  3. If it's from an equivocator and a (transitive) dependency of another vote, keep it
+  1. If the vote is not by an equivocator, process as normal
+  2. If by an equivocator and from the future, discard
+  3. If by an equivocator and a (transitive) dependency of another vote, keep it
   4. Otherwise discard it
 
 (3) captures the workflow with the deceived honest validator presented in the last section.
