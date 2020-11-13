@@ -27,23 +27,11 @@ A separate solution for each of these two issues will be described below.
 
 ### Seeing finalization before proposal
 
-#### Option 1
+The suggested solution would be to not notify the Block Proposer about proposed blocks at all. The `past` parameter passed to it would contain the hashes of deploys contained in the blocks that haven't been finalized yet, instead of the hashes of blocks themselves. This would make the `past` list a few times longer, but would remove the need for the Block Proposer to know which blocks have been proposed - it could only care about finalized blocks in this approach.
 
-The first potential solution to the first issue is fairly straightforward: buffer finalized blocks that haven't been proposed as far as we know, and then handle both proposal and finalization when we see the proposal.
+One of this solution's advantages would be removing the need for detection of orphaned blocks. If we don't record proposals, we won't have to "restore" the deploys from there when a block is orphaned.
 
-Since both the proposal and finalization events ultimately come from our own Consensus component, and we won't finalize a block we haven't seen proposed, we can expect that when the Block Proposer sees a finalization of a block that apparently wasn't proposed, it will also see the proposal shortly. This means we don't even have to take special care to prune old finalized blocks from the buffer, since we should never see a block that has been finalized, but is never proposed.
-
-However, this still doesn't solve the issue of orphaned blocks. Since we have no orphaned block detection currently, a block that is orphaned will stay in the `proposed` collection forever, thus making nodes never propose the deploys that were contained in them.
-
-Another pain point is that we would need a way to tell proto-blocks with identical deploy lists (like an empty list) from each other - otherwise, when we receive a notification about a block being finalized, we wouldn't know which proto-block it refers to, and we wouldn't be able to have multiple identical proto-blocks in the `proposed` collection. A way of doing that would be to pass in a parent block hash along with the proto-block.
-
-#### Option 2
-
-The second potential solution would be to not notify the Block Proposer about proposed blocks at all. The `past` parameter passed to it would contain the hashes of deploys contained in the blocks that haven't been finalized yet, instead of the hashes of blocks themselves. This would make the `past` list a few times longer, but would remove the need for the Block Proposer to know which blocks have been proposed - it could only care about finalized blocks in this approach.
-
-This option's another advantage would be removing the need for detection of orphaned blocks. If we don't record proposals, we won't have to "restore" the deploys from there when a block is orphaned.
-
-Yet another advantage is the lack of a need to distinguish between identical deploy lists. We wouldn't care if multiple proto-blocks with empty lists have been proposed, we would only care about the actual set of deploys that are in the past of the block to be proposed.
+Another advantage over the main alternative discussed below is the lack of a need to distinguish between identical deploy lists. We wouldn't care if multiple proto-blocks with empty lists have been proposed, we would only care about the actual set of deploys that are in the past of the block to be proposed.
 
 ### Request for a block before seeing another validator's proposal
 
@@ -60,24 +48,6 @@ Even with this solution in place, we could actually still experience problems. C
 [reference-level-explanation]: #reference-level-explanation
 
 ### Seeing finalization before proposal
-
-#### Option 1
-
-When receiving `FinalizedProtoBlock(block)`:
-
-- check that `block.hash()` is in `self.state.proposed`
-- if not, add `block.hash()` to a new collection `self.state.finalization_queue`
-- if yes, proceed in the current manner
-
-When receiving `ProposedProtoBlock(block)`:
-
-- check if `block.hash()` is in `self.state.finalization_queue`
-- if yes, remove it from `finalization_queue` and proceed as if we received both `ProposedProtoBlock` and `FinalizedProtoBlock`
-- if no, proceed in the current manner
-
-The last reuired part would be orphaned block detection, but it is not an improvement to the Block Proposer, but rather a missing feature in Consensus, and so is beyond the scope of this CEP.
-
-#### Option 2
 
 - Remove `self.state.proposed`, `added_block()`, `orphaned_block()`, `Event::ProposedProtoBlock` and consensus announcement about a proposed proto block
 - In `remaining_deploys`, change `past_blocks` to `past_deploys` which would be a set of deploy hashes instead of block hashes
@@ -103,13 +73,21 @@ When receiving a `FinalizedProtoBlock` event:
 
 [drawbacks]: #drawbacks
 
-This adds more state to the `BlockProposer`, which might be undesirable. However, the issues caused by out-of-order events are pressing and the benefits likely outweigh the cost.
+This increases the size of the parameters passed around when requesting a new block from the Block Proposer. It also adds some state (`finalization_queue`) and fields to events (`last_finalized_block`). However, the issues caused by out-of-order events are pressing and the benefits likely outweigh the cost.
 
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-An alternative for the first issue might be requiring consensus to wait with issuing a finalization event until it is sure that the proposal event has been processed by all relevant components. This would just move the additional required state from Block Proposer to Consensus, though, and would require a much greater complexity in the event flow (announcements would have to be responded to with confirmations, which would have to be processed).
+The main alternative to the first issue would be to buffer finalized blocks that haven't been proposed as far as we know, and then handle both proposal and finalization when we see the proposal.
+
+Since both the proposal and finalization events ultimately come from our own Consensus component, and we won't finalize a block we haven't seen proposed, we could expect that when the Block Proposer sees a finalization of a block that apparently wasn't proposed, it will also see the proposal shortly. This means we wouldn't even have to take special care to prune old finalized blocks from the buffer, since we should never see a block that has been finalized, but is never proposed.
+
+However, a disadvantage here relative to the suggested solution is the issue of orphaned blocks. Since we have no orphaned block detection currently, a block that is orphaned will stay in the `proposed` collection forever, thus making nodes never propose the deploys that were contained in them.
+
+Another pain point would be that we would need a way to tell proto-blocks with identical deploy lists (like an empty list) from each other - otherwise, when we receive a notification about a block being finalized, we wouldn't know which proto-block it refers to, and we wouldn't be able to have multiple identical proto-blocks in the `proposed` collection. A way of doing that would be to pass in a parent block hash along with the proto-block.
+
+Another alternative for the first issue might be requiring consensus to wait with issuing a finalization event until it is sure that the proposal event has been processed by all relevant components. This would just move the additional required state from Block Proposer to Consensus, though, and would require a much greater complexity in the event flow (announcements would have to be responded to with confirmations, which would have to be processed).
 
 An alternative for the second issue could be to make sure that replaying a deploy won't cause any problems. This could be achieved by making all deploys idempotent somehow, but there is no clear way of making them so, making this possible solution purely hypothetical.
 
@@ -129,4 +107,4 @@ None at the moment.
 
 [future-possibilities]: #future-possibilities
 
-None at the moment.
+The solution to the first issue could be later optimized by restoring the notifications about proposed blocks, but they would only be used as a means to make the `past` list shorter - a hash of a proto-block would serve as an abbreviation for a list of deploys.
