@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0021)
 
-Reduce the time required to sync and the disk usage of nodes by allowing both transfer and offloading of state (global state as well storage).
+Reduce the time required to sync and the disk usage of nodes by allowing both transfer and offloading of state (global state as well as storage).
 
 ## Motivation
 
