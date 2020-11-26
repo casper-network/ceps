@@ -69,7 +69,7 @@ becomes somewhat more complex, since it is up to the user to determine the gas r
 to allocate gas on the fly. This means that to avoid underutilization of block gas, we must charge for the entire reserved amount (although with partial refunds, in recognition
 of difficulties with estimating gas use of complex deploys). It is expected that the users, and particularly high WTP users, will make their best effort to estimate gas
 requirements offline, or on our testnet, before submitting the deploys to the live network. We expect that, eventually, the community will develop tooling to make this estimation easier.
-Some of the potential solutions may large dApps contributing developer time and nodes to maintaining a robust testnet that shadows complex contracts deployed on the live chain, adaptation of
+Some of the potential solutions may be large dApps contributing developer time and nodes to maintain a robust testnet that shadows complex contracts deployed on the live chain, adaptation of
 our testing tools and application of empirical methods to observed gas use patterns.
 
 ### What does the protoblock proposer see?
@@ -220,4 +220,3 @@ Our design is inspired by Ethereum, but adjusted to the realities of a consensus
 ### Futures gas market
 
 We expect that the spot gas market will be eventually supplemented by a futures gas market. Gas reserved on the futures market would then be used by deploys in a new deploy channel.
-
