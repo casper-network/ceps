@@ -83,41 +83,123 @@ the simple greedy rule we outlined above, alongside with balance checks to preve
 
 ### Chainspec parameters
 
-#### Block gas limit
+There are several natural parameters that govern the process we outlined. While it would reduce the scope of proposed work to leave these hardcoded, the optimal values cannot be determined in advance and will change as the platform grows, making it imperative that these parameters be included in the chainspec.
 
-#### Share of gas dedicated to WASM-less transfers
+#### General gas limit
+
+The limit on spot gas reservations by general deploys.
+
+#### WASM-less transfer dedicated gas limit
+
+The limit on spot gas reservations of WASM-less deploys, naturally stated as a multiple of desired number of such deploys multiplied by their (fixed) gas reservation. 
+
+#### Refund proportion
+
+Refund proportion for unused gas. Conceptually, this is equivalent to a discount on the unused reserved gas. The refund applies to total gas used, regardless of its use for payment or session code.
 
 ### Deploy channels
 
+We have already mentioned the concept of a dedicated gas limit for WASM-less transfers in our description of the proposed chainspec parameters. To avoid crowding out WASM-less transfers, which are expected to be critical for platform health and public perception, there should be a separate "lane" for such transfers and this parameter specifies the width of this "lane." Selection among WASM-less transfers would work the same as it does for general deploys, but with sorting by WTP alone, since the gas reservation is fixed for these. Moreover, WASM-less transfers that are not selected for inclusion would be eligible for inclusion as general deploys, with stated WTP and fixed gas reservation.
+
 ### Lifecycle of a deploy
+
+#### Construction
+
+(user-side)
+
+1. User creates a deploy in any supported manner, additionally specifying willingness to pay and gas reservation.
+    
+    a.  If the deploy is a WASM-less transfer, the gas reservation is fixed.
+
+#### Submission
+
+(user-side)
+
+1. User submits the deploy to any node as usual.
 
 #### Ordering
 
-#### Balance check
+(validator-side)
 
-#### Allocation
+1. Block proposer orders available deploys for inclusion in a protoblock.
+
+    a. Sort by WTP (greatest to least).
+    
+    b. Sort by gas reservation (greatest to least).
+
+#### Balance check & allocation
+
+(validator-side, proposal)
+
+For each channel, starting with WASM-less transfers, the following process is to be followed:
+
+1. Traverse the ordered list of deploys, checking balances.
+    
+    a. Check that originating account purse holds an amount equal to willingness to pay times gas reservation, record the remainder for this originating account purse.
+    
+    b. If sufficient tokens, include the deploy in the protoblock.
+    
+    c. Upon encountering the same originating account purse subsequently, check willingness to pay times gas reservation against remainder, and update the remainder.
+    
+    d. If sufficient tokens in the remainder, include the deploy in the protoblock.
+    
+2. Continue traversing deploy-by-deploy until the gas limit is full.
+
+3. Once gas limit cannot be filled by the next deploy with an eligible balance or remainder, skip deploys until a deploy small enough is encountered to be considered, otherwise continuing as above.
+
+The remainder for each originating account is to carry over from WASM-less transfers to general deploys.
 
 #### Payment code execution
 
+(validator-side, execution)
+
+1. Execute payment code as usual, but recording both originating account purse and purse provided by the payment code.
+
 #### Session code execution
 
-#### Refunds
+(validator-side, execution)
+
+1. Execute session code as usual, but subject to the available tokens in both the originating account purse and the provided purse.
+
+#### Charges & refunds
+
+(validator-side, execution)
+
+1. Charge the provided purse first.
+
+    a. If no unused reserved gas and sufficient tokens, charge willingness to pay times gas reservation to the provided purse.
+    b. If unused reserved gas and sufficient tokens, charge willingness to pay times used gas, plus willingness to pay times unused gas times refund parameter.
+    
+2. If the provided purse has insufficient tokens, charge overflow to the originating account purse according to the rule in 1.
 
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
+### Gas requirements estimation
+
+We have already mentioned that, due to the consensus-before-execution model, we cannot charge only for gas used during execution. Charging only for gas used fails to provide any incentive for the users
+to estimate gas requirements and open the proposed system to gaming by setting arbitrarily high gas reservations. This is contrary to the notion high-value transactions be prioritized and could possibly result in consistently underfilled blocks. However, this is a serious UX issue, since we have few tools at present for estimating gas requirements. It is expected that tooling will eventually be developed by third parties, using a testnet as a simulacrum of a live network. Such tooling may be developed from existing tests for simple contracts, but would require considerable work to enable testing of complex assemblages of contracts.
+
 ### Nothing-in-purse problem
 
-### Payment code
+The flexibility of our payment code presents a serious problem in the consensus-before-execution model, since the purse ultimately responsible for the charges cannot be checked until execution. Our proposal is seen to address this by requiring that the originating account act as a "soft" guarantor that deploy can pay for the reserved gas. We say that the originating account acts as a "soft" guarantor because uncertainty about the order of block inclusion in the linear chain means that, at execution time, the balance may no longer be sufficient in either the provided or the originating purses. However, we believe the balance check strategy we propose should prevent a sustained attempt to abuse the platform, since, eventually, the offending account will no longer be able to pass balance checks.
 
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
+### Second-price auction
+
+One may observe that the proposed model of the spot gas market is essentially a first-price auction. While we do not currently know the strategic properties of our particular design, results concerning similar auctions suggest that it is not strategy-proof. In other words, users have to bid strategically, instead of merely reporting their *true* willingess to pay. We suspect that this would result in higher price volatility compared to a second-price auction (where charges would be calculated according to the *next user's* willingness to pay, rather than you own), due to user uncertainty about competition from other users. However, a second-price auction was ruled out, because the proposer-gets-all model of transaction fees enables validators to game such an auction by including own deploys in the protoblocks, potentially severely diminishing (or eliminating) consumer surplus.
+
 ### Account reputation system
 
+We have considered assigning accounts reputation according to their observed ability to pay for deploys, but this was judged to be unworkable because of difficulty in designing reputation update rules that would enable new users to submit deploys, without leaving the platform open an attack by new unfunded accounts, thereby largely defeating the point of a reputation system.
+
 ### Pre-execution of payment code
+
+We have considered executing payment code at proposal time, but judged that balance checks for originating account purses is a more elegant approach.
 
 ## Prior art
 
@@ -125,11 +207,17 @@ the simple greedy rule we outlined above, alongside with balance checks to preve
 
 ### Search ad auctions
 
+Our design is similar to the original ad position auctions used by search engines, before second-price position auctions were found to be preferable due to lower volatility. However, while similar in spirit, our auction ultimately allocates quantities, not positions, so we cannot provided any formal predictions about the properties or performance of our spot market at this time.
+
 ### Ethereum pricing
+
+Our design is inspired by Ethereum, but adjusted to the realities of a consensus-before-execution model, primarily to avoid nothing-in-purse attacks.
 
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
 ### Futures gas market
+
+We expect that the spot gas market will be eventually supplemented by a futures gas market. Gas reserved on the futures market would then be used by deploys in a new deploy channel.
 
