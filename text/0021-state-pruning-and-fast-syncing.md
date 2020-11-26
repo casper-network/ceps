@@ -12,9 +12,9 @@ Reduce the time required to sync and the disk usage of nodes by allowing both tr
 
 [motivation]: #motivation
 
-Disk usage of a node goes up continously with the current implementation, increasing the required resources to host a node, potentially posing a significant barrier to entry for validators. Not all of this state is necessary for operation, some is only ever retrieved due to the current implementation of the joining process, which requires all historical data since genesis to derive an up-to-date global state.
+Disk usage of a node goes up continuously with the current implementation, increasing the required resources to host a node, potentially posing a significant barrier to entry for validators. Not all of this state is necessary for operation, some is only ever retrieved due to the current implementation of the joining process, which requires all historical data since genesis to derive an up-to-date global state.
 
-It should be possible to reduce this overhead for nodes that are not participating in a record-keeping function (colloqially called "archival nodes"), bringing down disk space and CPU time, as well as reducing strain on the network as a whole.
+It should be possible to reduce this overhead for nodes that are not participating in a record-keeping function (colloquially called "archival nodes"), bringing down disk space and CPU time, as well as reducing strain on the network as a whole.
 
 ## Guide-level explanation
 
@@ -27,7 +27,7 @@ We are addressing two core business concerns with this CEP, namely
 
 Considering **state** we partition three broad classes of state, *trie-store*, *storage* and *consensus* state. The trie-store holds the so-called *global state*, which is the state as seen by all smart contracts running on the blockchain. The storage state is handled by the storage component and deals mainly with blocks, deploys and related data such as signatures. State inside consensus component is a set of directed-acyclic graphs holding the information about the running consensus process.
 
-This CEP focus solely on the first two classes of state (trie-store and global state). While consensus state could benefit from a fast-syncing process, it is currently not persisted to disk and evicted periodically, for this reason we defer extending this proposal to its data structures future work for another CEP.
+This CEP focus solely on the first two classes of state (trie-store and global state). While consensus state could benefit from a fast-syncing process, it is currently not persisted to disk and evicted periodically. For this reason we defer extending this proposal to its data structures as future work for another CEP.
 
 ### Trie-store pruning
 
@@ -58,11 +58,11 @@ This leaves us with the problem of deciding which root hashes to keep, which wil
 
 ### Storage pruning
 
-Pruning of the storage offers more substantial savings than the trie store, as most disk space is to consumed by deploys. Each block has associated data (deploys, finality signatures, etc.) that is unlikely to be shared by other blocks, as deploys are only added to one block and finality signatures are also unique. Evicting blocks from the store should thus free up space proportionally on average.
+Pruning of the storage offers more substantial savings than the trie store, as most disk space is consumed by deploys. Each block has associated data (deploys, finality signatures, etc.) that is unlikely to be shared by other blocks, as deploys are only added to one block and finality signatures are also unique. Evicting blocks from the store should thus free up space proportionally on average.
 
 By deciding to "cut" the block chain at a specific parent, we can apply a similar garbage collection algorithm:
 
-1. Decide which blocks to keep and add them to the "objects to keep" set (*i.e.* a starting block and all descendents).
+1. Decide which blocks to keep and add them to the "objects to keep" set (*i.e.* a starting block and all descendants).
 1. For each block, visit all of its dependencies (deploys, finality signatures) and add them to an "objects to keep" set.
 1. Visit each block, deploy and finality signature, remove them if not inside the "objects to keep" set.
 
@@ -74,7 +74,7 @@ This again reduces the problem on selecting which blocks to keep.
 
 Both trie-store as well as storage can be trimmed down by garbage collection, with savings in the latter probably being more substantial than the former.
 
-In both cases the problem can reduced to identifying which root hashes or blocks must be kept and which can be discarded. Once this information is available, garbage collection becomes straight forward.
+In both cases the problem can be reduced to identifying which root hashes or blocks must be kept and which can be discarded. Once this information is available, garbage collection becomes straightforward.
 
 An "archival node" is a node on which garbage collection is either disabled or restricted to non-transitive state information, *i.e.* it keeps all root hashes except those created in the midst of execution.
 
@@ -85,11 +85,11 @@ Fast syncing, while beneficial in its own right, is also of interest from a stor
 The "fast" part of fast-syncing, as compared to the status quo, is realized from two factors, namely
 
 * **side-loading** data from outside the network through external sources and
-* **transfering** state, namely trie-store state, which is currently not transferrable at all.
+* **transferring** state, namely trie-store state, which is currently not transferable at all.
 
 ### Side-loading
 
-We create a common trait for Blocks, Deploys or any other transferable object that states how it can be serialized and defines a hash function for its serialized representation, as well as a key to separate the hash space. As an example, a block whose hash is `5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2` would be adressable as `blockv1_5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2`. The `blockv1` denotes a complete scheme, that is it also pins the serialization format. While it is not necessary to separate the hash value space to avoid collisions, the prefix allows for multiple representations, should the format of a serialization or an internal data structure change at some point. We refer to data structures that satisfy this condition as *objects* from here on out.
+We create a common trait for Blocks, Deploys or any other transferable object that states how it can be serialized and defines a hash function for its serialized representation, as well as a key to separate the hash space. As an example, a block whose hash is `5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2` would be addressable as `blockv1_5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2`. The `blockv1` denotes a complete scheme, that is it also pins the serialization format. While it is not necessary to separate the hash value space to avoid collisions, the prefix allows for multiple representations, should the format of a serialization or an internal data structure change at some point. We refer to data structures that satisfy this condition as *objects* from here on out.
 
 **Note**: The defunct CEP3 proposed hashing the serialized representation of an object instead of the object itself, which makes it a lot easier for external stores to handle these, as integrity can be checked without deserializing first. However, hashing the internal object minimizes the impact on the existing codebase instead.
 
@@ -97,7 +97,7 @@ We can then define a generic mechanism for requesting these objects from other n
 
 ### S3, HTTP and read/write, read-only stores
 
-As objects are unchanging, they can be readily be side-loaded from an HTTP-server that acts as a read-only store. As an example, should a node need to obtain the block `5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2`, it can follow the following steps:
+As objects are unchanging, they can be readily side-loaded from an HTTP-server that acts as a read-only store. As an example, should a node need to obtain the block `5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2`, it can take the following steps:
 
 1. Check one or more configured external HTTP stores by calling `GET store/objects/5A4A55A8CA87B584960DCB0673DC1260292991EC6D2B8F214701B5224FB141D2`
 1. If the request is a hit, try to download the object, deserialize it and validate the hash. Should any of these operations fail, discard and continue. Otherwise return.
@@ -107,17 +107,17 @@ In the same manner, an S3-compatible API can be employed. Since many S3 provider
 
 Nodes configured to keep the external store up-to-date will, upon receiving a new object, attempt to upload it to the store, by first checking if it exists already and uploading it if it does not.
 
-With these measures in place almost all currently persisted state can be backed up to a service provider. It is up to operators or the Casper organisation to maintain these stores, which can be hosted on decentralized services like [storaj](https://storj.io/), providers like Amazon, Google, or self-hosted, possibly private caches like [minio](https://min.io/).
+With these measures in place almost all currently persisted state can be backed up to a service provider. It is up to operators or the Casper organisation to maintain these stores, which can be hosted on decentralized services like [storj](https://storj.io/), providers like Amazon, Google, or self-hosted, possibly private caches like [minio](https://min.io/).
 
-### Transfering state from the trie store
+### Transferring state from the trie store
 
-Objects like blocks, deploys and similar are trivially convertable into objects. For the trie store it should also be possible, as every vertex on the tree is either a leaf, a node or an extension. The hash matches what the store calls a pointer, thus a recovery of a root hash `4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2` from an external store or the network would look like this:
+Objects like blocks, deploys and similar are trivially convertible into objects. For the trie store it should also be possible, as every vertex on the tree is either a leaf, a node or an extension. The hash matches what the store calls a pointer, thus a recovery of a root hash `4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2` from an external store or the network would look like this:
 
-0. Initialize the retrieval queue with `4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2`.
-0. For every object in the retrieval queue, remove those already in the trie store. If the queue is now empty, exit.
-0. Request all objects though the trie scheme, e.g. `triev1_4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2`, which should deserialize to a `Trie::Node`.
-0. After successful deserialization, add all descendants of retrieved object into the retrieval queue, or abort with an error.
-0. Go to 1.
+1. Initialize the retrieval queue with `4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2`.
+1. For every object in the retrieval queue, remove those already in the trie store. If the queue is now empty, exit.
+1. Request all objects though the trie scheme, e.g. `triev1_4813494D137E1631BBA301D5ACAB6E7BB7AA74CE1185D456565EF51D737677B2`, which should deserialize to a `Trie::Node`.
+1. After successful deserialization, add all descendants of retrieved object into the retrieval queue, or abort with an error.
+1. Go to 2.
 
 ### Optimization of retrieval
 
@@ -130,8 +130,8 @@ This is an optimization that should be deferred for now though.
 With a combination of the proposals above, a node's joining process from a trusted hash ideally becomes this:
 
 1. Download the block given in the trusted hash, sped-up through external caches.
-2. Download the global state as described earlier directly, without the need for executing previous blocks.
-3. The node can now join the network by following the remainder of the existing joining process.
+1. Download the global state as described earlier directly, without the need for executing previous blocks.
+1. The node can now join the network by following the remainder of the existing joining process.
 
 To save space, the node is safe to remove at least all blocks that are older than the current block minus the unbonding period. It thus fills the following two sets:
 
@@ -157,7 +157,7 @@ trait Scheme {
     const PREFIX: &'static str;
 
     /// The hash function used to hash `Object`s.
-    type Digest : ToString;
+    type Digest: ToString;
 
     /// The actual object handled by the `Scheme`.
     type Object;
@@ -172,7 +172,7 @@ trait Scheme {
 
     /// Serialize an object instance.
     ///
-    /// Does not use genericized traits like `Serialize`, as the concrete
+    /// Does not use generic traits like `Serialize`, as the concrete
     /// serialization method may differ between versions or schemes.
     fn serialize(object: &Self::Object, output: &mut io::Write) -> io::Result<()>;
 }
