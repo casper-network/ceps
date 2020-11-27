@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0023](https://github.com/casperlabs/ceps/pull/23)
 
 This CEP outlines the plan for handling nodes that send us invalid messages (binary blobs that don't deserialize to proper messages, or messages containing data that is invalid in other ways).
 
