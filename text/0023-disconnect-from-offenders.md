@@ -35,7 +35,7 @@ Determining what amounts to slash for what offenses should probably be done in a
 
 There is also a question of what is the adequate response to an offence for each of these 3 points. This CEP proposes that for offences not constituting a threat to the security of the network (eg., invalid messages that we can just detect and discard, as opposed to something like equivocations, which can cause problems to consensus), we shouldn't even bother telling other nodes - just disconnecting and blacklisting should be enough. More on that in the [Rationale and alternatives](#rationale-and-alternatives) section.
 
-Thus, we would define a new mechanisms: a `DisconnectAndBlacklist` request to the networking component (see [unresolved question 1](#unresolved-questions)).
+Thus, we would define a new mechanism: a `DisconnectAndBlacklist` request to the networking component (see [unresolved question 1](#unresolved-questions)).
 
 The `DisconnectAndBlacklist` request would cause the networking component to disconnect from the given node and add it to a blacklist, preventing it from reconnecting in the future. Specifically, it would blacklist the node's endpoint (IP and port). In order to keep the size of the blacklist manageable, we could consider various kinds of compression mechanisms and simplifications, such as blacklisting a whole IP address (all ports) if the same address shows up multiple times.
 
