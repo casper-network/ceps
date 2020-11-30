@@ -41,13 +41,15 @@ The first essential step will be determining the starting point for the network 
 
 A desirable goal for the initial global state would be to revert as few transactions from all the forks as possible, in order to limit the damage. Every transaction that was included in a block which appeared to be finalized for a time could have caused real world consequences (like, for example, a merchant sending ordered goods). Reverting any such transaction might potentially cause a loss to a user.
 
-In order to minimize losses, the following approach is proposed: first, choose the last finalized block as the starting point. If the equivocators caused multiple forks to appear, choose the tip of one of the forks. The exact criteria of choice will be left to the community to decide.
+In order to minimize losses, the following approach is proposed: first, choose the last safe block as the starting point. A safe block would be one that still appears finalized with some small FTT, for example 1%, after a full synchronization of the protocol state.
 
-After the block is chosen, take its global state and all transactions from the blocks in other forks and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one. Call the resulting global state the "pre-initial state".
+After the block is chosen, take its global state and all transactions from the blocks that were considered finalized at some point, but are no longer a part of the main branch of the chain, and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one. Call the resulting global state the "pre-initial state".
 
 As the last step, agree on the initial set of validators for the restarted network. The equivocators should be slashed, but there may be reasons to also exclude other validators, or even to start with a set of validators that has nothing in common with the validators from the stopped network. Once agreement has been reached, apply necessary changes to the pre-initial state: modify the validator stakes and change the entries in the auction contract. After this is applied, the resulting state will be the state used for the restart.
 
 After the users collectively decide upon the new initial state and the new initial set of validators, the network can be restarted.
+
+Note that tools would have to be provided that would facilitate the manual construction of a specific state. This could be realized in the form of node software constructing the state based on the provided hash of a block, list of block or deploy hashes defining deploys to be executed on top of that block, and possibly some additional upgrade code.
 
 ### Restarting the network
 
@@ -55,6 +57,7 @@ The process of restarting the network would be very similar to the process of st
 
 - There is a different set of genesis validators - the new validators chosen by the community.
 - There is a different initial global state: it is not empty anymore, but it is the initial state prepared before.
+- There is a different starting block height - we would not start from 0, but from the last safe block.
 - Other details like the protocol version can differ as well, but they are not of the main concern for the restart process itself.
 
 The agreed upon set of validators and the initial state would be included in the chainspec. The "restart-chainspec" could be distributed among the validators the same way the initial chainspec for the network was. The files containing the new initial state could be distributed alongside the chainspec, or the nodes could download it from each other after they are started (which, of course, requires at least one node to possess the full copy of the state).
@@ -67,10 +70,10 @@ Here we will just summarize the exact steps to be performed when an equivocation
 
 1. An equivocation catastrophe is detected. Once a single validator detects it, we can expect all the validators to detect it eventually as well (even if just due to them receiving the evidence from the validator that detected it first).
 2. Consensus gets suspended, though validators continue to gossip. The users (validator nodes' owners) receive notice about the catastrophe and start the process of social consensus.
-3. The users agree about the new initial global state and the new initial set of validators. The new initial global state is manually constructed based on social consensus.
+3. The users agree about the new initial global state and the new initial set of validators. The new initial global state is manually constructed based on social consensus, using provided tools.
 4. A chainspec for the restart is manually constructed and agreed upon. This includes:
     - the initial set of validators for the restarted network,
-    - the initial global state hash for the restarted network
+    - the initial global state hash for the restarted network (possibly given implicitly, in a form that will allow the node to construct it on the fly)
 5. The network is being restarted using the chainspec constructed above.
 
 Note that currently the chainspec doesn't contain the initial global state hash. Introducing such a field to the chainspec, allowing for the initial state to not be empty, and implementing global state synchronization between nodes would be required changes for the implementation of this CEP.
