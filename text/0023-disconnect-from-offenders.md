@@ -37,7 +37,7 @@ There is also a question of what is the adequate response to an offence for each
 
 Thus, we would define a new mechanism: a `DisconnectAndBlacklist` request to the networking component (see [unresolved question 1](#unresolved-questions)).
 
-The `DisconnectAndBlacklist` request would cause the networking component to disconnect from the given node and add it to a blacklist, preventing it from reconnecting in the future. Specifically, it would blacklist the node's endpoint (IP and port). In order to keep the size of the blacklist manageable, we could consider various kinds of compression mechanisms and simplifications, such as blacklisting a whole IP address (all ports) if the same address shows up multiple times.
+The `DisconnectAndBlacklist` request would cause the networking component to disconnect from the given node and add it to a blacklist, preventing it from reconnecting in the future. Specifically, it would blacklist the node's endpoint (IP and port) - blacklisting a key wouldn't be a solution, since creating a new key is cheap. In order to keep the size of the blacklist manageable, we could consider various kinds of compression mechanisms and simplifications, such as blacklisting a whole IP address (all ports) if the same address shows up multiple times.
 
 ## Reference-level explanation
 
