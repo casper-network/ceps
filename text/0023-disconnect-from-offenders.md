@@ -33,14 +33,11 @@ When we receive an invalid message, we know that the sender must be broken or ma
 
 Determining what amounts to slash for what offenses should probably be done in another CEP. Currently, the only slashable offence is an equivocation and it is handled within the consensus component.
 
-For points 1 and 2, we would define two new mechanisms:
+There is also a question of what is the adequate response to an offence for each of these 3 points. This CEP proposes that for offences not constituting a threat to the security of the network (eg., invalid messages that we can just detect and discard, as opposed to something like equivocations, which can cause problems to consensus), we shouldn't even bother telling other nodes - just disconnecting and blacklisting should be enough. More on that in the [Rationale and alternatives](#rationale-and-alternatives) section.
 
-- A `DisconnectAndBlacklist` request to the networking component (see [unresolved question 1](#unresolved-questions)).
-- An `Accuse` message variant.
+Thus, we would define a new mechanisms: a `DisconnectAndBlacklist` request to the networking component (see [unresolved question 1](#unresolved-questions)).
 
-The `DisconnectAndBlacklist` request would cause the networking component to disconnect from the given node and add it to a blacklist, preventing it from reconnecting in the future.
-
-The `Accuse` message variant would accuse the given node of malice and supply proof in the form of a signed invalid message. It would be gossipped like deploys or blocks, and nodes would disconnect and blacklist the indicated node when receiving such a message (unless the accusation turns out to be invalid, in which case they would disconnect from the accusing node and accuse it themselves).
+The `DisconnectAndBlacklist` request would cause the networking component to disconnect from the given node and add it to a blacklist, preventing it from reconnecting in the future. Specifically, it would blacklist the node's endpoint (IP and port). In order to keep the size of the blacklist manageable, we could consider various kinds of compression mechanisms and simplifications, such as blacklisting a whole IP address (all ports) if the same address shows up multiple times.
 
 ## Reference-level explanation
 
@@ -57,34 +54,21 @@ enum NetworkRequest<I, P> {
 
 The networking component would also keep a blacklist of nodes' endpoints (see [unresolved question 2](#unresolved-questions)). If a node attempts to connect from a blacklisted endpoint, the connection will be rejected (see [unresolved question 3](#unresolved-questions)).
 
-We would also add the following to `protocol::Message`:
-
-```rust
-enum Message<I> {
-    // ...other variants
-    Accuse {
-        node: I,
-        invalid_message: Vec<u8>,
-        signature: Vec<u8>,
-    }
-}
-```
-
-The `node` field would indicate the original sender of the `invalid_message`. The `invalid_message` should correctly deserialize into a signed message with invalid data, and the signature should be valid for the indicated sender. The `signature` should be a valid signature by the sender of the tuple `(node, invalid_message)`. If any of these conditions aren't satisfied, the accusation itself is invalid and the sender should be disconnected, blacklisted and (if the signature was valid) accused in turn.
-
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
-If we are too eager with punishments, we might blacklist nodes for issues that were beyond their control (corrupt data because of connection issues, for example) and break the network's liveness. However, the risk is small and can be mitigated by making sure that we only punish offences we are reasonably sure about.
+By choosing not to accuse nodes sending invalid messages to other nodes, we theoretically make it possible for a known malicious node to participate in the network for a while. However, the risk involved is rather small (see [Rationale and alternatives](#rationale-and-alternatives) below).
 
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-The rationale has been explained [above](#motivation).
+Most of the rationale behind the proposal has been explained [above](#motivation).
 
-An alternative to the blacklist could be keeping some kind of local "reputation" score for nodes. This could be a more cautious approach and another way of decreasing the risk of excessive blacklisting. However, if we have a definitive proof of misbehavior, a blacklisting approach seems more preferable.
+One missing part is why not accuse offending nodes. The issue here is that accusation are a nonzero, even if small, cost to the network. A determined malicious party could trick the network into spamming itself with accusations by starting many nodes sending invalid messages. On the other hand, the risk associated with not immediately banning such a node is small. If an offender only sends valid messages to other nodes, there is no harm in still letting it communicate with the network, and if it tries sending an invalid one, it will just be blacklisted by the recipient independently. This means that we wouldn't be gaining much by accusing such nodes, but could potentially introduce a vector for a DoS-type attack.
+
+As for alternatives, an alternative to the blacklist could be keeping some kind of local "reputation" score for nodes. However, if we are convinced of a node's misbehavior, a blacklisting approach seems more preferable.
 
 ## Prior art
 
@@ -104,4 +88,4 @@ Banning for misbehavior is a common practice in the Internet communities, multip
 
 [future-possibilities]: #future-possibilities
 
-Currently, the messages exchanged between nodes aren't always signed. If we ever implement signatures in the network layer, we could get rid of the `signature` field in `Accusation` (as the message would be signed, anyway) and better identify the offenders when someone sends an invalid message.
+A possibility for future improvement involves making the blacklist more compact in order to reduce the risk of resource exhaustion attacks.
