@@ -35,7 +35,7 @@ We will go into more detail about these steps below.
 
 ### Social consensus
 
-For the initial version of this CEP, we assume that we have some kind of platform that enables open communication between validators and CasperLabs. The chosen platform should allow for storing, linking, referencing and displaying the whole public process and communication. We also should make sure that the content is in a format that can be displayed elsewhere.
+For the initial version of this CEP, we assume that we have some kind of platform that enables open communication between validators. The chosen platform should allow for storing, linking, referencing and displaying the whole public process and communication. We also should make sure that the content is in a format that can be displayed elsewhere.
 
 The first essential step will be determining the starting point for the network after the restart. The suggested approach here would be to agree upon the new initial global state, new set of validators and restart the network as if it was starting from scratch.
 
@@ -43,7 +43,7 @@ A desirable goal for the initial global state would be to revert as few transact
 
 In order to minimize losses, the following approach is proposed: first, choose the last safe block as the starting point. A safe block would be one that still appears finalized with some small FTT, for example 1%, after a full synchronization of the protocol state.
 
-After the block is chosen, take its global state and all transactions from the blocks that were considered finalized at some point, but are no longer a part of the main branch of the chain, and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one. Call the resulting global state the "pre-initial state".
+After the block is chosen, take its global state and all transactions from the blocks that were considered finalized at some point, but are no longer a part of the main branch of the chain, and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one (the default one could be based on deploy timestamps, but the community could decide on some other ordering if deemed necessary). The deploys' TTL could also be expanded to account for the time spent reaching social consensus and allow them to still be valid afterwards. Call global state resulting from replaying these deploys the "pre-initial state".
 
 As the last step, agree on the initial set of validators for the restarted network. The equivocators should be slashed, but there may be reasons to also exclude other validators, or even to start with a set of validators that has nothing in common with the validators from the stopped network. Once agreement has been reached, apply necessary changes to the pre-initial state: modify the validator stakes and change the entries in the auction contract. After this is applied, the resulting state will be the state used for the restart.
 
@@ -60,7 +60,7 @@ The process of restarting the network would be very similar to the process of st
 - There is a different starting block height - we would not start from 0, but from the last safe block.
 - Other details like the protocol version can differ as well, but they are not of the main concern for the restart process itself.
 
-The agreed upon set of validators and the initial state would be included in the chainspec. The "restart-chainspec" could be distributed among the validators the same way the initial chainspec for the network was. The files containing the new initial state could be distributed alongside the chainspec, or the nodes could download it from each other after they are started (which, of course, requires at least one node to possess the full copy of the state).
+The agreed upon set of validators and the initial state would be included in the chainspec. The "restart-chainspec" (consisting of a new `chainspec.toml` along with any dependencies like `accounts.csv`) could be distributed among the validators the same way the initial chainspec for the network was. The files containing the new initial state could be distributed alongside the chainspec, or the nodes could download it from each other after they are started (which, of course, requires at least one node to possess the full copy of the state).
 
 ## Reference-level explanation
 
@@ -98,7 +98,7 @@ Not handling equivocation catastrophes at all would mean the end of the network 
 
 [prior-art]: #prior-art
 
-There have been cases of blockchain projects introducing manual interventions in order to revert catastrophical events, for example the Ethereum DAO hack.
+There have been cases of blockchain projects introducing manual interventions in order to revert catastrophical events, for example the Ethereum DAO hack (see also [link](https://drive.google.com/file/d/1XuZ_3IcYbhg9hkPw2h6HH5rdkBsf2JS-/view)).
 
 ## Unresolved questions
 
