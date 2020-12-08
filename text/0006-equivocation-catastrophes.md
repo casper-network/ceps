@@ -22,7 +22,7 @@ The procedure for handling the equivocation catastrophes will have to consist of
 
 The obvious first thing that should happen in the case of an equivocation catastrophe is that the software should alert the users about the situation. The node software is aware of the configured FTT, so when it detects equivocations, it can notice if the total weight of the equivocators exceeds the current FTT. When it is exceeded, the users should be made aware of it.
 
-In order to make sure that as many validators as possible become aware of all the equivocations eventually, the operation of the nodes shouldn't stop. Finalizing blocks should be halted, as finalization ceases to mean anything when it can be reverted, but the nodes should continue gossiping votes.
+In order to make sure that as many validators as possible become aware of all the equivocations eventually, the operation of the nodes shouldn't stop. Creating votes and finalizing blocks should be halted, as finalization ceases to mean anything when it can be reverted, but the nodes should continue gossiping existing votes, so that validators can eventually fully synchronize their states. As a precaution against malicious validators continuing to vote, new votes could be rejected based on their timestamps, for example.
 
 The nodes could also output the hash of the last block finalized before FTT has been exceeded and all the transactions included in the later blocks, and the list of equivocators. These will be useful for the manual steps.
 
@@ -41,11 +41,11 @@ The first essential step will be determining the starting point for the network 
 
 A desirable goal for the initial global state would be to revert as few transactions from all the forks as possible, in order to limit the damage. Every transaction that was included in a block which appeared to be finalized for a time could have caused real world consequences (like, for example, a merchant sending ordered goods). Reverting any such transaction might potentially cause a loss to a user.
 
-In order to minimize losses, the following approach is proposed: first, choose the last safe block as the starting point. A safe block would be one that still appears finalized with some small FTT, for example 1%, after a full synchronization of the protocol state.
+In order to minimize losses, the following approach is proposed:
 
-After the block is chosen, take its global state and all transactions from the blocks that were considered finalized at some point, but are no longer a part of the main branch of the chain, and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one (the default one could be based on deploy timestamps, but the community could decide on some other ordering if deemed necessary). The deploys' TTL could also be expanded to account for the time spent reaching social consensus and allow them to still be valid afterwards. Call global state resulting from replaying these deploys the "pre-initial state".
-
-As the last step, agree on the initial set of validators for the restarted network. The equivocators should be slashed, but there may be reasons to also exclude other validators, or even to start with a set of validators that has nothing in common with the validators from the stopped network. Once agreement has been reached, apply necessary changes to the pre-initial state: modify the validator stakes and change the entries in the auction contract. After this is applied, the resulting state will be the state used for the restart.
+1. Choose the last safe block as the starting point. A safe block would be one that still appears finalized with some small FTT, for example 1%, after a full synchronization of the protocol state.
+2. Take its global state and all transactions from the blocks that were considered finalized at some point, but are no longer a part of the main branch of the chain, and attempt to replay them on top of that global state. Since the order could matter, the community would have to agree on one (the default one could be based on deploy timestamps, but the community could decide on some other ordering if deemed necessary). The deploys' TTL could also be expanded to account for the time spent reaching social consensus and allow them to still be valid afterwards (which would have to be done on the validation level, as the TTL is a part of the signed data in a deploy). Call global state resulting from replaying these deploys the "pre-initial state".
+3. Agree on the initial set of validators for the restarted network. The equivocators should be slashed, but there may be reasons to also exclude other validators, or even to start with a set of validators that has nothing in common with the validators from the stopped network. On the other hand, if the equivocations were happening due to a bug, the validator set might remain unchanged. Once agreement has been reached, apply necessary changes to the pre-initial state: modify the validator stakes and change the entries in the auction contract. After this is applied, the resulting state will be the state used for the restart.
 
 After the users collectively decide upon the new initial state and the new initial set of validators, the network can be restarted.
 
@@ -57,7 +57,7 @@ The process of restarting the network would be very similar to the process of st
 
 - There is a different set of genesis validators - the new validators chosen by the community.
 - There is a different initial global state: it is not empty anymore, but it is the initial state prepared before.
-- There is a different starting block height - we would not start from 0, but from the last safe block.
+- There is a different starting block height - we would not start from 0, but from a block after the last safe block, which would be manually constructed from the last safe block and included later deploys (so it would include the prepared initial state).
 - Other details like the protocol version can differ as well, but they are not of the main concern for the restart process itself.
 
 The agreed upon set of validators and the initial state would be included in the chainspec. The "restart-chainspec" (consisting of a new `chainspec.toml` along with any dependencies like `accounts.csv`) could be distributed among the validators the same way the initial chainspec for the network was. The files containing the new initial state could be distributed alongside the chainspec, or the nodes could download it from each other after they are started (which, of course, requires at least one node to possess the full copy of the state).
