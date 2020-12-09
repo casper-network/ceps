@@ -109,19 +109,9 @@ set. Joining nodes needs to track this.
 We could add a field =validators= to this with type
 [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/types/src/auction/types.rs#L15][=types::ValidatorWeights=]] (i.e. =BTreeMap<PublicKey, U512>=). 
 
-To support this, blocks will include the list of validators whenever
-they are updated.  There are two scenarios where this can happen:
-
-  1. In a switch block when new validators become bonded/unbonded
-  2. When a validator has been slashed, although this may not be necessary
-
-If we only need to update validators at switch blocks, then it
-suffices to add a field =validators= with type =BTreeMap<VID,U512>= to
+This would be updated as switch blocks are processed. To support this,
+A field =next_era_validators= with type =BTreeMap<VID,U512>= will be added
 [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/consensus/consensus_protocol.rs#L34-L42][=consensus_protocol::EraEnd=]].
-
-Otherwise a field =updated_validators= with type
-=Option<ValidatorWeights>= would be added to [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/types/block.rs#L527-L539][=block::BlockHeader=]] to
-support this.
 
 ** Unresolved questions
 :PROPERTIES:
