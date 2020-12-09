@@ -129,3 +129,14 @@ A field =next_era_validators= with type =BTreeMap<VID,U512>= will be added
 - How will we enforce the new invariants?  What is the testing strategy?
 
 - What else is needed to support fast sync?
+
+** Future possibilities
+:PROPERTIES:
+:CUSTOM_ID: future-possibilities
+:END:
+
+To support fast synchronization, /booking blocks/ could contain the
+validator sets for future eras.  This way, a node could skip from one
+booking block to the next in the era where the specified validators
+are activated. It would not be necessary to process the intermediate
+blocks.
