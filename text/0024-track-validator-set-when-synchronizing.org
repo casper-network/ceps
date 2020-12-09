@@ -16,7 +16,8 @@ A node joining the network needs a secure means of tracking the
 validator set as it processes blocks. To achieve this, the validators
 for the next era are to be provided in each switch block.
 
-This is required for [[https://github.com/casperlabs/ceps/pull/1234][casperlabs/ceps#1234]] and [[https://github.com/casperlabs/ceps/pull/9999][casperlabs/ceps#9999]].
+This is required for [[https://github.com/casperlabs/ceps/pull/1234][casperlabs/ceps#1234 (placeholder link)]] and
+[[https://github.com/casperlabs/ceps/pull/9999][casperlabs/ceps#9999 (placeholder link)]].
 
 ** Motivation
 :PROPERTIES:
