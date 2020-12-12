@@ -36,7 +36,7 @@ for each era is essential to securely joining the network.
 
 Joining a network requires that a node process one block at a time
 (under the current scheme). It does so until it becomes current. The
-node then runs the /highway/ protocol.
+node then runs the /Highway/ protocol.
 
 The following depicts the process a joining node will take assuming an
 era height of 2.  Checking will not be implemented until
