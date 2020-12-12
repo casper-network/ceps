@@ -103,7 +103,7 @@ set. Joining nodes needs to track this.
 :END:
 
 /Synchronization mode/ is mediated by the variant
-[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L85-L93][=linear_chain_sync::State::SyncingDescendants]]=.
+[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L85-L93][=linear_chain_sync::State::SyncingDescendants=]].
 
 We could add a field =validators= to this with type
 [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/types/src/auction/types.rs#L15][=types::ValidatorWeights=]] (i.e. =BTreeMap<PublicKey, U512>=). 
