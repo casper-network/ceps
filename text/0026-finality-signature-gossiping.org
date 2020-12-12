@@ -1,0 +1,190 @@
+#+STARTUP: inlineimages
+
+* Finality Signatures For Secure Joining Node Synchronization
+:PROPERTIES:
+:CUSTOM_ID: finality-signatures-for-secure-joining-node-synchronization
+:END:
+
+** Summary
+:PROPERTIES:
+:CUSTOM_ID: summary
+:END:
+
+CEP PR: [[https://github.com/casperlabs/ceps/pull/0025][casperlabs/ceps#0025]]
+
+Nodes joining the network will use /finality signatures/ to securely
+synchronize with the validators. As a node synchronizes, it will get
+signatures of block hashes via the gossip network until it has > 33%
+of the validator weight. Once a node has enough signatures, it can
+trust that block hash.  It can then proceed to download the next block
+hash.
+
+** Motivation
+:PROPERTIES:
+:CUSTOM_ID: motivation
+:END:
+
+Nodes joining the network need to get blocks from the block-chain in a
+secure manner.  If a block hash has /finality signatures/ from enough
+validators it can be trusted. Since the security model for Highway is
+tolerant of 33% of validators being byzantine.  If a node can get >
+33% of the validator weight to sign a block-hash, that block-hash can
+be trusted.  It suffices for nodes to get these signatures from the gossip network.
+
+** Guide-level explanation
+:PROPERTIES:
+:CUSTOM_ID: guide-level-explanation
+:END:
+
+Nodes joining the chain need to get /finality signatures/ in order to
+trust a block-hash. These are acquired from the gossip network.  The
+security model dictates they need more than 33% of the validator
+weight to establish trust.
+
+This is done by asking the gossip network for a block-hash at height
+=n=. There are two responses to consider:
+
+  1. There is no block at height =n=
+  2. A block hash is provided along with signatures
+
+The diagram below provides the logic for handling these responses.
+
+#+BEGIN_SRC svgbob :file images/0025/state-logic.svg :exports results
+
+                 _____
+                /     \
+               < Start >
+                \_____/
+                   |
+                   |
+                   v
+        +----------o------------+
+        |                       |
+   +--->o  Get Signatures/Hash  o<----------------+
+   |    |  For Block Height n   |                 |
+   |    |                       |                 |
+   |    +----------+------------+                 |
+   |               |                              | No
+   |               |                              |
+   |               v                              |
+   |    +----------o------------+       +---------+--------+
+   |    |                       |       |                  |
+   |    |  Peers Report Block   |       |      Enough      |
+   |    |    at that Height?    +------>o    Signatures?   |
+   |    |                       |  Yes  |                  |
+   |    +----------+------------+       +---------+--------+
+   |               |                              |
+   |               | No                           | Yes
+   |               v                              v
+   |    +----------o------------+       ,~~~~~~~~~o~~~~~~~~.
+   |    |                       |       :                  :
+   |    |  Last Block Near      |       :    Get Block     :
+   +----+  Current Timestamp?   |       :    Using Hash    :
+   | No |                       |       :                  :
+   |    +----------+------------+       `~~~~~~~~~~~~~~~~~~'
+   |               |
+   |               | Yes
+   |               v
+   |       +-------o-------+
+   |       |               |
+   |       |  Era Started  |
+   +-------+  Recently?    |
+     No    |               |
+           +-------+-------+
+                   |
+                   | Yes
+                   v
+           ,~~~~~~~o~~~~~~~.
+           :               :
+           :   Switch to   :
+           :   Highway     :
+           :   Consensus   :
+           :               :
+           `~~~~~~~~~~~~~~~'
+
+
+#+END_SRC
+
+#+RESULTS:
+[[file:images/0025/state-logic.svg]]
+
+** Reference-level explanation
+:PROPERTIES:
+:CUSTOM_ID: reference-level-explanation
+:END:
+
+The central place where program logic will change is in
+[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L365-L368][=linear_chain_sync::LinearChainSync::fetch_next_block=]].
+
+#+BEGIN_SRC rust
+  State::SyncingDescendants { .. } => {
+      let next_height = block_header.height() + 1;
+      fetch_block_at_height(effect_builder, peer, next_height)
+  }
+#+END_SRC
+
+Here =fetch_block_at_height= will change to [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L560][=fetch_block_by_hash=]].
+
+Before the call to =fetch_block_by_hash=, the =LinearChainSync= process
+will need to have acquired a enough weight in signatures as discussed in
+ [[Guide-level explanation][Guide-level explanation]].
+
+A synchronizing node would make a request to its peers with a /new/
+function =fetch_finality_signatures_at_height=.
+
+When calling a peer to gossip a finality signature of height =n=, that
+peer might be faulty.  It could give a finality signature for the
+wrong height. To avoid this, the [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain.rs#L31-L37][=FinalitySignature=]] data structure
+will now include the =block_height= like so:
+
+#+begin_src rust
+/// Finality signature that can be gossiped between nodes or sent to clients.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FinalitySignature {
+    block_hash: BlockHash,
+    block_height: u64,
+    signature: Signature,
+    public_key: PublicKey,
+}
+#+end_src
+
+The signature would be of the bytes =(block_height, block_hash)=.
+
+A faulty validator must by dealt with when syncing.  A validator could
+make finality signatures with the same height and different block
+hashes.  An approach to deal with this is as follows. First, introduce an enum:
+
+#+begin_src rust
+enum FaultyOrFetchedFinalitySignature {
+  /// A pair of finality signatures where:
+  /// - `bad_sig1.public_key == bad_sig2.public_key`
+  /// - `bad_sig1.block_height == bad_sig2.block_height`
+  /// - `bad_sig1.block_hash != bad_sig2.block_hash`
+  Faulty {
+    bad_sig1: FinalitySignature, 
+    bad_sig2: FinalitySignature
+  },
+  Fetched(FinalitySignature)
+}
+#+end_src
+
+Then extend [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L85-L93][linear_chain_sync::State::SyncingDescendants]] with a field
+=validator_finality_signatures= with type =BTreeMap<PublicKey,
+FaultyOrFetched>=. Fetching validator signatures will update this map.
+New signatures are either added or change old signatures to faulty if
+detected. 
+
+To determine the weight of a block hash in this structure: add the
+weight of non-faulty signatures with that hash /plus/ the weight of the
+faulty validators. If this is greater than 1/3 of the validator
+weight, then it must be that one of the validator nodes is not faulty.
+This is a /pigeon hole/ argument based on the trust model for highway.
+
+** Unresolved questions
+:PROPERTIES:
+:CUSTOM_ID: unresolved-questions
+:END:
+
+- Where is the enum that needs to be extended so that the gossip
+  protocol to support =fetch_finality_signatures_at_height=?
+- Is it necessary to have completed [[https://casperlabs.atlassian.net/browse/NDRS-667][NDRS-667]] before doing this work?
