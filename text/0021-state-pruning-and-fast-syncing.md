@@ -119,12 +119,6 @@ Objects like blocks, deploys and similar are trivially convertible into objects.
 1. After successful deserialization, add all descendants of retrieved object into the retrieval queue, or abort with an error.
 1. Go to 2.
 
-### Optimization of retrieval
-
-Retrieval of any object can be optimized by batching, which will not be discussed in depth here. The general idea is to request multiple objects in a single request, and/or provide pre-assembled pack files that group data that is often requested at the same time, like a block and its deploys or the children of a subtree of a global state hash.
-
-This is an optimization that should be deferred for now though.
-
 ### Putting everything together
 
 With a combination of the proposals above, a node's joining process from a trusted hash ideally becomes this:
@@ -238,3 +232,9 @@ The approach is still not preferred as it has two crucial drawbacks: It does not
 * Should consensus state ever be persisted using the storage component, it could be shared in the same manner. Similarly it could be transferred in the same vein.
 
 * Adopting an essentially "stateless" model for many components by simplifying on-demand retrieval could obsolete the need for a separate joining process.
+
+### Optimization of retrieval
+
+Retrieval of any object can be optimized by batching, which will not be discussed in depth here. The general idea is to request multiple objects in a single request, and/or provide pre-assembled pack files that group data that is often requested at the same time, like a block and its deploys or the children of a subtree of a global state hash.
+
+This is an optimization that should be deferred for now though.
