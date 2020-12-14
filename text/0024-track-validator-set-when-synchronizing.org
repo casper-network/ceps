@@ -16,7 +16,7 @@ A node joining the network needs a secure means of tracking the
 validator set as it processes blocks. To achieve this, the validators
 for the next era are to be provided in each switch block.
 
-This is required for [[https://github.com/casperlabs/ceps/pull/0025][casperlabs/ceps#0025]].
+This is required for [[https://github.com/casperlabs/ceps/pull/0026][casperlabs/ceps#0026]].
 
 ** Motivation
 :PROPERTIES:
@@ -40,7 +40,7 @@ node then runs the /Highway/ protocol.
 
 The following depicts the process a joining node will take assuming an
 era height of 2.  Checking will not be implemented until
-[[https://github.com/casperlabs/ceps/pull/0025][casperlabs/ceps#0025]].
+[[https://github.com/casperlabs/ceps/pull/0026][casperlabs/ceps#0026]].
 
 #+BEGIN_SRC svgbob :file images/0024/joining.svg :exports results
 
@@ -124,7 +124,7 @@ A field =next_era_validators= with type =BTreeMap<VID,U512>= will be added
 - What changes need to be made to transitioning from the
   =SyncingDescendants= state to ordinary validation?  This is also
   addressed in [[https://github.com/casperlabs/ceps/pull/0025][casperlabs/ceps#0025]].
- 
+
 - How will we enforce the new invariants?  What is the testing strategy?
 
 - What else is needed to support fast sync?
