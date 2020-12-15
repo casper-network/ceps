@@ -29,7 +29,8 @@ secure manner.  If a block hash has /finality signatures/ from enough
 validators it can be trusted. Since the security model for Highway is
 tolerant of 33% of validators being byzantine.  If a node can get >
 33% of the validator weight to sign a block-hash, that block-hash can
-be trusted.  It suffices for nodes to get these signatures from the gossip network.
+be trusted.  It suffices for nodes to get these signatures from the
+gossip network.
 
 ** Guide-level explanation
 :PROPERTIES:
@@ -118,7 +119,7 @@ The diagram below provides the logic for handling these responses.
 :END:
 
 The central place where program logic will change is in
-[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L365-L368][=linear_chain_sync::LinearChainSync::fetch_next_block=]].
+[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L365-L368][linear_chain_sync::LinearChainSync::fetch_next_block]].
 
 #+BEGIN_SRC rust
   State::SyncingDescendants { .. } => {
@@ -127,7 +128,7 @@ The central place where program logic will change is in
   }
 #+END_SRC
 
-Here =fetch_block_at_height= will change to [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L560][=fetch_block_by_hash=]].
+Here =fetch_block_at_height= will change to [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L560][fetch_block_by_hash]].
 
 Before the call to =fetch_block_by_hash=, the =LinearChainSync= process
 will need to have acquired a enough weight in signatures as discussed in
@@ -138,7 +139,7 @@ function =fetch_finality_signatures_at_height=.
 
 When calling a peer to gossip a finality signature of height =n=, that
 peer might be faulty.  It could give a finality signature for the
-wrong height. To avoid this, the [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain.rs#L31-L37][=FinalitySignature=]] data structure
+wrong height. To avoid this, the [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain.rs#L31-L37][FinalitySignature]] data structure
 will now include the =block_height= like so:
 
 #+begin_src rust
@@ -165,7 +166,7 @@ enum FaultyOrFetchedFinalitySignature {
   /// - `bad_sig1.block_height == bad_sig2.block_height`
   /// - `bad_sig1.block_hash != bad_sig2.block_hash`
   Faulty {
-    bad_sig1: FinalitySignature, 
+    bad_sig1: FinalitySignature,
     bad_sig2: FinalitySignature
   },
   Fetched(FinalitySignature)
@@ -176,7 +177,7 @@ Then extend [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c
 =validator_finality_signatures= with type =BTreeMap<PublicKey,
 FaultyOrFetched>=. Fetching validator signatures will update this map.
 New signatures are either added or change old signatures to faulty if
-detected. 
+detected.
 
 To determine the weight of a block hash in this structure: add the
 weight of non-faulty signatures with that hash /plus/ the weight of the
