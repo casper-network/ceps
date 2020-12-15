@@ -1,4 +1,4 @@
-<svg class="bob" font-family="arial" font-size="14" height="832" width="480" xmlns="http://www.w3.org/2000/svg">
+<svg class="bob" font-family="arial" font-size="14" height="896" width="536" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <marker id="triangle" markerHeight="8" markerWidth="8" orient="auto" refX="4" refY="2" viewBox="0 0 8 4">
 <polygon class="fg_fill" points="0,0 0,4 8,2 0,0"/>
@@ -68,56 +68,56 @@ tspan.head{
 }
     
 </style>
-<rect class="backdrop" height="832" width="480" x="0" y="0"/>
+<rect class="backdrop" height="896" width="536" x="0" y="0"/>
 <g>
-<line class="fg_stroke" x1="28" x2="28" y1="168" y2="472"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="28" x2="60" y1="168" y2="168"/>
-<line class="fg_stroke" x1="28" x2="28" y1="472" y2="616"/>
-<line class="fg_stroke" x1="28" x2="68" y1="472" y2="472"/>
-<line class="fg_stroke" x1="28" x2="92" y1="616" y2="616"/>
-<line class="fg_stroke" x1="68" x2="68" y1="424" y2="472"/>
-<line class="fg_stroke" x1="68" x2="68" y1="472" y2="504"/>
-<line class="fg_stroke" x1="68" x2="156" y1="504" y2="504"/>
-<line class="fg_stroke" x1="92" x2="92" y1="568" y2="616"/>
-<line class="fg_stroke" x1="92" x2="92" y1="616" y2="648"/>
-<line class="fg_stroke" x1="92" x2="156" y1="648" y2="648"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="504" y2="556"/>
-<line class="fg_stroke" x1="156" x2="260" y1="504" y2="504"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="648" y2="700"/>
-<line class="fg_stroke" x1="156" x2="220" y1="648" y2="648"/>
-<line class="fg_stroke" x1="220" x2="220" y1="568" y2="648"/>
-<line class="fg_stroke" x1="260" x2="260" y1="424" y2="504"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="424" y2="424"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="92" x2="156" y1="568" y2="568"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="260" y1="424" y2="424"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="220" y1="568" y2="568"/>
+<line class="fg_stroke" x1="28" x2="28" y1="232" y2="536"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="28" x2="60" y1="232" y2="232"/>
+<line class="fg_stroke" x1="28" x2="28" y1="536" y2="680"/>
+<line class="fg_stroke" x1="28" x2="68" y1="536" y2="536"/>
+<line class="fg_stroke" x1="28" x2="92" y1="680" y2="680"/>
+<line class="fg_stroke" x1="68" x2="68" y1="488" y2="536"/>
+<line class="fg_stroke" x1="68" x2="68" y1="536" y2="568"/>
+<line class="fg_stroke" x1="68" x2="156" y1="568" y2="568"/>
+<line class="fg_stroke" x1="92" x2="92" y1="632" y2="680"/>
+<line class="fg_stroke" x1="92" x2="92" y1="680" y2="712"/>
+<line class="fg_stroke" x1="92" x2="156" y1="712" y2="712"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="568" y2="620"/>
+<line class="fg_stroke" x1="156" x2="260" y1="568" y2="568"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="712" y2="764"/>
+<line class="fg_stroke" x1="156" x2="220" y1="712" y2="712"/>
+<line class="fg_stroke" x1="220" x2="220" y1="632" y2="712"/>
+<line class="fg_stroke" x1="260" x2="260" y1="488" y2="568"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="488" y2="488"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="92" x2="156" y1="632" y2="632"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="260" y1="488" y2="488"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="220" y1="632" y2="632"/>
 </g>
 <g>
-<line class="fg_stroke" x1="68" x2="156" y1="216" y2="216"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="216" y2="268"/>
-<line class="fg_stroke" x1="156" x2="260" y1="216" y2="216"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="68" x2="68" y1="168" y2="216"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="260" x2="260" y1="168" y2="216"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="260" x2="264" y1="168" y2="168"/>
+<line class="fg_stroke" x1="68" x2="156" y1="280" y2="280"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="280" y2="332"/>
+<line class="fg_stroke" x1="156" x2="260" y1="280" y2="280"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="68" x2="68" y1="232" y2="280"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="260" x2="260" y1="232" y2="280"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="260" x2="264" y1="232" y2="232"/>
 </g>
 <g>
-<line class="fg_stroke" x1="68" x2="68" y1="280" y2="360"/>
-<line class="fg_stroke" x1="68" x2="156" y1="360" y2="360"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="360" y2="412"/>
-<line class="fg_stroke" x1="156" x2="260" y1="360" y2="360"/>
-<line class="fg_stroke" x1="260" x2="260" y1="328" y2="360"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="260" x2="316" y1="328" y2="328"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="280" y2="280"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="260" y1="280" y2="280"/>
+<line class="fg_stroke" x1="68" x2="68" y1="344" y2="424"/>
+<line class="fg_stroke" x1="68" x2="156" y1="424" y2="424"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="424" y2="476"/>
+<line class="fg_stroke" x1="156" x2="260" y1="424" y2="424"/>
+<line class="fg_stroke" x1="260" x2="260" y1="392" y2="424"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="260" x2="316" y1="392" y2="392"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="344" y2="344"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="260" y1="344" y2="344"/>
 </g>
 <g>
-<line class="fg_stroke" x1="92" x2="92" y1="716" y2="720"/>
-<line class="fg_stroke dashed" x1="92" x2="92" y1="720" y2="800"/>
-<path class="fg_stroke no_fill" d="M 96 712 A 4 4 0 0 0 92 716"/>
+<line class="fg_stroke" x1="92" x2="92" y1="780" y2="784"/>
+<line class="fg_stroke dashed" x1="92" x2="92" y1="784" y2="864"/>
+<path class="fg_stroke no_fill" d="M 96 776 A 4 4 0 0 0 92 780"/>
 </g>
 <g>
-<line class="fg_stroke" x1="92" x2="92" y1="804" y2="800"/>
-<path class="fg_stroke no_fill" d="M 92 804 A 4 4 0 0 0 96 808"/>
+<line class="fg_stroke" x1="92" x2="92" y1="868" y2="864"/>
+<path class="fg_stroke no_fill" d="M 92 868 A 4 4 0 0 0 96 872"/>
 </g>
 <g>
 <line class="fg_stroke" x1="124" x2="128" y1="56" y2="48"/>
@@ -135,160 +135,156 @@ tspan.head{
 <line class="fg_stroke" x1="152" x2="156" y1="80" y2="80"/>
 <line class="fg_stroke" x1="156" x2="156" y1="80" y2="96"/>
 <line class="fg_stroke" x1="156" x2="160" y1="80" y2="80"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="96" y2="124"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="156" x2="156" y1="96" y2="188"/>
 </g>
 <g>
-<line class="fg_stroke" x1="220" x2="220" y1="716" y2="720"/>
-<line class="fg_stroke dashed" x1="220" x2="220" y1="720" y2="800"/>
-<path class="fg_stroke no_fill" d="M 220 716 A 4 4 0 0 0 216 712"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="212" x2="212" y1="120" y2="188"/>
+<line class="fg_stroke" x1="212" x2="516" y1="120" y2="120"/>
+<line class="fg_stroke" x1="516" x2="516" y1="120" y2="632"/>
 </g>
 <g>
-<line class="fg_stroke" x1="220" x2="220" y1="804" y2="800"/>
-<path class="fg_stroke no_fill" d="M 216 808 A 4 4 0 0 0 220 804"/>
+<line class="fg_stroke" x1="220" x2="220" y1="780" y2="784"/>
+<line class="fg_stroke dashed" x1="220" x2="220" y1="784" y2="864"/>
+<path class="fg_stroke no_fill" d="M 220 780 A 4 4 0 0 0 216 776"/>
 </g>
 <g>
-<line class="fg_stroke" x1="260" x2="260" y1="280" y2="328"/>
+<line class="fg_stroke" x1="220" x2="220" y1="868" y2="864"/>
+<path class="fg_stroke no_fill" d="M 216 872 A 4 4 0 0 0 220 868"/>
 </g>
 <g>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="272" x2="268" y1="168" y2="168"/>
-<line class="fg_stroke" x1="272" x2="404" y1="168" y2="168"/>
-<line class="fg_stroke" x1="404" x2="404" y1="168" y2="280"/>
-<line class="fg_stroke" x1="404" x2="476" y1="280" y2="280"/>
-<line class="fg_stroke" x1="476" x2="476" y1="280" y2="360"/>
+<line class="fg_stroke" x1="260" x2="260" y1="344" y2="392"/>
 </g>
 <g>
-<line class="fg_stroke" x1="324" x2="404" y1="280" y2="280"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="324" x2="324" y1="280" y2="328"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="324" x2="320" y1="328" y2="328"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="324" x2="324" y1="328" y2="360"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="272" x2="268" y1="232" y2="232"/>
+<line class="fg_stroke" x1="272" x2="404" y1="232" y2="232"/>
+<line class="fg_stroke" x1="404" x2="404" y1="232" y2="344"/>
+<line class="fg_stroke" x1="404" x2="476" y1="344" y2="344"/>
+<line class="fg_stroke" x1="476" x2="476" y1="344" y2="424"/>
 </g>
 <g>
-<line class="fg_stroke" x1="324" x2="404" y1="360" y2="360"/>
-<line class="fg_stroke" marker-end="url(#triangle)" x1="404" x2="404" y1="360" y2="412"/>
-<line class="fg_stroke" x1="404" x2="476" y1="360" y2="360"/>
+<line class="fg_stroke" x1="324" x2="404" y1="344" y2="344"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="324" x2="324" y1="344" y2="392"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="324" x2="320" y1="392" y2="392"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="324" x2="324" y1="392" y2="424"/>
 </g>
 <g>
-<line class="fg_stroke" x1="324" x2="324" y1="428" y2="432"/>
-<line class="fg_stroke dashed" x1="324" x2="324" y1="432" y2="496"/>
-<path class="fg_stroke no_fill" d="M 328 424 A 4 4 0 0 0 324 428"/>
+<line class="fg_stroke" x1="324" x2="404" y1="424" y2="424"/>
+<line class="fg_stroke" marker-end="url(#triangle)" x1="404" x2="404" y1="424" y2="476"/>
+<line class="fg_stroke" x1="404" x2="476" y1="424" y2="424"/>
 </g>
 <g>
-<line class="fg_stroke" x1="324" x2="324" y1="500" y2="496"/>
-<path class="fg_stroke no_fill" d="M 324 500 A 4 4 0 0 0 328 504"/>
+<line class="fg_stroke" x1="324" x2="324" y1="488" y2="568"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="324" x2="404" y1="488" y2="488"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="324" x2="404" y1="568" y2="568"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="404" x2="476" y1="488" y2="488"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="404" x2="404" y1="568" y2="632"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="404" x2="476" y1="568" y2="568"/>
 </g>
 <g>
-<line class="fg_stroke" x1="476" x2="476" y1="428" y2="432"/>
-<line class="fg_stroke dashed" x1="476" x2="476" y1="432" y2="496"/>
-<path class="fg_stroke no_fill" d="M 476 428 A 4 4 0 0 0 472 424"/>
+<line class="fg_stroke" x1="352" x2="360" y1="102" y2="102"/>
 </g>
 <g>
-<line class="fg_stroke" x1="476" x2="476" y1="500" y2="496"/>
-<path class="fg_stroke no_fill" d="M 472 504 A 4 4 0 0 0 476 500"/>
+<line class="fg_stroke" x1="352" x2="360" y1="106" y2="106"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="96" x2="152" y1="712" y2="712"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="152" y1="712" y2="712"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="160" y1="712" y2="712"/>
+<line class="fg_stroke" x1="404" x2="516" y1="632" y2="632"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="96" x2="216" y1="808" y2="808"/>
+<line class="fg_stroke" x1="476" x2="476" y1="488" y2="568"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="160" x2="216" y1="712" y2="712"/>
+<line class="fg_stroke dashed" x1="96" x2="152" y1="776" y2="776"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="152" y1="776" y2="776"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="160" y1="776" y2="776"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="328" x2="400" y1="424" y2="424"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="404" x2="400" y1="424" y2="424"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="404" x2="408" y1="424" y2="424"/>
+<line class="fg_stroke dashed" x1="96" x2="216" y1="872" y2="872"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="328" x2="472" y1="504" y2="504"/>
+<line class="fg_stroke dashed" x1="160" x2="216" y1="776" y2="776"/>
 </g>
 <g>
-<line class="fg_stroke dashed" x1="408" x2="472" y1="424" y2="424"/>
-</g>
-<g>
-<text class="fg_fill" x="41" y="492">
+<text class="fg_fill" x="41" y="556">
 No
 </text>
 </g>
 <g>
-<text class="fg_fill" x="41" y="636">
+<text class="fg_fill" x="41" y="700">
 No
 </text>
 </g>
 <g>
-<text class="fg_fill" x="89" y="172">
+<text class="fg_fill" x="89" y="236">
 Get
 </text>
 </g>
 <g>
-<text class="fg_fill" x="89" y="188">
+<text class="fg_fill" x="89" y="252">
 For
 </text>
 </g>
 <g>
-<text class="fg_fill" x="89" y="316">
+<text class="fg_fill" x="89" y="380">
 Peers
 </text>
 </g>
 <g>
-<text class="fg_fill" x="89" y="460">
+<text class="fg_fill" x="89" y="524">
 Last
 </text>
 </g>
 <g>
-<text class="fg_fill" x="89" y="476">
+<text class="fg_fill" x="89" y="540">
 Current
 </text>
 </g>
 <g>
-<text class="fg_fill" x="105" y="332">
+<text class="fg_fill" x="105" y="396">
 at
 </text>
 </g>
 <g>
-<text class="fg_fill" x="113" y="604">
+<text class="fg_fill" x="113" y="668">
 Era
 </text>
 </g>
 <g>
-<text class="fg_fill" x="113" y="620">
+<text class="fg_fill" x="113" y="684">
 Recently?
 </text>
 </g>
 <g>
-<text class="fg_fill" x="121" y="172">
+<text class="fg_fill" x="121" y="236">
 Signatures/Hash
 </text>
 </g>
 <g>
-<text class="fg_fill" x="121" y="188">
+<text class="fg_fill" x="121" y="252">
 Block
 </text>
 </g>
 <g>
-<text class="fg_fill" x="121" y="748">
+<text class="fg_fill" x="121" y="812">
 Switch
 </text>
 </g>
 <g>
-<text class="fg_fill" x="121" y="764">
+<text class="fg_fill" x="121" y="828">
 Highway
 </text>
 </g>
 <g>
-<text class="fg_fill" x="121" y="780">
+<text class="fg_fill" x="121" y="844">
 Consensus
 </text>
 </g>
 <g>
-<text class="fg_fill" x="129" y="332">
+<text class="fg_fill" x="129" y="396">
 that
 </text>
 </g>
 <g>
-<text class="fg_fill" x="129" y="460">
+<text class="fg_fill" x="129" y="524">
 Block
 </text>
 </g>
@@ -298,115 +294,141 @@ Start
 </text>
 </g>
 <g>
-<text class="fg_fill" x="137" y="316">
+<text class="fg_fill" x="137" y="380">
 Report
 </text>
 </g>
 <g>
-<text class="fg_fill" x="145" y="604">
+<text class="fg_fill" x="145" y="668">
 Started
 </text>
 </g>
 <g>
-<text class="fg_fill" x="153" y="476">
+<text class="fg_fill" x="153" y="540">
 Timestamp?
 </text>
 </g>
 <g>
-<text class="fg_fill" x="169" y="188">
+<text class="fg_fill" x="169" y="252">
 Height
 </text>
 </g>
 <g>
-<text class="fg_fill" x="169" y="332">
+<text class="fg_fill" x="169" y="396">
 Height?
 </text>
 </g>
 <g>
-<text class="fg_fill" x="169" y="396">
+<text class="fg_fill" x="169" y="460">
 No
 </text>
 </g>
 <g>
-<text class="fg_fill" x="169" y="540">
+<text class="fg_fill" x="169" y="604">
 Yes
 </text>
 </g>
 <g>
-<text class="fg_fill" x="169" y="684">
+<text class="fg_fill" x="169" y="748">
 Yes
 </text>
 </g>
 <g>
-<text class="fg_fill" x="177" y="460">
+<text class="fg_fill" x="177" y="524">
 Near
 </text>
 </g>
 <g>
-<text class="fg_fill" x="177" y="748">
+<text class="fg_fill" x="177" y="812">
 to
 </text>
 </g>
 <g>
-<text class="fg_fill" x="193" y="316">
+<text class="fg_fill" x="193" y="380">
 Block
 </text>
 </g>
 <g>
-<text class="fg_fill" x="225" y="188">
+<text class="fg_fill" x="225" y="252">
 n
 </text>
 </g>
 <g>
-<text class="fg_fill" x="281" y="348">
+<text class="fg_fill" x="281" y="412">
 Yes
 </text>
 </g>
 <g>
-<text class="fg_fill" x="361" y="332">
+<text class="fg_fill" x="305" y="108">
+Set
+</text>
+</g>
+<g>
+<text class="fg_fill" x="337" y="108">
+n
+</text>
+</g>
+<g>
+<text class="fg_fill" x="361" y="396">
 Signatures?
 </text>
 </g>
 <g>
-<text class="fg_fill" x="361" y="460">
+<text class="fg_fill" x="361" y="524">
 Get
 </text>
 </g>
 <g>
-<text class="fg_fill" x="361" y="476">
+<text class="fg_fill" x="361" y="540">
 Using
 </text>
 </g>
 <g>
-<text class="fg_fill" x="377" y="316">
+<text class="fg_fill" x="369" y="108">
+n
+</text>
+</g>
+<g>
+<text class="fg_fill" x="377" y="380">
 Enough
 </text>
 </g>
 <g>
-<text class="fg_fill" x="393" y="460">
+<text class="fg_fill" x="385" y="108">
++
+</text>
+</g>
+<g>
+<text class="fg_fill" x="393" y="524">
 Block
 </text>
 </g>
 <g>
-<text class="fg_fill" x="409" y="476">
+<text class="fg_fill" x="401" y="108">
+1
+</text>
+</g>
+<g>
+<text class="fg_fill" x="409" y="540">
 Hash
 </text>
 </g>
 <g>
-<text class="fg_fill" x="417" y="236">
+<text class="fg_fill" x="417" y="300">
 No
 </text>
 </g>
 <g>
-<text class="fg_fill" x="417" y="396">
+<text class="fg_fill" x="417" y="460">
 Yes
 </text>
 </g>
 <g>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="68" y1="136" y2="168"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="136" y2="136"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="68" x2="64" y1="168" y2="168"/>
-<line class="fg_stroke" marker-start="url(#open_circle)" x1="156" x2="260" y1="136" y2="136"/>
-<line class="fg_stroke" marker-end="url(#open_circle)" x1="260" x2="260" y1="136" y2="168"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="68" y1="200" y2="232"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="68" x2="156" y1="200" y2="200"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="68" x2="64" y1="232" y2="232"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" marker-start="url(#open_circle)" x1="156" x2="212" y1="200" y2="200"/>
+<line class="fg_stroke" marker-start="url(#open_circle)" x1="212" x2="260" y1="200" y2="200"/>
+<line class="fg_stroke" marker-end="url(#open_circle)" x1="260" x2="260" y1="200" y2="232"/>
 </g>
 </svg>
