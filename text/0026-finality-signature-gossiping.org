@@ -10,7 +10,7 @@
 :CUSTOM_ID: summary
 :END:
 
-CEP PR: [[https://github.com/casperlabs/ceps/pull/0025][casperlabs/ceps#0025]]
+CEP PR: [[https://github.com/casperlabs/ceps/pull/0026][casperlabs/ceps#0026]]
 
 Nodes joining the network will use /finality signatures/ to securely
 synchronize with the validators. As a node synchronizes, it will get
