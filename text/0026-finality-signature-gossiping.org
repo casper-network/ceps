@@ -155,7 +155,7 @@ pub struct FinalitySignature {
 
 The signature would be of the bytes =(block_height, block_hash)=.
 
-A faulty validator must by dealt with when syncing.  A validator could
+A faulty validator must be dealt with when syncing.  A validator could
 make finality signatures with the same height and different block
 hashes.  An approach to deal with this is as follows. First, introduce an enum:
 
