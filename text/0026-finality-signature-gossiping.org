@@ -13,8 +13,9 @@
 CEP PR: [[https://github.com/casperlabs/ceps/pull/0026][casperlabs/ceps#0026]]
 
 Nodes joining the network will use /finality signatures/ to securely
-synchronize with the validators. As a node synchronizes, it will get
-signatures of block hashes via the gossip network until it has > 33%
+synchronize with the validators.  These nodes were identified in As a
+node synchronizes, it will get signatures of block hashes via the
+gossip network until it has greater than threshold =t%= (default: 33%)
 of the validator weight. Once a node has enough signatures, it can
 trust that block hash.  It can then proceed to download the next block
 hash.
@@ -27,10 +28,10 @@ hash.
 Nodes joining the network need to get blocks from the block-chain in a
 secure manner.  If a block hash has /finality signatures/ from enough
 validators it can be trusted. Since the security model for Highway is
-tolerant of 33% of validators being byzantine.  If a node can get >
-33% of the validator weight to sign a block-hash, that block-hash can
-be trusted.  It suffices for nodes to get these signatures from the
-gossip network.
+tolerant of threshold =t%= (default: 33%) of validators being byzantine.
+If a node can get greater than =t%= of the validator weight to sign a
+block-hash, that block-hash can be trusted.  It suffices for nodes to
+get these signatures from the gossip network.
 
 ** Guide-level explanation
 :PROPERTIES:
@@ -39,8 +40,8 @@ gossip network.
 
 Nodes joining the chain need to get /finality signatures/ in order to
 trust a block-hash. These are acquired from the gossip network.  The
-security model dictates they need more than 33% of the validator
-weight to establish trust.
+security model dictates they need more than =t%= (default: 33%) of the
+validator weight to establish trust.
 
 This is done by asking the gossip network for a block-hash at height
 =n=. There are two responses to consider:
@@ -181,7 +182,7 @@ detected.
 
 To determine the weight of a block hash in this structure: add the
 weight of non-faulty signatures with that hash /plus/ the weight of the
-faulty validators. If this is greater than 1/3 of the validator
+faulty validators. If this is greater than =t%= (default: 33%) of the validator
 weight, then it must be that one of the validator nodes is not faulty.
 This is a /pigeon hole/ argument based on the trust model for highway.
 
