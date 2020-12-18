@@ -19,6 +19,8 @@ than threshold =t%= (default: 33%) of the validator weight. Once a node
 has enough signatures, it can trust that block hash.  It can then
 proceed to download the next block hash.
 
+This is a follow up to [[https://github.com/casperlabs/ceps/pull/0024][casperlabs/ceps#0024]]
+
 ** Motivation
 :PROPERTIES:
 :CUSTOM_ID: motivation
