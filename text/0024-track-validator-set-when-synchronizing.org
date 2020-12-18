@@ -109,8 +109,8 @@ We could add a field =validators= to this with type
 [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/types/src/auction/types.rs#L15][types::ValidatorWeights]] (i.e. =BTreeMap<PublicKey, U512>=).
 
 This would be updated as switch blocks are processed. To support this,
-A field =next_era_validators= with type =BTreeMap<VID,U512>= will be added to
-[[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/consensus/consensus_protocol.rs#L34-L42][consensus_protocol::EraEnd]].
+a field =next_era_validator_weights= with type =BTreeMap<PublicKey,U512>=
+will be added to [[https://github.com/xcthulhu/casper-node/blob/d00ab84f2501f2f65e8ab6e0a7449c0e0983138b/node/src/types/block.rs#L533][block::BlockHeader]].
 
 ** Unresolved questions
 :PROPERTIES:
