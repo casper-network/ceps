@@ -193,4 +193,3 @@ This is a /pigeon hole/ argument based on the trust model for highway.
 
 - Where is the enum that needs to be extended so that the gossip
   protocol to support =fetch_finality_signatures_at_height=?
-- Is it necessary to have completed [[https://casperlabs.atlassian.net/browse/NDRS-667][NDRS-667]] before doing this work?
