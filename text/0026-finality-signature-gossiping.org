@@ -13,12 +13,11 @@
 CEP PR: [[https://github.com/casperlabs/ceps/pull/0026][casperlabs/ceps#0026]]
 
 Nodes joining the network will use /finality signatures/ to securely
-synchronize with the validators.  These nodes were identified in As a
-node synchronizes, it will get signatures of block hashes via the
-gossip network until it has greater than threshold =t%= (default: 33%)
-of the validator weight. Once a node has enough signatures, it can
-trust that block hash.  It can then proceed to download the next block
-hash.
+synchronize with the validators.  As a node synchronizes, it will get
+signatures of block hashes via the gossip network until it has greater
+than threshold =t%= (default: 33%) of the validator weight. Once a node
+has enough signatures, it can trust that block hash.  It can then
+proceed to download the next block hash.
 
 ** Motivation
 :PROPERTIES:
@@ -27,21 +26,22 @@ hash.
 
 Nodes joining the network need to get blocks from the block-chain in a
 secure manner.  If a block hash has /finality signatures/ from enough
-validators it can be trusted. Since the security model for Highway is
-tolerant of threshold =t%= (default: 33%) of validators being byzantine.
-If a node can get greater than =t%= of the validator weight to sign a
-block-hash, that block-hash can be trusted.  It suffices for nodes to
-get these signatures from the gossip network.
+validators then a node can trust it. Since the security model for
+Highway is tolerant of threshold =t%= (default: 33%) of validators being
+byzantine.  If a node can see that greater than =t%= of the validator
+weight has signed a block-hash or is Byzantine, then that node can
+trust that block hash.  It suffices for nodes to get these signatures
+from the gossip network.
 
 ** Guide-level explanation
 :PROPERTIES:
 :CUSTOM_ID: guide-level-explanation
 :END:
 
-Nodes joining the chain need to get /finality signatures/ in order to
-trust a block-hash. These are acquired from the gossip network.  The
-security model dictates they need more than =t%= (default: 33%) of the
-validator weight to establish trust.
+Nodes joining the chain need to get /finality signatures/ so it can
+trust a block-hash. These come from the gossip network.  The security
+model dictates they need more than =t%= (default: 33%) of the validator
+weight to establish trust.
 
 This is done by asking the gossip network for a block-hash at height
 =n=. There are two responses to consider:
@@ -156,9 +156,10 @@ pub struct FinalitySignature {
 
 The signature would be of the bytes =(block_height, block_hash)=.
 
-A faulty validator must be dealt with when syncing.  A validator could
-make finality signatures with the same height and different block
-hashes.  An approach to deal with this is as follows. First, introduce an enum:
+Nodes must deal with a faulty validator when syncing.  A validator
+could make finality signatures with the same height and different
+block hashes.  An approach to deal with this is as follows. First,
+introduce an enum:
 
 #+begin_src rust
 enum FaultyOrFetchedFinalitySignature {
@@ -182,9 +183,11 @@ detected.
 
 To determine the weight of a block hash in this structure: add the
 weight of non-faulty signatures with that hash /plus/ the weight of the
-faulty validators. If this is greater than =t%= (default: 33%) of the validator
-weight, then it must be that one of the validator nodes is not faulty.
-This is a /pigeon hole/ argument based on the trust model for highway.
+faulty validators. This principle was briefly discussed in the
+[[#motivation][Motivation]] section. If this is greater than =t%= (default: 33%) of the
+validator weight, then it must be that one of the validator nodes is
+not faulty.  This is a /pigeon hole/ argument based on the trust model
+for highway.
 
 ** Unresolved questions
 :PROPERTIES:
