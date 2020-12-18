@@ -129,37 +129,21 @@ The central place where program logic will change is in
   }
 #+END_SRC
 
-Here =fetch_block_at_height= will change to [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L560][fetch_block_by_hash]].
-
 Before the call to =fetch_block_by_hash=, the =LinearChainSync= process
-will need to have acquired a enough weight in signatures as discussed in
- [[Guide-level explanation][Guide-level explanation]].
+will need to have acquired a enough weight in signatures as discussed
+in [[Guide-level explanation][Guide-level explanation]].
 
-A synchronizing node would make a request to its peers with a /new/
-function =fetch_finality_signatures_at_height=.
+Here =fetch_block_at_height= will yield the block header /and/ the
+finality signatures. Moreover, updating =next_height= to
+=block_header.height() + 1= will happen only after enough weight of
+finality signatures has been observed.
 
-When calling a peer to gossip a finality signature of height =n=, that
-peer might be faulty.  It could give a finality signature for the
-wrong height. To avoid this, the [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain.rs#L31-L37][FinalitySignature]] data structure
-will now include the =block_height= like so:
-
-#+begin_src rust
-/// Finality signature that can be gossiped between nodes or sent to clients.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct FinalitySignature {
-    block_hash: BlockHash,
-    block_height: u64,
-    signature: Signature,
-    public_key: PublicKey,
-}
-#+end_src
-
-The signature would be of the bytes =(block_height, block_hash)=.
+Byzantine nodes are a key concern for calculating the weight.
 
 Nodes must deal with a faulty validator when syncing.  A validator
-could make finality signatures with the same height and different
-block hashes.  An approach to deal with this is as follows. First,
-introduce an enum:
+could make finality signatures with the same height (according to the
+block header) and different block hashes.  An approach to deal with
+this is as follows. First, introduce an enum:
 
 #+begin_src rust
 enum FaultyOrFetchedFinalitySignature {
