@@ -28,9 +28,9 @@ This is a follow up to [[https://github.com/casperlabs/ceps/pull/0024][casperlab
 
 Nodes joining the network need to get blocks from the block-chain in a
 secure manner.  If a block hash has /finality signatures/ from enough
-validators then a node can trust it. Since the security model for
-Highway is tolerant of threshold =t%= (default: 33%) of validators being
-byzantine.  If a node can see that greater than =t%= of the validator
+validators then a node can trust it. This is because the security model for
+Highway is tolerant of a threshold =t%= (default: 33%) of validators being
+Byzantine.  If a node can see that greater than =t%= of the validator
 weight has signed a block-hash or is Byzantine, then that node can
 trust that block hash.  It suffices for nodes to get these signatures
 from the gossip network.
@@ -41,7 +41,7 @@ from the gossip network.
 :END:
 
 Nodes joining the chain need to get /finality signatures/ so it can
-trust a block-hash. These come from the gossip network.  The security
+trust a block-hash. These come from the gossip network. The security
 model dictates they need more than =t%= (default: 33%) of the validator
 weight to establish trust.
 
