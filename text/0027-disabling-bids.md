@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/27)
 
 This CEP outlines the course of action required for preventing liveness failures in the network when validators disconnect without retracting their bids.
 
