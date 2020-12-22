@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0022](https://github.com/casperlabs/ceps/pull/0001)
+CEP PR: [casperlabs/ceps#0001](https://github.com/casperlabs/ceps/pull/0001)
 
 Make specifications, ideas and implementation guidelines more developer friendly and accessible through the introduction of an easy to use CEPs process.
 
