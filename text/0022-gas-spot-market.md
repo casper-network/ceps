@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0001](https://github.com/casperlabs/ceps/pull/0022)
+CEP PR: [casperlabs/ceps#0022](https://github.com/casperlabs/ceps/pull/0022)
 
 The present CEP is intended to guide the development of the gas allocation mechanism that will be present at mainnet launch, 
 later to be supplemented by a gas futures market and a fiat link. The CEP explains the concepts of willingness to pay (WTP), spot gas reservation,
