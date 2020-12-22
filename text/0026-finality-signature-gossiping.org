@@ -28,12 +28,12 @@ This is a follow up to [[https://github.com/casperlabs/ceps/pull/0024][casperlab
 
 Nodes joining the network need to get blocks from the block-chain in a
 secure manner.  If a block hash has /finality signatures/ from enough
-validators then a node can trust it. This is because the security model for
-Highway is tolerant of a threshold =t%= (default: 33%) of validators being
-Byzantine.  If a node can see that greater than =t%= of the validator
-weight has signed a block-hash or is Byzantine, then that node can
-trust that block hash.  It suffices for nodes to get these signatures
-from the gossip network.
+validators then a node can trust it. If a node can see that greater
+than =t%= of the validator weight has signed a block-hash which do not
+appear to be Byzantine, then that node can trust that block hash. If
+it sees more than =t%= are Byzantine it should stop the process because
+there's been an /equivocation catastrophe/ (see [[https://github.com/CasperLabs/ceps/blob/master/text/0006-equivocation-catastrophes.md][casperlabs/ceps#0006]]).
+It suffices for nodes to get these signatures from the gossip network.
 
 ** Guide-level explanation
 :PROPERTIES:
@@ -43,7 +43,9 @@ from the gossip network.
 Nodes joining the chain need to get /finality signatures/ so it can
 trust a block-hash. These come from the gossip network. The security
 model dictates they need more than =t%= (default: 33%) of the validator
-weight to establish trust.
+weight to establish trust. But if for more than =t%= of validators are
+found to be Byzantine, the node will stop its process for emergency
+restart.
 
 This is done by asking the gossip network for a block-hash at height
 =n=. There are two responses to consider:
@@ -60,20 +62,19 @@ The diagram below provides the logic for handling these responses.
                < Start >
                 \_____/
                    |
-                   |                  Set n = n + 1
+                   |
                    |      +-------------------------------------+
                    |      |                                     |
                    |      |                                     |
-                   |      |                                     |
                    v      v                                     |
-        +----------o------o-----+                               |
-        |                       |                               |
-   +--->o  Get Signatures/Hash  o<----------------+             |
-   |    |  For Block Height n   |                 |             |
-   |    |                       |                 |             |
-   |    +----------+------------+                 |             |  
-   |               |                              | No          |
-   |               |                              |             |
+        +----------o------o-----+       +---------+--------+    |
+        |                       |       |                  |    |
+   +--->o  Get Signatures/Hash  |       |    Get Block     |    |
+   |    |  For Block Height n   o<------+    Using Hash    |    |
+   |    |                       | n=n+1 |                  |    |
+   |    +----------+------------+       +---------o--------+    |
+   |               |                              ^             |
+   |               |                              | Yes         |
    |               v                              |             |
    |    +----------o------------+       +---------+--------+    |
    |    |                       |       |                  |    |
@@ -82,23 +83,23 @@ The diagram below provides the logic for handling these responses.
    |    |                       |  Yes  |                  |    |
    |    +----------+------------+       +---------+--------+    |
    |               |                              |             |
-   |               | No                           | Yes         |
+   |               | No                           | No          |
    |               v                              v             |
    |    +----------o------------+       +---------o--------+    |
    |    |                       |       |                  |    |
-   |    |  Last Block Near      |       |    Get Block     |    |
-   +----+  Current Timestamp?   |       |    Using Hash    |    |
-   | No |                       |       |                  |    |
-   |    +----------+------------+       +---------o--------+    |
-   |               |                              |             |
-   |               | Yes                          |             |
-   |               v                              |             |
-   |       +-------o-------+                      +-------------+
-   |       |               |
-   |       |  Era Started  |
-   +-------+  Recently?    |
-     No    |               |
-           +-------+-------+
+   |    |  Last Block Near      |       |    Too Many      |    |
+   +----+  Current Timestamp?   |       |    Byzantine?    +----+
+   | No |                       |       |                  | No
+   |    +----------+------------+       +---------+--------+
+   |               |                              |
+   |               | Yes                          | Yes
+   |               v                              v
+   |       +-------o-------+            ,~~~~~~~~~o~~~~~~~~.
+   |       |               |            :                  :
+   |       |  Era Started  |            :   Kill Process   :
+   +-------+  Recently?    |            :                  :
+     No    |               |            :                  :
+           +-------+-------+            `~~~~~~~~~~~~~~~~~~'
                    |
                    | Yes
                    v
@@ -142,9 +143,9 @@ finality signatures has been observed.
 
 Byzantine nodes are a key concern for calculating the weight.
 
-Nodes must deal with a faulty validator when syncing.  A validator
+Nodes must deal with a faulty validator when syncing. A validator
 could make finality signatures with the same height (according to the
-block header) and different block hashes.  An approach to deal with
+block header) and different block hashes. An approach to deal with
 this is as follows. First, introduce an enum:
 
 #+begin_src rust
@@ -162,13 +163,9 @@ FaultyOrFetched>=. Fetching validator signatures will update this map.
 New signatures are either added or change old signatures to faulty if
 detected.
 
-To determine the weight of a block hash in this structure: add the
-weight of non-faulty signatures with that hash /plus/ the weight of the
-faulty validators. This principle was briefly discussed in the
-[[#motivation][Motivation]] section. If this is greater than =t%= (default: 33%) of the
-validator weight, then it must be that one of the validator nodes is
-not faulty.  This is a /pigeon hole/ argument based on the trust model
-for highway.
+If there are more than =t%= signatures which are =Correct=, proceed to the
+next block.  If there are more than =t%= which are =Faulty=
+(i.e. /Byzantine/), stop the process.
 
 ** Unresolved questions
 :PROPERTIES:
