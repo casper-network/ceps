@@ -149,17 +149,12 @@ this is as follows. First, introduce an enum:
 
 #+begin_src rust
 enum FaultyOrFetchedFinalitySignature {
-  /// A pair of finality signatures where:
-  /// - `bad_sig1.public_key == bad_sig2.public_key`
-  /// - `bad_sig1.block_height == bad_sig2.block_height`
-  /// - `bad_sig1.block_hash != bad_sig2.block_hash`
-  Faulty {
-    bad_sig1: FinalitySignature,
-    bad_sig2: FinalitySignature
-  },
-  Fetched(FinalitySignature)
+  Faulty,
+  Correct(FinalitySignature)
 }
 #+end_src
+
+The naming convention in this enum follow [[https://github.com/goral09/casper-node-1/blob/0bbefb1c284784f0307661cdc7c33584ffded3ce/node/src/components/consensus/highway_core/state/panorama.rs#L24-L31][panorama::Observation]].
 
 Then extend [[https://github.com/xcthulhu/casper-node/blob/0a7f9e5fd7608e2f6574c1e213bd9f5e35880af5/node/src/components/linear_chain_sync.rs#L85-L93][linear_chain_sync::State::SyncingDescendants]] with a field
 =validator_finality_signatures= with type =BTreeMap<PublicKey,
