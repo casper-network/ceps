@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0029](https://github.com/casperlabs/ceps/pull/0029)
 
 We propose introduction of a delegation cap, or a proportional limit on delegation relative to own staked tokens.
 
