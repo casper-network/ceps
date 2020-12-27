@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0030](https://github.com/casperlabs/ceps/pull/0030)
 
 We propose that the operation of the auction and related contracts be modified to reflect the language of agreements regarding token allocations. To this end, we propose that the unlock of tokens be gradual and take place over the course of 90 days. Further, we introduce a new type of deploy, the genesis validator token withdrawal, which would enable genesis validators to withdraw eligible tokens without paying for gas.
 
