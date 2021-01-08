@@ -24,7 +24,7 @@ We introduce two changes to the platform. The first change concerns the lock-in 
 - After 90 days, tokens unlock gradually (equal proportion of starting amount) over the course of a further 90 days, possibly as weekly lump sums
 - Auto-win conditions is set to false at the 90 day mark and genesis validators begin to compete in the auction
 
-The second change concerns the problem of genesis validators having no tokens to withdraw their rewards. To this end, we propose introducing a new deploy type, the genesis validator token withdrawal, which requires no payment for gas and can be processed by the platform for the first **210 days**.
+The second change concerns the problem of genesis validators having no tokens to withdraw their rewards. To this end, we propose introducing a new deploy type, the genesis validator token withdrawal, which requires no payment for gas and can be processed by the platform for the first **180 days**.
 
 ## Reference-level explanation
 
