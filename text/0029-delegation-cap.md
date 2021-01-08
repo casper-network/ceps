@@ -55,7 +55,7 @@ The expected drawback to this proposal is the exclusion of high delegation ratio
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-The rationale for this feature is our own risk-aversion. While we hope that all users act to further their rational, long-term self-interest, years of experience with Internet platform suggest the propriety of certain safeguards that prevent users from making almost certain mistakes. It is also judged that there is a low probability but high magnitude risk of a PR event associated with a massively overdelegated validator triggering a slashing. Finally, the logic of consensus security intuitively demands that we require participants to have "skin in the game." 
+The rationale for this feature is our own risk-aversion. While we hope that all users act to further their rational, long-term self-interest, years of experience with Internet platforms suggest the propriety of certain safeguards that prevent users from making almost certain mistakes. It is also judged that there is a low probability but high magnitude risk of a PR event associated with a massively overdelegated validator triggering a slashing. Finally, the logic of consensus security intuitively demands that we require participants to have "skin in the game." 
 
 ## Prior art
 
