@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0032](https://github.com/casperlabs/ceps/pull/0032)
 
 The `upgrade-bootstrapper` is a new binary which will be responsible for launching the `casper-node` binaries.  It will
 handle transitions between network versions by identifying when a current `casper-node` execution ceases and starting
