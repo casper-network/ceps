@@ -35,83 +35,30 @@ Parameters `k`, `N` and `m` should be chosen in a way that achieves the best bal
 
 An inactive validator is probably one that completely lost the connection to the network. A failing validator either experiences intermittent network problems, or is deliberately trying to disrupt the network by sending messages erratically.
 
-In either case, we would want to disable such a validator's bid. This would be done by a new type of system transaction, akin to rewards and slashing. Though, in order to minimize the time to action, such transactions would be included and executed in every block, instead of just in the switch block, like rewards and slashing.
+In either case, we would want to disable such a validator's bid. This would be done by a new type of system transaction, akin to rewards and slashing. Just like rewards and slashing, it would be included in the switch block and passed to the auction contract to be processed.
 
-However, the new type of transaction cannot work just as a regular transaction, in that it is not enough that the leader of the round proposes it in a block. If a single node considers another one inactive/failing, it doesn't mean that everyone or even that a majority of others will. Thus, such a transaction should be gossipped like a deploy, and it should be signed by nodes who agree that the offender should be disabled. Only if we collect enough of the signatures, the transaction should be included in a block (along with all the signatures proving that the validators agree about its correctness).
+The validity of this transaction would be determined by the consensus state as seen by the switch block proposal consensus unit (i.e. the number of messages sent by each validator would be calculated based on what the unit containing the switch block sees) - this ensures that all validators will agree about whose bids need to be disabled.
 
-The new transaction would completely disable the validator's bid immediately upon execution and remove it from the validator set from the next era onwards. The funds would not be redeemable until the regular delay (`LOCKED_FUNDS_PERIOD`) passes. If the validator desires to become a validator again, it would have to submit a new, separate bid.
+The new transaction would completely disable the validator's bid upon execution by the auction contract and remove the offending validator from the validator set from the next era onwards. The funds would not be redeemable until the regular delay (`LOCKED_FUNDS_PERIOD`) passes. If the validator desires to become a validator again, it would have to submit a new, separate bid.
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-The Highway implementation would keep track of which validators perform as expected, that is, which of them are consistently sending the correct number of messages.
-
-The struct `Validator` in `src/components/consensus/highway_core/validators.rs` would contain an additional field:
+A new field would be added to `consensus::consensus_protocol::EraEnd`:
 
 ```rust
-struct Validator<VID> {
+struct EraEnd<VID> {
     // ...
-    state: ValidatorState,
+    inactive_validators: Vec<VID>,
 }
 ```
 
-`ValidatorState` would be the following enum:
+This field would be populated by the finality detector, just like the `rewards` field, based on the configured threshold for inactivity.
 
-```rust
-enum ValidatorState {
-    /// A state meaning that the validator is active so far, but tracking rounds that didn't meet the expectations
-    Active {
-        inactive_rounds: u8, // or a larger type, if `m` could be larger than 255
-        failing_rounds: VecDeque<bool>,
-    },
-    /// A state meaning that the validator is now considered failing
-    Failing,
-    /// A state meaning that the validator is now considered inactive
-    Inactive,
-}
-```
+An analogous field would be added in the `StepRequest` structure, which is now used to signal the rewards and slashings to the auction contract. `BlockExecutor::execute_next_deploy_or_create_block` populate it based on `EraEnd::inactive_validators`.
 
-As the rounds pass, the instance would update the state for every validator participating in the protocol. If a validator becomes failing or inactive, the Highway protocol would emit a new variant of `ProtocolOutcome`:
-
-```rust
-enum ProtocolOutcome<I, C: Context> {
-    // ...
-    ValidatorInactive(C::ValidatorId),
-}
-```
-
-The Era Supervisor, upon receiving such an outcome, would generate a new variant of `ConsensusMessage` and request gossipping of this message:
-
-```rust
-enum ConsensusMessage {
-    // ...
-    ValidatorInactive {
-        disabling_transaction: Deploy,
-    }
-}
-```
-
-The `disabling_transaction` would consist of:
-
-- `payment`: empty `ExecutableDeployItem::ModuleBytes`
-- `session`: a new variant `ExecutableDeployItem::DisableBid { era_id: EraId, validator: PublicKey }` with `era_id` being set to the ID of the era that emitted the `ValidatorInactive` outcome
-- `approvals`: a vector containing a single approval by the validator that generated the deploy.
-
-Other validators, when receiving `ConsensusMessage::ValidatorInactive`, would collect the valid approvals in a new field in `EraSupervisor`:
-
-```rust
-struct EraSupervisor<I> {
-    // ...
-    collecting_approvals: BTreeMap<(EraId, PublicKey), Deploy>,
-}
-```
-
-where the key would be the same data as in `ExecutableDeployItem::DisableBid`, and the value would be the full deploy, with all the approvals collected so far.
-
-Every validator, when it is their turn to propose a block, would check `collecting_approvals` for deploys that got enough approvals. Any such deploys would be included in the proposed block.
-
-`ExecutableDeployItem::DisableBid`, upon execution, would cause a call into the auction contract, which would remove the relevant validator's bid from eras `era_id + 1` onwards. The funds would remain locked for `LOCKED_FUNDS_PERIOD`.
+The auction contract would then use this data to disable the bids as applicable.
 
 ## Drawbacks
 
@@ -119,11 +66,13 @@ Every validator, when it is their turn to propose a block, would check `collecti
 
 If we are too eager with disabling bids, we could inadvertently punish honest validators just having network issues. This can be mitigated by adjusting the choice of the relevant constants, though.
 
+One important drawback of this approach is that the bids are only disabled once per era. This means that even if validators don't go offline at once, but enough of them become inactive during the span of an era, we will be left with no recourse but to wait until some of them come back online.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-Instead of gossipping signatures for a new deploy, disabling bids could be done based on the past cone of a block in the Highway DAG. It could be inferred from the DAG which validators were inactive and for how long. However, it is unclear whether malicious validators couldn't collaborate in order to deliberately create outdated panoramas and make it look as if another validator was inactive. We shouldn't use this approach unless we can prove it is safe.
+Since disabling the bids only once per era still runs a risk of stalling the network in case of multiple validators becoming inactive, it would be desirable to evict inactive validators more often, eg. once per block. Unfortunately, there is no clear way of achieving this effect without making modifications having deeply reaching consequences, so this remains a future possibility for now.
 
 There is also another potential approach in regards to the precise mechanism of disabling bids. Instead of being removed entirely, the bid could be flagged as inactive, and the flag could be removed when the validator comes back online. However, this would open the network up to being exploited by "lazy validators", where a validator could go offline for large amounts of time, get disabled, then reenabled immediately when it comes back online.
 
@@ -146,4 +95,9 @@ It is a general practice in networked applications to disconnect unresponsive no
 
 [future-possibilities]: #future-possibilities
 
-None at the moment.
+It might be possible to evict inactive validators more often than once per era. Possible approaches include:
+
+- Ending eras early. When a validator becomes inactive, we end the era, include the inactivity information in the switch block and start a new one without the inactive validator.
+- Ignoring the weight of inactive validators at the consensus level - not including them in the finality calculations, for example.
+
+These approaches have far reaching consequences, though. Ending eras early has implications for security: it effectively modifies the set of validators for an era with a known seed, which means that an attacker could use this to manipulate the sequence of round leaders. The second approach, on the other hand, could have implications for the correctness of the consensus algorithm, so it would have to be formulated more precisely and investigated in much more depth.
