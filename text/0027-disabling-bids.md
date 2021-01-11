@@ -39,7 +39,7 @@ In either case, we would want to disable such a validator's bid. This would be d
 
 The validity of this transaction would be determined by the consensus state as seen by the switch block proposal consensus unit (i.e. the number of messages sent by each validator would be calculated based on what the unit containing the switch block sees) - this ensures that all validators will agree about whose bids need to be disabled.
 
-The new transaction would completely disable the validator's bid upon execution by the auction contract, which would set a flag on the bid, marking it as inactive, and remove the validator from the eras in which it had already won the auctions. The bid would remain in this state until the validator either bids again (possibly a zero amount, which would remove the "inactivity" flag and make it eligible for winning future auctions again) or explicitly retracts the bid.
+The new transaction would completely disable the validator's bid upon execution by the auction contract, which would set a flag on the bid, marking it as inactive. This would cause the bid not to be taken into account in auctions for the eras starting at `AUCTION_DELAY` eras in the future. The bid would remain in this state until the validator either bids again (possibly a zero amount, which would remove the "inactivity" flag and make it eligible for winning future auctions again) or explicitly retracts the bid.
 
 ## Reference-level explanation
 
@@ -66,13 +66,13 @@ The auction contract would then use this data to disable the bids as applicable.
 
 If we are too eager with disabling bids, we could inadvertently punish honest validators just having network issues. This can be mitigated by adjusting the choice of the relevant constants, though.
 
-One important drawback of this approach is that the bids are only disabled once per era. This means that even if validators don't go offline at once, but enough of them become inactive during the span of an era, we will be left with no recourse but to wait until some of them come back online.
+One important drawback of this approach is that the bids are only disabled once per era and observe the `AUCTION_DELAY`. This means that even if validators don't go offline at once, but enough of them become inactive during the span of `AUCTION_DELAY` eras, we will be left with no recourse but to wait until some of them come back online. It would be tempting to remove the validator from the validator set starting at the next era in order to quicken the process, but that has security implications - it would modify the set of validators in already decided eras, so there would be a possibility of an attacker having some control over the sequence of the round leaders if we did that.
 
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-Since disabling the bids only once per era still runs a risk of stalling the network in case of multiple validators becoming inactive, it would be desirable to evict inactive validators more often, eg. once per block. Unfortunately, there is no clear way of achieving this effect without making modifications having deeply reaching consequences, so this remains a future possibility for now.
+Since disabling the bids only after `AUCTION_DELAY` eras still carries a risk of stalling the network in case of multiple validators becoming inactive, it would be desirable to evict inactive validators more quickly, eg. after one round. Unfortunately, there is no clear way of achieving this effect without making modifications having deeply reaching consequences, so this remains a future possibility for now.
 
 There is also another potential approach in regards to the precise mechanism of disabling bids. Instead of being removed entirely, the bid could be flagged as inactive, and the flag could be removed when the validator comes back online. However, this would open the network up to being exploited by "lazy validators", where a validator could go offline for large amounts of time, get disabled, then reenabled immediately when it comes back online.
 
@@ -89,7 +89,6 @@ It is a general practice in networked applications to disconnect unresponsive no
 - Should inactive validators be treated differently from failing ones?
 - Should we even disable the bids of failing validators?
 - Should we slash parts of the bids of the validators we disable?
-- Can we remove the validator from the set of validators for the next era, or do we have to observe the `AUCTION_DELAY` here?
 
 ## Future possibilities
 
