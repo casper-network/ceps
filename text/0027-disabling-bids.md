@@ -39,7 +39,7 @@ In either case, we would want to disable such a validator's bid. This would be d
 
 The validity of this transaction would be determined by the consensus state as seen by the switch block proposal consensus unit (i.e. the number of messages sent by each validator would be calculated based on what the unit containing the switch block sees) - this ensures that all validators will agree about whose bids need to be disabled.
 
-The new transaction would completely disable the validator's bid upon execution by the auction contract and remove the offending validator from the validator set from the next era onwards. The funds would not be redeemable until the regular delay (`LOCKED_FUNDS_PERIOD`) passes. If the validator desires to become a validator again, it would have to submit a new, separate bid.
+The new transaction would completely disable the validator's bid upon execution by the auction contract, which would set a flag on the bid, marking it as inactive, and remove the validator from the eras in which it had already won the auctions. The bid would remain in this state until the validator either bids again (possibly a zero amount, which would remove the "inactivity" flag and make it eligible for winning future auctions again) or explicitly retracts the bid.
 
 ## Reference-level explanation
 
