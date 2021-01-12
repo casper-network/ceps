@@ -8,7 +8,7 @@ CEP PR: [casperlabs/ceps#0022](https://github.com/casperlabs/ceps/pull/0022)
 
 The present CEP is intended to guide the development of the gas allocation mechanism that will be present at mainnet launch, 
 later to be supplemented by a gas futures market and a fiat link. The CEP explains the concepts of willingness to pay (WTP), spot gas reservation,
-gas allocation, gas requirements estimation, refunds and price determination. Further, it addresses the separation of block gas allocation for regular deploys and WASM-less transfers, 
+gas allocation, gas requirements estimation and price determination. Further, it addresses the separation of block gas allocation for regular deploys and WASM-less transfers, 
 balance checks and fallback purses. The present CEP is not intended to be a technical specification, but rather an explanation of the business logic
 and the economic imperatives leading to the proposed deploy lifecycle.
 
@@ -42,15 +42,13 @@ true willingness to pay, since the proposed allocation rule is analogous to a fi
 #### Spot gas reservation
 
 Spot gas reservation, conceptually, is the claim a user will lay on gas in a proposed block. Similarly to willingness to pay, it will be
-a deploy parameter. The user effectively buys this amount, priced at the stated willingness to pay, when included in a block. To soften
-the impact of poor gas requirements estimation, we will be implementing partial refunds for unused gas.
+a deploy parameter. The user effectively buys this amount, priced at the stated willingness to pay, when included in a block.
 
 #### Gas allocation
 
 Gas allocation with a greedy revenue-optimizing ordering of deploys is the core activity that this CEP proposes. It is envisioned that this
 rule will be hardcoded into the block proposer component. The rule will be that highest WTP deploys with the highest spot gas reservations
-be included first, subject to certain balance requirements. The charges arising from inclusion would be WTP multiplied by the spot gas reservation,
-less any refunds arising from incomplete use of reserved gas.
+be included first, subject to certain balance requirements. The charges arising from inclusion would be WTP multiplied by the spot gas reservation.
 
 #### What do we mean by "price?"
 
@@ -66,8 +64,7 @@ rule.
 
 The UI change for the user is the introduction (possibly by renaming) of a "willingness to pay" parameter and a "spot gas reservation" parameter. The UX
 becomes somewhat more complex, since it is up to the user to determine the gas requirements. Because of our consensus-before-execution model, we are unable
-to allocate gas on the fly. This means that to avoid underutilization of block gas, we must charge for the entire reserved amount (although with partial refunds, in recognition
-of difficulties with estimating gas use of complex deploys). It is expected that the users, and particularly high WTP users, will make their best effort to estimate gas
+to allocate gas on the fly. This means that to avoid underutilization of block gas, we must charge for the entire reserved amount. It is expected that the users, and particularly high WTP users, will make their best effort to estimate gas
 requirements offline, or on our testnet, before submitting the deploys to the live network. We expect that, eventually, the community will develop tooling to make this estimation easier.
 Some of the potential solutions may be large dApps contributing developer time and nodes to maintain a robust testnet that shadows complex contracts deployed on the live chain, adaptation of
 our testing tools and application of empirical methods to observed gas use patterns.
@@ -92,10 +89,6 @@ The limit on spot gas reservations by general deploys.
 #### WASM-less transfer dedicated gas limit
 
 The limit on spot gas reservations of WASM-less deploys, naturally stated as a multiple of desired number of such deploys multiplied by their (fixed) gas reservation. 
-
-#### Refund proportion
-
-Refund proportion for unused gas. Conceptually, this is equivalent to a discount on the unused reserved gas. The refund applies to total gas used, regardless of its use for payment or session code.
 
 ### Deploy channels
 
@@ -161,15 +154,11 @@ The remainder for each originating account is to carry over from WASM-less trans
 
 1. Execute session code as usual, but subject to the available tokens in both the originating account purse and the provided purse.
 
-#### Charges & refunds
+#### Charges
 
 (validator-side, execution)
 
-1. Charge the provided purse first.
-
-    a. If no unused reserved gas and sufficient tokens, charge willingness to pay times gas reservation to the provided purse.
-    b. If unused reserved gas and sufficient tokens, charge willingness to pay times used gas, plus willingness to pay times unused gas times refund parameter.
-    
+1. Charge the provided purse first, charging willingness to pay times gas reservation to the provided purse
 2. If the provided purse has insufficient tokens, charge overflow to the originating account purse according to the rule in 1.
 
 ## Drawbacks
@@ -193,6 +182,10 @@ The flexibility of our payment code presents a serious problem in the consensus-
 
 One may observe that the proposed model of the spot gas market is essentially a first-price auction. While we do not currently know the strategic properties of our particular design, results concerning similar auctions suggest that it is not strategy-proof. In other words, users have to bid strategically, instead of merely reporting their *true* willingess to pay. We suspect that this would result in higher price volatility compared to a second-price auction (where charges would be calculated according to the *next user's* willingness to pay, rather than you own), due to user uncertainty about competition from other users. However, a second-price auction was ruled out, because the proposer-gets-all model of transaction fees enables validators to game such an auction by including own deploys in the protoblocks, potentially severely diminishing (or eliminating) consumer surplus.
 
+### Refunds
+
+We have considered giving users partial refunds for the unused gas, to soften the blow of requiring precise gas estimation. However, this change introduces an additional degree of freedom for the users, making it difficult to reason about the properties of the implicit auction. We intend to come back to this issue in future research, and, depending on the findings, possibly reintroduce refunds. An additional consideration in dropping this feature was ease of implementation of full and zero refunds relative to refunds governed by a variable parameter.
+
 ### Account reputation system
 
 We have considered assigning accounts reputation according to their observed ability to pay for deploys, but this was judged to be unworkable because of difficulty in designing reputation update rules that would enable new users to submit deploys, without leaving the platform open an attack by new unfunded accounts, thereby largely defeating the point of a reputation system.
@@ -209,9 +202,9 @@ We have considered executing payment code at proposal time, but judged that bala
 
 Our design is similar to the original ad position auctions used by search engines, before second-price position auctions were found to be preferable due to lower volatility. However, while similar in spirit, our auction ultimately allocates quantities, not positions, so we cannot provided any formal predictions about the properties or performance of our spot market at this time.
 
-### Ethereum pricing
+### Ethereum pricing & knapsack problems
 
-Our design is inspired by Ethereum, but adjusted to the realities of a consensus-before-execution model, primarily to avoid nothing-in-purse attacks.
+Our design is inspired by Ethereum, but adjusted to the realities of a consensus-before-execution model, primarily to avoid nothing-in-purse attacks. The reader might also note that we insist on a rather primitive, greedy solution to the problem of assembling revenue-bearing deploys into a block (i.e., the classic knapsack problem). We use the greedy solution, in lieu of a revenue-maximizing one, for several reasons. First, it is computationally expensive to compute an approximation to the revenue-maximizing solution. Second, even the slight improvement to the greedy algorithm (considering currently included deploys against the first excluded) creates a problem with price formation, since it breaks the logic of the first-price auction. Third, our immediate objective is easy to understand price formation, rather than revenue optimization for the validators.
 
 ## Future possibilities
 
