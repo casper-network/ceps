@@ -31,8 +31,9 @@ Under normal circumstances, the following steps will be performed:
    gets installed to the same location as the current equivalent files.  The location of the `config.toml` can be
    retrieved from the known location used by the `upgrade-bootstrapper` at step 2.  An upgrade file for chainspec
    modifications should also be installed and its path included in the new `config-next.toml`
-5. when the current upgrade activation point is reached and the node has finished all its work in that era, it exits
-   normally with an exit code 0
+5. when the current upgrade activation point is reached (see [the first unresolved question](#unresolved-questions)
+   regarding how the running node will get to know of the activation point) and the node has finished all its work in
+   that era, it exits normally with an exit code 0
 6. the `upgrade-bootstrapper` renames
      * `casper-node-next` to `casper-node` (replaces the old binary)
      * `config.toml` to `config-old.toml`
