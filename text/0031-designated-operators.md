@@ -6,7 +6,7 @@
 
 CEP PR: [casperlabs/ceps#0031](https://github.com/casperlabs/ceps/pull/0031)
 
-We propose that validators be given the capability to designate a public key different from their own to sign messages, thereby enabling validators to outsource their functions to third party operators.
+We propose that validators be given the capability to designate a public key different from their own, corresponding to a private key of an operator designated to sign messages, thereby enabling validators to outsource their functions to third party operators.
 
 ## Motivation
 
@@ -18,7 +18,7 @@ It is expected that many validators will want to rely on third parties to provis
 
 [guide-level-explanation]: #guide-level-explanation
 
-Add an additional field, expecting a public key (or some type wrapping a public key), to the `add_bid` entry point of the auction contract. The supplied public key will be used to sign consensus messages on the validator's behalf and to sign for or identify the validator in all instances required by the protocol proper. The link between the validator and the operator, as well as the history of validator's operator public keys, is to be tracked by the auction contract. Tracking of the pairings between a validator and its operators is intended to enable slashing, distribution of rewards and collection of transaction fees.
+Add an additional field, expecting a public key (or some type wrapping a public key), to the `add_bid` entry point of the auction contract. The supplied public key is expected to be part of a key pair belonging to a third party ("third party" can be the validator itself, if the field is not optional). The corresponding private key will be used to sign consensus messages on the validator's behalf, as well as sign for the validator in any other instances required by the protocol proper (i.e., besides interactions with the auction contract). The link between the validator and the operator, as well as the history of validator's operator public keys, is to be tracked by the auction contract. Tracking of the pairings between a validator and its operators is intended to enable slashing, distribution of rewards and collection of transaction fees.
 
 ## Reference-level explanation
 
