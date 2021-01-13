@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0033](https://github.com/casperlabs/ceps/pull/33)
 
 This is an outline of a plan to allow nodes to rejoin eras that are already in progress, without risking to equivocate.
 
