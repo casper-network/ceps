@@ -42,7 +42,7 @@ The consensus component should:
 
 - Whenever a unit or an endorsement is created, emit a request to storage to store the latest data for the era. The data stored would contain:
     - The hash of the latest unit
-    - The list of hashes of endorsed units
+    - The list of hashes of latest units by each validator endorsed by us
 
 This data should be keyed by the consensus instance ID.
 
@@ -81,9 +81,9 @@ Point 2 makes sure that at least one honest validator has received our unit befo
 
 Point 5 makes sure that we don't try starting from an older unit unless no validator seems able to send it to us.
 
-However, this scheme still has a weakness. It is theoretically possible that we will remove all the older hashes from the list when just a single honest validator confirms its reception, and that this validator will crash right afterwards. In such a case we will still be stuck with just hashes of units that no active honest validator has heard of and that we won't be able to sync. The risk should be significantly lower, though.
+However, this scheme still has an important weakness. If only some of the honest validators knew our unit before they all crashed, and the only ones that still have it are malicious, they could withhold this information, prompting us to start at some earlier point in the history and create a conflicting unit. Then they could reveal our old unit and claim that we equivocated.
 
-The question here is whether the complexity of this alternative is worth the decrease in the risk we would get by using it.
+Because of this risk, we probably shouldn't use this approach and go for the simpler, more secure one.
 
 ### Other alternatives
 
