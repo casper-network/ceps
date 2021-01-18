@@ -33,7 +33,9 @@ For safety, consensus messages from a validator signed with validator's own priv
 ### Cases
 
 Genesis validators - operator specified at platform launch
+
 Entrant (no history as bidder or validator) - optionally supplies operator public key in `add_bid`
+
 Existing bid - changes bid data (by using `add_bid`, similar to adjusting bid token amount) to include an operator public key; platform will expect this operator to sign messages on validator's behalf in a future era where this bid wins
 
 ### Typical timeline
