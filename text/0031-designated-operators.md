@@ -41,13 +41,20 @@ Existing bid - changes bid data (by using `add_bid`, similar to adjusting bid to
 ### Typical timeline
 
 Bid entered by a new entrant B, no operator provided
+
 ... (some blocks are added to the linear chain)
+
 Auction for era N + `auction_delay` takes place, B wins
 ...
-Era N+auction_delay starts, B is a validator, signing own consensus messages with own private key
+
+Era N + `auction_delay` starts, B is a validator, signing own consensus messages with own private key
+
 During era N + `auction_delay`, B calls `add_bid` to supply an operator public key (and possibly add/reduce number of tokens in the bid)
+
 Auction for era N + `auction_delay` + `auction_delay` takes place, B wins again
+
 ...
+
 Era N + `auction_delay` + `auction_delay` starts, B is a validator, but consensus messages are produced and signed by the operator, consensus messages signed by B are ignored
 
 ### Restrictions on designation
