@@ -22,31 +22,28 @@ Under normal circumstances, the following steps will be performed:
 
 1. the `upgrade-bootstrapper` is started
 2. if the path to the node's `config.toml` was provided via an arg, the `upgrade-bootstrapper` writes the path value to
-   a hard-coded, known location (if writing fails, it panics).  Otherwise it reads the path value from the known
-   location.  If the path cannot be read from the known location, it panics
-3. if in the same folder as the `config.toml` there is a `config-old.toml`, the `upgrade-bootstrapper` runs the
+   a hard-coded, known location (if writing fails, it exits with an error).  Otherwise it reads the path value from the
+   known location.  If the path cannot be read from the known location, it exits with an error
+3. if in the same folder as the `config.toml` there is a `config-next.toml`, the `upgrade-bootstrapper` runs the
    `casper-node` in migrate-data mode (see below for further details), passing it the path to `config.toml` and
-   `config-old.toml` as args.  The node performs any migration of stored data and config options required, then exits
-   normally with an exit code 0.  The node should delete `config-old.toml`, but only once the full migration of data and
-   config is complete.
-4. the `upgrade-bootstrapper` then runs the `casper-node` binary in validator mode, passing it the path to its
-   `config.toml` as an arg
-5. while they are running, before the network reaches the upgrade point, the next version of the `casper-node` gets
-   installed, but not run.  The binary is always named `casper-node-next` and its config named `config-next.toml`.  Each
-   gets installed to the same location as the current equivalent files.  The location of the `config.toml` can be
-   retrieved from the known location used by the `upgrade-bootstrapper` at step 2.  An upgrade file for chainspec
-   modifications should also be installed and its path included in the new `config-next.toml`
-6. when the current upgrade activation point is reached (see [the first unresolved question](#unresolved-questions)
-   regarding how the running node will get to know of the activation point) and the node has finished all its work in
-   that era, it exits normally with an exit code 0
-7. the `upgrade-bootstrapper` renames
-     * `casper-node-next` to `casper-node` (replaces the old binary)
-     * `config.toml` to `config-old.toml`
-     * `config-next.toml` to `config.toml`
-8. repeat from step 3
+   `config-next.toml` as args.  The node performs any migration of stored data, then exits normally with an exit code 0.
+4. the `upgrade-bootstrapper` renames `config-next.toml` if it exists to `config.toml` (replaces the old node config)
+5. the `upgrade-bootstrapper` runs the `casper-node` binary in validator mode, passing it the path to its `config.toml`
+   as an arg
+6. while they are running, before the network reaches the upgrade point, the next version of the `casper-node` gets
+   installed, but not automatically run.  The binary is always named `casper-node-next` and its config named
+   `config-next.toml`.  Each gets installed to the same location as the current equivalent files.  The location of the
+   `config.toml` can be retrieved from the known location used by the `upgrade-bootstrapper` at step 2.  An upgrade file
+   for chainspec modifications should also be installed and its path included in the new `config-next.toml`
+7. the user, immediately after installing the new software, performs the config migration.
+8. when the current upgrade activation point is reached (see below for further details on how the running node will get
+   to know of the activation point) and the node has finished all its work in that era, it exits normally with an exit
+   code 0
+9. the `upgrade-bootstrapper` renames `casper-node-next` to `casper-node` (replaces the old binary)
+10. repeat from step 3
 
-Should the child process stop with a non-zero exit code at any stage, the `upgrade-bootstrapper` should itself panic.
-It is up to the user to restart the `upgrade-bootstrapper` manually.
+Should the child process stop with a non-zero exit code at any stage, the `upgrade-bootstrapper` should itself exit with
+an error.  It is up to the user to restart the `upgrade-bootstrapper` manually.
 
 This flow also allows for an installer or user to upgrade the `upgrade-bootstrapper` itself.  The `upgrade-bootstrapper`
 should be able to be killed, replaced and restarted while maintaining the integrity of the flow above.
@@ -61,17 +58,42 @@ location of the `casper-node` binary) we can handle these locations in a similar
 
 [reference-level-explanation]: #reference-level-explanation
 
+### Default locations
+
+The following default locations will be used:
+
+| File                               | Location                                      |
+| :--------------------------------- | :-------------------------------------------- |
+| `casper-node` binary               | `/var/lib/casper/bin/casper-node`             |
+| `upgrade-bootstrapper` binary      | `/var/lib/casper/bin/upgrade-bootstrapper`    |
+| `casper-node` config file          | `/etc/casper/config.toml`                     |
+| `upgrade-bootstrapper` config file | `/etc/casper/upgrade-bootstrappe-config.toml` |
+
 ### Changes to existing `casper-node` (running in validator mode)
 
-We require the following changes to `casper-node`:
+As well as the other changes specified in the sections below, we require the following changes to `casper-node`:
 
-* running in validator mode, when we reach the upgrade activation point, exit gracefully
+* running in validator mode, when we reach the upgrade activation point, exit gracefully.  Specifically, the point at
+  which the node should exit is one minute after it has received a third of finality signatures for the switch block.
+  The one minute delay is to allow the completion of gossiping messages for the benefit of other peers still awaiting
+  the requisite number of finality signatures.  It is an overly simple solution, pending replacement by a more robust
+  and efficient one
 * running in validator mode, if the node starts, joins and finds that it has already reached the upgrade activation
   point, exit gracefully
 * upgrade activation points should be defined in terms of era IDs, not block heights
 * config.toml updated to take the path to the chainspec upgrade file, similar to the `node.chainspec_config_path`
   option.  Alternatively, just remove this option, and require the chainspec, its upgrade file, accounts.csv and the
   config.toml file all to live in the same folder
+* chainspec loader will need to properly support returning an upgraded chainspec
+* initializer reactor will need to support calling the `commit_upgrade` method of contract runtime
+* consider creating an empty block immediately after committing an upgrade, in order to capture the global state hash
+  after possible data-migration but before the global state has been affected by executing any deploys.
+
+### Learning of a new upgrade activation point
+
+For simplicity's sake, the running `casper-node` will try on every era change to read from a file in a known location
+the next upgrade activation point.  This could be the chainspec upgrade file, or a standalone one containing just the
+activation point.
 
 ### Data migration
 
@@ -79,11 +101,14 @@ We require to add a new `migrate-data` subcommand to `casper-node`.  We could pr
 exclusively for data and config migration, but it seems simpler to just make this a subcommand.  Simpler for the
 installer, for the `upgrade-bootstrapper` and simpler to code.
 
+Currently we only require to migrate global state data.  The data held by the storage component can be left untouched
+as it won't be used after a major version protocol upgrade.
+
 Migration of any of the databases needs to take the following approach by iterating each value in the DB and doing:
 
 1. parse as the old type
 1. convert it to the new type
-1. store the new type, possibly under a different key
+1. store the new type, possibly under a different key, or in a new database
 1. if stored under a different key (i.e. it's not just an overwrite), then delete the old value
 
 We need to be able to resume migration in case it's killed while running.  This means we need to ensure that we either
@@ -91,37 +116,31 @@ keep track of our progress by writing to disk after each individual item is succ
 that parsing a new value as an old value fails, or else we ensure that running the conversion step on an
 already-converted item is a no-op.
 
-If data migration is going to take a prohibitively long time to execute, we should look to have the
-`upgrade-bootstrapper` perform _data_ migration only (not config migration) as soon as the installer provides the new
-`casper-node` binary, while the current `casper-node` is still running in validator mode.  However, this might result in
-a doubling or more of the disk space consumed by the databases, since the migrated data cannot be allowed to overwrite
-the existing data while the node is still running as a validator, and _this_ disk consumption might prove to be
-prohibitive.
-
-Data migration would also still need to be executed again once the old `casper-node` stops due to reaching
-the upgrade activation point, since more data will likely have been written to the databases between then and when the
-data migration was previously completed.  Running the `migrate-data` subcommand of the node could be done repeatedly at
-regular intervals to ensure that only a small amount is left to do after the old node binary has stopped.
+Data migration will only be executed once the old `casper-node` stops due to reaching the upgrade activation point, as
+there is no time saving to migrating the trie store prior to that point.
 
 ### Config migration
 
-Migration will also need to handle converting an old config file to a new one.  For this to work, we need to know which
-config values have been modified by the user from their default values.  This requires either default values to be
-provided, hard-coded in the node, or else the `migrate-data` subcommand will need to be passed not just the old and new
-config.toml files, but also a copy of each with their default values set.
+We require to add a new `migrate-config` subcommand to `casper-node`.  Config migration will handle converting an old
+config file to a new one.  For this to work, we need to know which config values have been modified by the user from
+their default values.  This requires either default values to be provided, hard-coded in the node, or else the
+`migrate-data` subcommand will need to be passed not just the old and new config.toml files, but also a copy of each
+with their default values set.
 
 We moved away from hard-coding defaults in the code a while ago, but a challenge to the other approach is ensuring the
 user _copies_ the installed vanilla config rather than renaming or deleting it.  Two possible solutions are:
 1. have the installer create a read-only copy of the default config exclusively for the `upgrade-bootstrapper`'s use,
-   and a separate writable one for the user to modify/copy/move as they wish
+   and a separate writeable one for the user to modify/copy/move as they wish
 1. require that every config value is annotated with a standard comment specifying the default value
+1. `include_str!` the default config.toml to make it available at compile time
 
-It seems like annotating the config file with default values might be somewhat more "normal" and should be fairly simple
-to implement and test.
+It seems like using `include_str!` might be somewhat more "normal" and should be fairly simple to implement and test.
 
 To migrate, the node will identify any modified values in the old config, and apply the same changes to the new config
 if the corresponding new config value has not already been modified by the user.
 
+It is expected that the user will execute this subcommand immediately after a new version is installed, and at least
+before it is required by the new `casper-node` binary.
 
 ### `upgrade-bootstrapper`
 
@@ -131,41 +150,37 @@ if setting up CI is not deemed too onerous.  Ideally its tests shouldn't need to
 the other casper crates.  Hence it makes sense to keep this separate to the rest of the node project.
 
 The `upgrade-bootstrapper` and `casper-node` must both be capable of being restarted, having been stopped or killed at
-any step above, without disrupting this normal flow.  This will require the `upgrade-bootstrapper` to write which step
-its about to perform to the hard-coded known location immediately before performing the step.  On starting, the
-`upgrade-bootstrapper` will try to read this value and jump to that step.  If the value/file is absent, it assumes it's
-a fresh start.
+any step above, without disrupting this normal flow.
+
+### Fast sync
+
+Fast sync should be unaffected by this proposal, assuming we include certain required fields in Block headers
+consistently across all protocol upgrades.  The actual required fields will be specified elsewhere as part of a
+separate design proposal.
 
 
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
-Users lose the ability to override config values via command line.
+1. We don't have the ability to slash across major protocol version upgrades.  This is not a major problem; only
+unsuccessful attempts to disrupt the network will go unpunished.  Successful attempts will be subject to manual slashing
+via social consensus.
+
+1. Users lose the ability to override config values via command line.
 
 
 ## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-1. How to get the upgrade activation point agreed by all validators?
-    * Could include first activation point in chainspec, and all chainspec upgrade files hold the _next_ activation
-      point. (Drawback is that we need to know much further in advance when we want the next activation point to occur)
-    * Once new chainspec upgrade file is installed, `upgrade-bootstrapper` could notify the node about its path (via
-      IPC or TCP listener on loopback).  Nodes could then use consensus to agree the point (could take a long time to
-      get consensus as install times of next version of software could vary widely)
-    * On each era change, `casper-node` could read from a file in a known location the next upgrade activation point.
-      This could be the chainspec upgrade file, or a standalone one containing just the activation point
-
 1. Do we have to keep all chainspec upgrade files, or just the latest?  If just the latest, change the chainspec to not
    hold them in a `Vec`
 
-1. Should we design the `upgrade-bootstrapper` to run migration from the moment it detects that a new version  of
-   `casper-node` has been installed?  This minimises downtime while migration is performed after the old node binary
-   exits and before the new binary starts.
-    * This will make the `upgrade-bootstrapper` slightly more complex, but also more future-proof
-    * We would make the `migrate-data` subcommand accept a flag to indicate whether it's being called while the old
-      node binary is still running.  In this way, for lightweight migrations, the node could choose to do nothing until
-      it's called to migrate data when the old binary has been stopped.  The flag would also indicate that only data and
-      not the config file should be upgraded, although, the old config file would still be needed in order to provide
-      e.g. the path to storage
+
+## Future possibilities
+
+[future-possibilities]: #future-possibilities
+
+We could aim to have the consensus component reach consensus on newly-read upgrade points, and possibly also on the hash
+of the newly-installed casper-node package.
