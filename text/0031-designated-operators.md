@@ -66,7 +66,7 @@ In order to simplify reasoning about validator-operator pair behavior and to pre
 3. Bidder public keys for the upcoming auction, other than that of the designator.
 3. Operator public keys corresponding to validator public keys in categories 1 through 3.
 
-Should a designating deploy specify a "duplicate" public key contained in the categories 1 through 4, the deploy ought to be rejected. Note that we allow for the possibility of designating oneself as the operator, with no changes to current node or consensus behavior.
+Should a designating deploy specify a "duplicate" public key contained in the categories 1 through 4, deploy execution ought to fail. Note that we allow for the possibility of designating oneself as the operator, with no changes to current node or consensus behavior.
 
 ## Drawbacks
 
