@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#35](https://github.com/casperlabs/ceps/pull/35)
 
 This CEP outlines the approach to handling emergency restarts, that is: restarts of the network after catastrophic events like equivocation catastrophes.
 
