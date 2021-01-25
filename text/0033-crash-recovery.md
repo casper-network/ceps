@@ -63,6 +63,8 @@ Any sending of a unit / an endorsement should only happen after the storage requ
 
 Every creation of a unit or an endorsement will now involve storage - however, this seems unavoidable in that we need to store the knowledge of our activity in consensus in some permanent way.
 
+Also, there is a possibility that a node will crash after persisting the hash of a new unit in an era, but before gossiping it - such a situation would render it unable to sync in that era. However, such situations should be unlikely enough to not become a major problem.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
@@ -77,7 +79,7 @@ In order to prevent situations in which we get stuck with a unit hash that no ot
 4. When we rejoin an era and try to sync the state, request the latest unit from the list from other validators.
 5. If no validator has this unit, remove it from the list and try with the next latest one.
 
-Point 2 makes sure that at least one honest validator has received our unit before we remove its ancestors from our list. This way, we should always have at least one hash that corresponds to a unit received by an honest validator.
+Point 3 makes sure that at least one honest validator has received our unit before we remove its ancestors from our list. This way, we should always have at least one hash that corresponds to a unit received by an honest validator.
 
 Point 5 makes sure that we don't try starting from an older unit unless no validator seems able to send it to us.
 
