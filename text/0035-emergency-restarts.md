@@ -49,35 +49,25 @@ On the consensus side, it is important for an era change to happen at the bounda
 
 ### The structure of an upgrade point
 
-Currently, an upgrade point supports defining some new config values. We need it to also be able to specify some transforms that should be applied to the global state. This could be realized in multiple ways:
-
-1. Specifying the modifications as direct key-value pairs to be written to the global state (potentially overwriting the values under existing keys).
-2. Specifying arbitrary WASM to be executed, which would result in the transforms to be applied.
-3. For some special use cases, specifying changes in other ways, eg. support for changes to the validator set to be specified using an `accounts.csv`-like file.
-
-In this CEP, we suggest a combination of options 2 and 3.
+Currently, an upgrade point supports defining some new config values. We need it to also be able to specify some transforms that should be applied to the global state. In order to achieve this goal, it will be made possible for the upgrade points to optionally specify a file containing key-value pairs to be written to the global state (potentially overwriting the values under existing keys).
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-The main thing required is to extend the `components::chainspec_loader::chainspec::UpgradePoint` structure to make it possible to specify arbitrary modifications to the global state.
-
-The best way of doing that is left as an unresolved question. We suggest adding the following two fields:
+The main thing required is to extend the `components::chainspec_loader::chainspec::UpgradePoint` structure to make it possible to specify arbitrary modifications to the global state. This will be achieved by adding a single field:
 
 ```rust
 struct UpgradePoint {
     // ... other fields
-    /// the paths to arbitrary WASM to be executed, in the specified order
-    upgrade_wasm_paths: Vec<String>,
-    /// the path to an `accounts.csv`-like file specifying the new set of validators
-    new_accounts: String,
+    /// The path to the file containing key-value pairs to be written to the global state.
+    state_write_spec: Option<String>,
 }
 ```
 
-These would have to be translated into analogous fields in `execution_engine::core::engine_state::upgrade::UpgradeConfig` (but probably containing the data itself, ie. WASM binary bytes and the contents of `accounts.csv` instead of the paths).
+It would have to be translated into an analogous field in `execution_engine::core::engine_state::upgrade::UpgradeConfig` (but containing the key-value map itself, not the path).
 
-The execution engine would execute the specified WASM and update the accounts and the state of the auction contract as a part of `EngineState::commit_upgrade`.
+The execution engine would execute the specified writes as a part of `EngineState::commit_upgrade`.
 
 The data about activation points would have to be made available to the `BlockExecutor` and the `EraSupervisor`. The BlockExecutor would have to be aware of them in order to request the execution engine to commit the upgrades at the right moments. The EraSupervisor would need this data to properly determine switch blocks.
 
@@ -93,9 +83,20 @@ None at the moment.
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
+### Alternative way of handling restarts
+
 An alternative has been suggested in [CEP 6](https://github.com/CasperLabs/ceps/blob/master/text/0006-equivocation-catastrophes.md). It involved restarting the network as if from scratch, and using the mechanisms created for handling genesis to apply the necessary changes to the global state.
 
 While the genesis already does some of the things we need (like initializing the validator set), it is designed to do that on an empty global state. Modifying the logic there to make it apply to non-empty states as well is a complex task and doesn't gain us anything over just using the upgrades mechanism (which has been introduced exactly for applying arbitrary changes to the global state at specific heights).
+
+### Alternatives for the specification of global state modifications
+
+Instead of specifying the key-value pairs to be written, we could use one of the following approaches, or a combination thereof:
+
+1. Specifying arbitrary WASM to be executed, which would result in the transforms to be applied.
+2. For some special use cases, specifying changes in other ways, eg. support for changes to the validator set to be specified using an `accounts.csv`-like file.
+
+Both of these approaches would indirectly generate a set of writes to the global state. This CEP proposes that taking a more direct approach is preferable, reducing the logic necessary to parse an upgrade point and to apply it correctly - with key-value pairs, the application will consist of just executing a bunch of writes.
 
 ## Prior art
 
@@ -107,7 +108,7 @@ None at the moment.
 
 [unresolved-questions]: #unresolved-questions
 
-- How should the arbitrary transforms to the global state be specified in the chainspec? Is the proposal from this CEP good enough?
+None at the moment.
 
 ## Future possibilities
 
