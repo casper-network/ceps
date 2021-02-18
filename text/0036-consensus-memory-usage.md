@@ -5,7 +5,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0036](https://github.com/casperlabs/ceps/pull/0036)
 
 Drop past eras' protocol states earlier, to use less memory.
 
