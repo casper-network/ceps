@@ -24,9 +24,12 @@ The node also has three possible exit codes: 0, 101 or 102.  0 indicates success
 and 102 indicates the node should be downgraded to a previous version.  These exit codes are read and reacted to by the
 launcher.
 
-On startup, the launcher either tries to read its previously cached state from disk, or assumes a fresh start.  On a
-fresh start, the launcher searches for the lowest installed version of `casper-node` and starts running it in validator
-mode.
+On startup, the launcher either tries to read its previously cached state from disk, or assumes a fresh start.
+Information cached includes which mode of operation the node was executed in, the protocol version, the path to the node
+binary and the path to the config folder.
+
+On a fresh start, the launcher searches for the lowest installed version of `casper-node` and starts running it in
+validator mode.
 
 If the launcher cannot find an appropriate version at any stage of upgrading or downgrading, it exits with an error.
 
