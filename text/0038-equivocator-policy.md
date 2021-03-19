@@ -35,7 +35,17 @@ While suspended, a bonded validator node will not receive transaction fees or se
 
 A special smart contract holds the bonded tokens used for validating. This is the auction contract. It controls bonded validator tokens and tokens delegated to them. We call a bonded validator's account in this smart contract a bid.
 
-To reactivate a bid for a faulty node, a validator must do the following.
+To reactivate a bid for a faulty node, a validator must create a deploy with the following command:
+
+```bash
+casper-client put-deploy \
+    --chain-name <CHAIN NAME> \
+    --node-address http://<HOST:PORT> \
+    --secret-key <PATH TO SECRET KEY> \
+    --session-path <PATH TO activate_bid.wasm> \
+    --session-arg=validator_public_key:"public_key='$(cat <PATH TO PUBLIC KEY HEX>)'" \
+    --payment-amount 10000000
+```
 
 ## Drawbacks
 
