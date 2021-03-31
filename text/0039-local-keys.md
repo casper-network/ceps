@@ -114,7 +114,7 @@ Similar to `write_local,` but emits an `ADD` transformation for a given local ke
 ### list_local
 
 ```rust
-fn list_local() -> Vec<Vec<u8>>;
+fn list_local(uref) -> Vec<Vec<u8>>;
 ```
 
 Lists all key values under a URef.
