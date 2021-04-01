@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0040](https://github.com/casperlabs/ceps/pull/0040)
 
 Remove redundant fields from the Highway block proposal messages.
 
