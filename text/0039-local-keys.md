@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0039](https://github.com/casperlabs/ceps/pull/0039)
 
 This document describes the support for improved local keys, which intends to resolve past problems that lead to their removal. Contract developers will use this to store data in separate keyspace prefixed by the URef address provisioned to a user by the system.
 
