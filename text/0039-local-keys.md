@@ -81,7 +81,7 @@ fn create_local() -> URef;
 
 Host provisions an URef of "unit" type under the hood used internally to store a secondary index of keys. This function's caller should keep the URef mentioned above under account or contract's named keys, retaining his ability to add new data.
 
-Newly created will have a type set to "unit" to hide the implementation details and discourage using "read" or "write" APIs to operate on local keyspace. The host will also secure this possibility on the backend, and inside of these host functions, a particular check will verify and forbid direct operations on `Key::Local` space.
+Newly created will have a type set to "unit" to hide the implementation details and discourage using "read" or "write" APIs to operate on local keyspace. The host will also secure this possibility on the backend, and inside of these host functions, a particular check will verify and forbid direct operations on the `Key::Local` space.
 
 ### read_local
 
@@ -117,7 +117,7 @@ Similar to `write_local,` but emits an `ADD` transformation for a given local ke
 fn list_local(uref) -> Vec<Vec<u8>>;
 ```
 
-Lists all key values under a URef.
+This function lists all keys under a Key::Local referenced by "URef." Internally it reads all the keys from the secondary index and returns them to the caller.
 
 ## Drawbacks
 
@@ -141,8 +141,8 @@ In the past, we used to have `Key::Local,` which we first deprecated and then re
 
 [unresolved-questions]: #unresolved-questions
 
-- What parts of the design do you expect to resolve through the CEP process before this gets merged?
-- What related issues do you consider out of scope for this CEP that could be addressed in the future independently of the solution that comes out of this CEP?
+- How do we name this feature to reflect better what it does? 
+- Does it make sense to make the provisioned URef a unit? Can we use it to store additional information related to the stored data under the local key?
 
 ## Future possibilities
 
