@@ -68,12 +68,12 @@ The actions a node will take on startup, in the order in which they are tested, 
 | :-------------------------------------------------- | :------------------------------------------- | :--------------------------------------- |
 | no blocks in storage, and PV 1.0.0                  | initial run                                  | commit genesis and continue running      |
 | no blocks in storage, and PV not 1.0.0              | invalid initial run                          | exit with code 102 to downgrade          |
-| HB.era + 1 == current AP and HP is switch block     | restart immediately after upgrade            | commit upgrade and continue running      |
-| HB.era + 1 == current AP and HP is not switch block | invalid run - blocks missing from storage    | exit with code 102 to downgrade          |
-| HB.era < current AP                                 | invalid run - blocks missing from storage    | exit with code 102 to downgrade          |
+| HB.era + 1 == current AP and HB is switch block     | restart immediately after upgrade            | commit upgrade and continue running      |
+| HB.era + 1 == current AP and HB is not switch block | invalid run - blocks missing from storage    | exit with code 102 to downgrade          |
+| HB.era + 1 < current AP                             | invalid run - blocks missing from storage    | exit with code 102 to downgrade          |
 | HB.PV != current PV                                 | restart after fork                           | treat as hard-reset and continue running |
 | HB.PV == current PV and no next chainspec available | unplanned shutdown with no scheduled upgrade | continue running                         |
-| HB.era < next AP                                    | unplanned shutdown before scheduled upgrade  | continue running                         |
+| HB.era + 1 < next AP                                | unplanned shutdown before scheduled upgrade  | continue running                         |
 | HB.PV != next PV                                    | missed an upgrade and forked                 | treat as hard-reset and continue running |
 | HB.PV == next PV                                    | running old version                          | exit with code 0 to upgrade              |
 
