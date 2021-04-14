@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0041](https://github.com/casperlabs/ceps/pull/0041)
 
 Modify the internal structure of the block body, so that it will be easy to add new fields to it in the future in a backwards-compatible manner.
 
