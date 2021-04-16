@@ -85,6 +85,8 @@ An alternative allowing us to expand the block format would be to just perform a
 
 The CEP also proposes to keep the old blocks in the old format. An alternative would be to migrate the old database of the block bodies to the new format. However, since block body hashes are immutable, the keys after the migration wouldn't always be the hash of the value stored under that key, which would make checking the integrity of storage much harder, if not impossible.
 
+Another alternative would be not to store partial block bodies at all. For the purposes of preventing replay attacks, we only need to know which deploys were included in past blocks. This information could be stored in the form of a `deploy_hash → block_hash` database. We currently have such a map as an index (so this data is lost on node restart and requires the block body data to be repopulated), and a `deploy_metadata` database that stores the block hash along with execution results - the drawback of the latter is that it only stores entries for _executed_ deploys, and fast sync wouldn't execute past deploys, so this database wouldn't be populated.
+
 ## Prior art
 
 [prior-art]: #prior-art
