@@ -52,8 +52,10 @@ This can be illustrated by the following diagram:
                          /                  \
                    hash(transfer_hashes)     hash_3_______
                                             /             \
-                                         hash(proposer)   hash("")
+                                         hash(proposer)   SENTINEL
 ```
+
+`SENTINEL` is a value that is very improbable to be a valid hash of some data - like, for example, the all-zeros hash (`000000...00`).
 
 So, for example, to securely download only the transfer hashes stored in a block with a known body hash, we will additionaly require only the hash of the deploy hashes list and `hash_3`. This will allow us to calculate `hash_2` and `body_hash`, and to verify that the body hash matches the one we have.
 
@@ -96,14 +98,14 @@ The second is a primitive for hashing slices. This follows the scheme for hashin
 pub fn hash_slice_rfold(slice: &[Digest]) -> Digest {
     slice
         .iter()
-        .rfold(hash(&[]), |prev, next| hash_pair(next, &prev))
+        .rfold(SENTINEL, |prev, next| hash_pair(next, &prev))
 }
 ```
 
 In this case `hash_slice_rfold(&[a, b, c])` effectively expands to:
 
 ```rust
-hash_pair(a, &hash_pair(b, &hash_pair(c, &hash(&[]))))
+hash_pair(a, &hash_pair(b, &hash_pair(c, &SENTINEL)))
 ```
 
 This scheme is suited to simple Merkle proofs and verification.  Hashing with a proof is almost identical to `hash_slice_rfold`.
@@ -121,7 +123,7 @@ The third hashing primitive constructs a [Merkle tree][2]. It is intended for ve
 ```rust
 fn hash_vec_merkle_tree(vec: Vec<Digest>) -> Digest {
     if vec.is_empty() {
-        return hash(&[]);
+        return SENTINEL;
     };
     let mut vec = vec;
     let mut k = vec.len();
@@ -178,7 +180,7 @@ where
     T: ToBytes,
 {
     match maybe_t {
-        None => Ok(hash(&[])),
+        None => Ok(SENTINEL),
         Some(t) => Ok(hash(t.to_bytes()?)),
     }
 }
@@ -241,7 +243,7 @@ impl BlockHeader {
 
         let hashed_era_id = hash(era_id.to_bytes());
         let hashed_era_end = match era_end {
-            None => hash(&[]),
+            None => SENTINEL,
             Some(era_end) => era_end.hash(),
         };        let hashed_height = hash(height.to_bytes());
         let hashed_timestamp =hash(timestamp.to_bytes());
