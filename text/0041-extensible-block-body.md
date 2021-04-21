@@ -12,9 +12,10 @@ This CEP proposes allowing for extensible block headers and bodies.  To achieve 
 
 [motivation]: #motivation
 
-There are two main reasons this will be useful:
-1. The block header and body will representable as content-addressed linked lists. It will be easy to add more fields to them should we ever need them.
+There are three main reasons this will be useful:
+1. The block header and body will be representable as content-addressed linked lists. It will be easy to add more fields to them should we ever need them.
 2. This is important for Fast Sync to be able to securely download only the relevant parts of old blocks, increasing performance.
+3. This will reduce the need for special handling of different versions of block headers and bodies.
 
 ## Guide-level explanation
 
@@ -245,8 +246,9 @@ impl BlockHeader {
         let hashed_era_end = match era_end {
             None => SENTINEL,
             Some(era_end) => era_end.hash(),
-        };        let hashed_height = hash(height.to_bytes());
-        let hashed_timestamp =hash(timestamp.to_bytes());
+        };
+        let hashed_height = hash(height.to_bytes());
+        let hashed_timestamp = hash(timestamp.to_bytes());
         let hashed_protocol_version = hash(protocol_version.to_bytes());
         let hashed_random_bit = hash(random_bit.to_bytes());
 
