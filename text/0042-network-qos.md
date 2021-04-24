@@ -28,7 +28,7 @@ Low ranking peers are also subject to rotation. New connections are still accept
 
 [reference-level-explanation]: #reference-level-explanation
 
-For identification, the a peer includes its validator public key and signs its peer ID, nonced by TLS server/client random. This information is optional, but allows the networking to know that the connection belongs to a particular validator.
+For identification, a peer includes its validator public key and signs its peer ID, nonced by TLS server/client random. This information is optional, but allows the networking to know that the connection belongs to a particular validator.
 
 Consensus (or another component) periodically announces the fingerprints of active and upcoming validators, allowing the networking to rank and allocate bandwidth accordingly.
 
