@@ -51,7 +51,7 @@ Without dynamic bandwidth allocation this will reduce available bandwidth at lig
 * We include 10% margin for overhead from network encoding and TCP/IP, an almost unrealistic best case.
 * We assume a 50mbit connection (10 mbit is too small, but 100mbit across the world seems hard to guarantee).
 
-This results in a bandwidth requirement of $\frac{2800\cdot32\cdot100\cdot1.1\cdot22}{1024^2\cdot8} \approx 3.4 [\textrm{mbit}]$ for just transferring hashes and consensus, 100 KB transferred per validator. We divide by 150 slots and can transfer roughly 2.5 megabytes of additional bulk data per peer to cover gossip, address and protocol overhead, as well as bulk data sent directly. We are relying on gossiping to spread the load here, or the network will slow down.
+This results in a bandwidth requirement of `2800 * 32 * 100 * 1.1 / (1024**2 * 8) ≈ 3.4` mbit for just transferring hashes and consensus, 100 KB transferred per validator. We divide by 150 slots and can transfer roughly 2.5 megabytes of additional bulk data per peer to cover gossip, address and protocol overhead, as well as bulk data sent directly. We are relying on gossiping to spread the load here, or the network will slow down.
 
 ## Unresolved questions
 
