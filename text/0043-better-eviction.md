@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0043](https://github.com/casperlabs/ceps/pull/0043)
 
 Exclude validators that equivocated or were inactive in one era from all future eras,
 even before the `auction_delay`.
