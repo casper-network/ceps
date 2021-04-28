@@ -94,6 +94,9 @@ This means the Highway instance has to keep track of both the original validator
 with the banned validators removed, and use the first one only for the first step in the proposer
 assignment.
 
+Finally, the modified weights (with the banned validators set to 0) also need to be applied outside
+of Highway, wherever we count a block's finality signatures.
+
 
 ## Drawbacks
 
