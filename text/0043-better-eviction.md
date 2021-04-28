@@ -65,16 +65,27 @@ They only lose some of their own slots.
 
 The first change to the protocol is that in addition to the equivocators, anyone who was reported
 as inactive in a switch block since the auction is marked as banned as well, when a new era is
-initialized. We will apply this only the the past `auction_delay` eras: If someone exhibited a fault
+initialized. We will apply this only to the past `auction_delay` eras: If someone exhibited a fault
 earlier than that, the auction contract will already have removed them.
 
 The second change is a modification of the proposer slot assignment:
-* We currently add (wrapping, as addition of two unsigned 64-bit integers) the era's seed to the
+1. We currently add (wrapping, as addition of two unsigned 64-bit integers) the era's seed to the
   slot's timestamp and seed a
   [ChaCha PRNG](https://docs.rs/rand_chacha/0.3.0/rand_chacha/struct.ChaCha8Rng.html)
   with the result, then apply it to select a validator, weighted by their stakes.
-* Now, if the result is a banned validator, we use the same seed, but select a different validator,
+2. Now, if the result is a banned validator, we use the same seed, but select a different validator,
   choosing only among the non-banned ones, weighted by only _their_ stakes.
+
+**Example**: Alice, Bob and Carol have stakes 4, 3 and 5, respectively. However, Bob got banned.
+We want to compute the proposer for round 42.
+In step 1, we do the computation as if Bob were still taking part: We generate a random number
+between 0 and 11, where 0, 1, 2, 3 would assign the slot to Alice, 4, 5, 6 to Bob and
+7, 8, 9, 10, 11 to Carol. We initialize the PRNG with the era's random seed plus the round
+number 42, roll the dice… and it's 6: The round would go to Bob.
+In step 2, we realize that Bob is banned, so we now have to reassign the slot. This time, we
+generate a random number between 0 and 8, where 0, 1, 2, 3 means Alice and 4, 5, 6, 7, 8 means
+Carol. We apply the PRNG again: This time it's 5 and the slot goes to Carol.
+She is this round's proposer.
 
 Thirdly, we remove the banned validators' weights from the total weight for the purpose of fork
 choice and finality detection: Apart from the proposer selection, the protocol behaves as if the
@@ -100,6 +111,19 @@ It would be simpler to just remove the banned validators altogether and just app
 new weight map. However, that would reassign most slots, even those belonging to honest validators.
 So an attacker with k nodes could choose among 2<sup>k</sup> different sequences by making any
 subset of them misbehave. It is safer to only reassign their own slots.
+
+**Example**: Eve controls 20 cheap (low stake and/or much of it delegated) validator nodes that all
+win the auction at the end of era 5. She also happens to be able to propose the last block of era 6,
+with another validator node. Choosing the random bit in that block allows her to choose among two
+seeds, and thus among two proposer sequences, for era 7.
+However, if we went with the simple approach, she could now also decide to equivocate with any
+subset of her 20 cheap nodes, and thus modify the validator set for era 7. This would allow her to
+choose among 2 · 2<sup>20</sup> different seeds, i.e. select one of about two million different
+proposer sequences. That gives her a greater chance of finding a sequence where she has a
+disproportionate number of slots.
+
+This is a rather expensive attack, of course, and the benefits don't seem to be that great, but it
+still seems safer to defend against it by only reassigning the banned nodes' slots.
 
 
 ## Prior art
