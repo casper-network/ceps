@@ -20,11 +20,11 @@ they become active.
 The node has two relevant modes of operation: "validator mode", and "migrate-data mode".  The normal mode is validator.
 The migrate-data mode is used immediately after an upgrade to migrate any data stored on disk as required.
 
-The node also has three possible exit codes: 0, 101 or 102.  0 indicates success, 101 indicates an error (e.g. a panic)
+The `casper-node` can emit three possible exit codes: 0, 101 or 102.  0 indicates success, 101 indicates an error (e.g. a panic)
 and 102 indicates the node should be downgraded to a previous version.  These exit codes are read and reacted to by the
-launcher.
+`casper-node-launcher`.
 
-On startup, the launcher either tries to read its previously cached state from disk, or assumes a fresh start.
+On startup, the `casper-node-launcher` either tries to read its previously cached state from disk, or assumes a fresh start.
 Information cached includes which mode of operation the node was executed in, the protocol version, the path to the node
 binary and the path to the config folder.
 
@@ -38,13 +38,13 @@ If the launcher cannot find an appropriate version at any stage of upgrading or 
 
 [reference-level-explanation]: #reference-level-explanation
 
-### casper-node-launcher
+### `casper-node-launcher`
 
 The following describes the control flow in the launcher:
 
 ![control flow in the launcher](images/0037/casper-launcher-flow.png "control flow in the launcher")
 
-### casper-node
+### `casper-node`
 
 On startup, the node needs to decide what action to take depending upon whether it is an initial run (without fast sync
 this will always be treated as running from genesis), a restart after an upgrade, or a restart after an unexpected
@@ -86,7 +86,7 @@ at the end of the era immediately before that activation point.
 
 [drawbacks]: #drawbacks
 
-1. We don't have the ability to slash across major protocol version upgrades.  This is not a major problem; only
+  - We don't have the ability to slash across major protocol version upgrades.  This is not a major problem; only
 unsuccessful attempts to disrupt the network will go unpunished.  Successful attempts will be subject to manual slashing
 via social consensus.
 
