@@ -95,7 +95,12 @@ with the banned validators removed, and use the first one only for the first ste
 assignment.
 
 Finally, the modified weights (with the banned validators set to 0) also need to be applied outside
-of Highway, wherever we count a block's finality signatures.
+of Highway, wherever we count a block's finality signatures. Any clients that validate blocks should
+use the modified weights as well.
+That suggests it would be best to put the _modified_ weights into the block header, instead of the
+original ones, or at least include all the information in every single switch block header that is
+required to compute them. The original weights would still need to be communicated to the Highway
+instance on initialization.
 
 
 ## Drawbacks
@@ -119,7 +124,8 @@ finality signatures and we don't have to keep track of two different sets of val
 The downside is that the faulty validators still count towards the fault tolerance threshold for the
 duration of one `auction_delay`, so the network would still cease to be live if e.g. 20% started
 being inactive in era 4, and then a further 20% started being inactive in era 5. With the full
-implementation of this CEP, such a situation would be tolerated.
+implementation of this CEP, such a situation would be tolerated. On the other hand, if they come
+back up, at least the first 20% now have a chance to save the day.
 
 In either case, this can be implemented as a first step, and the full implementation can be done
 separately later.
