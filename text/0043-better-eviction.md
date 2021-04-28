@@ -31,7 +31,7 @@ before the new era's beginning, can choose only among eight different seeds, whi
 all likely to be fair. If they could still e.g. reduce two bids with a million tokens each, they
 could choose among a trillion different proposer sequences. Similarly, if an attacker has k
 validator nodes and could remove themselves by letting any subset of nodes exhibit a fault,
-they could choose among 2<sup>k</sup> leader sequences, even if those k nodes' stakes are small.
+they could choose among 2<sup>k</sup> proposer sequences, even if those k nodes' stakes are small.
 
 We propose a safe way to effectively ignore faulty validators anyway, even if the fault happened
 after the auction, making it easier for the network to remain live without them.
@@ -109,6 +109,23 @@ However, we believe the approach is intuitive and straightforward.
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
+
+### Only modify the proposer sequence, but still count faulty validators' weights
+
+An alternative is to implement only part of this CEP: Only exclude banned validators from the
+proposer sequence, but don't set their weights to 0. This would be easier because it doesn't affect
+finality signatures and we don't have to keep track of two different sets of validators.
+
+The downside is that the faulty validators still count towards the fault tolerance threshold for the
+duration of one `auction_delay`, so the network would still cease to be live if e.g. 20% started
+being inactive in era 4, and then a further 20% started being inactive in era 5. With the full
+implementation of this CEP, such a situation would be tolerated.
+
+In either case, this can be implemented as a first step, and the full implementation can be done
+separately later.
+
+
+### Excluding faulty validators as if they hadn't won the auction
 
 It would be simpler to just remove the banned validators altogether and just apply the PRNG to the
 new weight map. However, that would reassign most slots, even those belonging to honest validators.
