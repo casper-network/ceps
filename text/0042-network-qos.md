@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0042](https://github.com/casperlabs/ceps/pull/0000)
 
 Introduce quality-of-service mechanisms for outgoing traffic to guarantee bandwidth for consensus.
 
