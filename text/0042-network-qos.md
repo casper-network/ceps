@@ -18,9 +18,9 @@ With a network growing in size, we want to guarantee that non-essential traffic 
 
 [guide-level-explanation]: #guide-level-explanation
 
-We are splitting the available upstream bandwidth (50 mbit, see below for estimates on these numbers) into equal-sized substreams, at least 1.5X the number of validator slots.
+We are splitting the available upstream bandwidth (50 mbit, see below for estimates on these numbers) into two substreams, one for priority (validator) traffic and one for the reminder.
 
-Every peer receives a score based on whether they are a validator (high), about to become a validator (medium) or neither (low). Peers are given guaranteed bandwidth from each according to their rank, peers scoring too low are disconnected.
+Every peer receives a score based on whether they are a validator (high), about to become a validator (medium) or neither (low). Peers are given guaranteed bandwidth from each according to their rank, peers scoring too low maybe also be disconnected.
 
 Low ranking peers are also subject to rotation. New connections are still accepted and connecting higher ranks may evict lower ranks.
 
@@ -32,7 +32,7 @@ For identification, a peer includes its validator public key and signs its peer 
 
 Consensus (or another component) periodically announces the fingerprints of active and upcoming validators, allowing the networking to rank and allocate bandwidth accordingly.
 
-Total bandwidth is configured by the node operator and divided into 0.33 mbit slots. When the ranking changes, some clients may become evicted/disconnected. Lower ranks should periodically be cycled as well.
+Total bandwidth is configured by the node operator and divided into configurable slots. When the ranking changes, some clients may become evicted/disconnected. Lower ranks should periodically be cycled as well.
 
 ## Drawbacks
 
@@ -43,15 +43,6 @@ Without dynamic bandwidth allocation this will reduce available bandwidth at lig
 ## Prior art
 
 [prior-art]: #prior-art
-
-### Bandwidth estimates
-
-* Full blocks at 100 validators result in having to send roughly 2800 hashes at 32 bytes to each, in 33% of the round time.
-* A round is 64 seconds, leaving ~ 22 seconds for this process.
-* We include 10% margin for overhead from network encoding and TCP/IP, an almost unrealistic best case.
-* We assume a 50mbit connection (10 mbit is too small, but 100mbit across the world seems hard to guarantee).
-
-This results in a bandwidth requirement of `2800 * 32 * 100 * 1.1 / (1024**2 * 8) ≈ 3.4` mbit for just transferring hashes and consensus, 100 KB transferred per validator. We divide by 150 slots and can transfer roughly 2.5 megabytes of additional bulk data per peer to cover gossip, address and protocol overhead, as well as bulk data sent directly. We are relying on gossiping to spread the load here, or the network will slow down.
 
 ## Unresolved questions
 
