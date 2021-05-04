@@ -6,8 +6,9 @@
 
 CEP PR: [casperlabs/ceps#0043](https://github.com/casperlabs/ceps/pull/0043)
 
-Exclude validators that equivocated or were inactive in one era from proposing blocks in all future
-eras, even before the `auction_delay`.
+Exclude validators that equivocated in one era from proposing blocks in all future eras, even
+before the `auction_delay`, and exclude validators that were inactive in one era from proposing
+blocks in the next.
 
 
 ## Motivation
@@ -48,8 +49,7 @@ validator weights.
 
 If after the auction a validator equivocates, it is still set to `Banned` status when the era is
 initialized. These banned validators are now excluded from the proposer sequence. In addition, we
-also exclude validators that were inactive in a recent era. I.e. whenever we know that a validator
-is about to be evicted, we exclude them.
+also exclude validators that were inactive in the previous era.
 
 Now the actual proposer sequence is modified:
 * If the proposer computation with the original set of weights returns a validator that was not
