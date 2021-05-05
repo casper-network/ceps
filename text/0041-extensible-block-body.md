@@ -56,7 +56,7 @@ This can be illustrated by the following diagram:
                                          hash(proposer)   SENTINEL1
 ```
 
-`SENTINEL1` is a value that is very improbable to be a valid hash of some data - like, for example, the all-zeros hash (`111111...11`).
+`SENTINEL1` is a value that is very improbable to be a valid hash of some data - like, for example, the all-ones hash (`0x010101...01`).
 
 So, for example, to securely download only the transfer hashes stored in a block with a known body hash, we will additionaly require only the hash of the deploy hashes list and `hash_3`. This will allow us to calculate `hash_2` and `body_hash`, and to verify that the body hash matches the one we have.
 
