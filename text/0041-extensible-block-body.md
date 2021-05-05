@@ -53,10 +53,10 @@ This can be illustrated by the following diagram:
                          /                  \
                    hash(transfer_hashes)     hash_3_______
                                             /             \
-                                         hash(proposer)   SENTINEL
+                                         hash(proposer)   SENTINEL1
 ```
 
-`SENTINEL` is a value that is very improbable to be a valid hash of some data - like, for example, the all-zeros hash (`000000...00`).
+`SENTINEL1` is a value that is very improbable to be a valid hash of some data - like, for example, the all-zeros hash (`111111...11`).
 
 So, for example, to securely download only the transfer hashes stored in a block with a known body hash, we will additionaly require only the hash of the deploy hashes list and `hash_3`. This will allow us to calculate `hash_2` and `body_hash`, and to verify that the body hash matches the one we have.
 
@@ -105,7 +105,7 @@ pub fn hash_slice_rfold(slice: &[Digest]) -> Digest {
 }
 ```
 
-Note we choose `SENTINEL0` for this primitive. Other primitives will use different sentinels. This is intended to help with debugging.
+Note we choose `SENTINEL1` for this primitive. Other primitives will use different sentinels. This is intended to help with debugging.
 
 In this case `hash_slice_rfold(&[a, b, c])` effectively expands to:
 
@@ -189,7 +189,7 @@ where
 }
 ```
 
-Hashing an option is similar.  Once again the sentinel hash `hash(&[])` is used to denote absence.
+Hashing an option is similar.  Here `SENTINEL0` is used to denote absence.
 
 ```rust
 pub const SENTINEL0: Digest = Digest([0; 32]);
