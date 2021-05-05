@@ -93,20 +93,24 @@ pub fn hash_pair(hash1: &Digest, hash2: &Digest) -> Digest {
 }
 ```
 
-The second is a primitive for hashing slices. This follows the scheme for hashing a `BlockBody` described in the previous section. It is intended for hashing vectors where we care about order.  This is suited to hashing extendable data structures. It uses a [right fold][1].
+The second is a primitive for hashing slices. This follows the scheme for hashing a `BlockBody` described in the previous section. It is intended for hashing vectors where we care about order.  This is suited to hashing extendable data structures. It uses a [right fold][wikipedia_fold]. It may be implemented using the [`rfold`][rfold] method defined in the rust standard library.
 
 ```rust
+pub const SENTINEL1: Digest = Digest([1; 32]);
+
 pub fn hash_slice_rfold(slice: &[Digest]) -> Digest {
     slice
         .iter()
-        .rfold(SENTINEL, |prev, next| hash_pair(next, &prev))
+        .rfold(SENTINEL1, |prev, next| hash_pair(next, &prev))
 }
 ```
+
+Note we choose `SENTINEL0` for this primitive. Other primitives will use different sentinels. This is intended to help with debugging.
 
 In this case `hash_slice_rfold(&[a, b, c])` effectively expands to:
 
 ```rust
-hash_pair(a, &hash_pair(b, &hash_pair(c, &SENTINEL)))
+hash_pair(a, &hash_pair(b, &hash_pair(c, &SENTINEL1)))
 ```
 
 This scheme is suited to simple Merkle proofs and verification.  Hashing with a proof is almost identical to `hash_slice_rfold`.
@@ -119,12 +123,14 @@ fn hash_slice_with_proof(slice: &[Digest], proof: Digest) -> Digest {
 }
 ```
 
-The third hashing primitive constructs a [Merkle tree][2]. It is intended for vectors where we do not care about order. The `deploy_hashes` field of `BlockBody` as previously discussed is an example.  When handed an empty list the procedure returns the sentinel `hash(&[])`.
+The third hashing primitive constructs a [Merkle tree][wikipedia_merkle_tree]. It is intended for vectors where we do not care about order. The `deploy_hashes` field of `BlockBody` as previously discussed is an example.  When handed an empty list the procedure returns the sentinel `hash(&[])`.
 
 ```rust
+pub const SENTINEL2: Digest = Digest([2; 32]);
+
 fn hash_vec_merkle_tree(vec: Vec<Digest>) -> Digest {
     if vec.is_empty() {
-        return SENTINEL;
+        return SENTINEL2;
     };
     let mut vec = vec;
     let mut k = vec.len();
@@ -143,7 +149,7 @@ fn hash_vec_merkle_tree(vec: Vec<Digest>) -> Digest {
 }
 ```
 
-The procedure is akin to [graph reduction][3]. The procedure would hash `vec![a, b, c, d, e, f]` as follows:
+The procedure is akin to [graph reduction][wikipedia_graph_reduction]. The procedure would hash `vec![a, b, c, d, e, f]` as follows:
 
 ```
 a b c d e f
@@ -157,7 +163,17 @@ j   k
 l
 ```
 
-Based on `hash_vec_merkle_tree`, we can give a procedure for hashing `BTreeMap`s. This procedure uses the `ToBytes` trait to abstract away they keys and values of the map.
+Using the [`itertools`][itertools], the above may be written concisely with [`tree_fold1`][tree_fold1]:
+
+```rust
+fn hash_vec_merkle_tree(vec: Vec<Digest>) -> Digest {
+    vec.into_iter()
+        .tree_fold1(|x, y| hash_pair(&x, &y))
+        .unwrap_or(SENTINEL2)
+}
+```
+
+Based on `hash_vec_merkle_tree`, we can give a procedure for hashing `BTreeMap`s. This procedure uses the `ToBytes` trait to abstract away the keys and values of the map.
 
 ```rust
 fn hash_btree_map<K, V>(btree_map: &BTreeMap<K, V>) -> Result<Digest, bytesrepr::Error>
@@ -176,20 +192,25 @@ where
 Hashing an option is similar.  Once again the sentinel hash `hash(&[])` is used to denote absence.
 
 ```rust
+pub const SENTINEL0: Digest = Digest([0; 32]);
+
 fn hash_option<T>(maybe_t: Option<T>) -> Result<Digest, bytesrepr::Error>
 where
     T: ToBytes,
 {
     match maybe_t {
-        None => Ok(SENTINEL),
+        None => Ok(SENTINEL0),
         Some(t) => Ok(hash(t.to_bytes()?)),
     }
 }
 ```
 
-[1]: https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds
-[2]: https://en.wikipedia.org/wiki/Merkle_tree
-[3]: https://en.wikipedia.org/wiki/Graph_reduction
+[wikipedia_fold]: https://en.wikipedia.org/wiki/Fold_(higher-order_function)#Linear_folds
+[rfold]: https://doc.rust-lang.org/std/iter/trait.DoubleEndedIterator.html#method.rfold
+[wikipedia_merkle_tree]: https://en.wikipedia.org/wiki/Merkle_tree
+[wikipedia_graph_reduction]: https://en.wikipedia.org/wiki/Graph_reduction
+[itertools]: https://docs.rs/itertools/latest/itertools/
+[tree_fold1]:https://docs.rs/itertools/latest/itertools/trait.Itertools.html#method.tree_fold1
 
 ### Prototype Rust Data-Structure Hashing Methods
 
