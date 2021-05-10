@@ -88,6 +88,13 @@ generate a random number between 0 and 8, where 0, 1, 2, 3 means Alice and 4, 5,
 Carol. We apply the PRNG again: This time it's 5 and the slot goes to Carol.
 She is this round's proposer.
 
+Thirdly, it doesn't make sense to start an era where _everyone_ is excluded.
+So:
+* If at the beginning of an era, everyone with nonzero weight is banned, un-ban
+  all validators.
+* Otherwise if everyone with nonzero weight is excluded from proposing blocks,
+  un-exclude all non-banned validators.
+
 [1]: https://docs.rs/rand_chacha/0.3.0/rand_chacha/struct.ChaCha8Rng.html
 
 
