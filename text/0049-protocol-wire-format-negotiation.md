@@ -30,7 +30,7 @@ Nodes send the following fields in the handshake:
 * protocol version (version 1.1.0 and up)
 * consensus certificate (see [CEP42](0042-network-qos.md))
 
-With the implementation of this CEP, a **fifth** field is added, containing a list of supported wire format versions, an encoded `Set<u8>`, with a default of `[1]`.
+With the implementation of this CEP, an implicit wire protocol version is selected based on the protocol version field.
 
 The wire format determines
 
@@ -38,7 +38,7 @@ The wire format determines
 * the framing, and
 * the serialization format.
 
-The underlying transport layer of TLS over TCP/IP is unaffected by this change. The existing wire format is specified to be version `1`. The handshake will always be transferred using wire format `1`.
+The underlying transport layer of TLS over TCP/IP is unaffected by this change. The existing wire format is specified to be version `1`, used for protocol version <= `1.3.0`. The handshake will always be transferred using wire format `1`.
 
 After the handshake has been completed, nodes select the highest commonly understood wire format and change the format, if necessary.
 
