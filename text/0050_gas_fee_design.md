@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0050](https://github.com/casperlabs/ceps/pull/0050)
 
 This CEP proposes a framework for gas fee design. The framework aims to provide economic rationale and conceptual tractability.
 
