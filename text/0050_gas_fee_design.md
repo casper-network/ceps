@@ -77,6 +77,8 @@ The alternative is to add adjustments to the status quo (Ethereum model), which 
 
 The current Ethereum gas fee involves a first-price auction. The rationale is to promote the most valuable transaction under congestion. It's challenging for the average users to solve the auction problem and the timely auction is bad for cost stability. Therefore, Ehtereum proposes to transit to [EIP-1559](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md) that has three components, a base fee, a tip and a fee cap. The formula is (a bit) ad hoc. The implementation is scheduled for July, so the effect is unknown for now.
 
+On the other hand, to keep storage low, Ethereum introduced gas refund for storage deletion. However, the refund mechanism actually increased the network storage, due to the speculation on gas fee. The proposal suggests that conditioning gas fee on the account storage is a simple and intuitive solution to keep storage low. The key idea is to keep the user decision static (current fee depends on current storage) instead of intertemporal (future fee affects today's storage).
+
 
 ## Unresolved questions
 
