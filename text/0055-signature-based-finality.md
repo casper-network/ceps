@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/55)
+CEP PR: [casperlabs/ceps#0055](https://github.com/casperlabs/ceps/pull/55)
 
 This document is a follow-up to [a point in CEP 36](https://github.com/casper-network/ceps/blob/master/text/0036-consensus-memory-usage.md#finality-is-determined-by-finality-signatures-only), specifying the details of how block finality based on signatures should be implemented.
 
