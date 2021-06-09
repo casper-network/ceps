@@ -53,8 +53,8 @@ work on hexadecimal strings.
 ### Converting Bytes to Nibbles
 
 The encoding procedure relies a helper function which converts bytes
-to nibbles. As mentioned in the [guide-level explanation](#guide-level-explanation), nibbles are 4-bit chunks. They
-correspond to hexadecimal digits.
+to nibbles. As mentioned in the [guide-level explanation](#guide-level-explanation), 
+nibbles are 4-bit chunks. They correspond to hexadecimal digits.
 
 ```rust
 fn bytes_to_nibbles(bytes: &[u8]) -> Vec<u8> {
