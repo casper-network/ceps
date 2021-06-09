@@ -1,4 +1,4 @@
-# Synchronizer Redesign and Sequence Number-based Dependencies
+# Synchronizer Redesign
 
 ## Summary
 
