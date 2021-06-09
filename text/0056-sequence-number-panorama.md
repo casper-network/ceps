@@ -38,6 +38,9 @@ In the current implementation, `u` contains a _panorama_, which is a list contai
 We propose replacing the hash with the _sequence number_ instead, i.e. the number of earlier units by the same validator.
 If Alice has created units `a0`, `a1` and `a2` so far, and Bob wants to cite `a2`, instead of its hash, he will now write `2` in the panorama of his unit.
 
+In the presence of equivocations the sequence number does not always uniquely specify a unit.
+So whenever we cannot reconstruct the hash-based panorama, we fall back to requesting it from the sender.
+
 [Panorama]: https://github.com/casper-network/casper-node/blob/b56c29cc97e86ead8d36dfdb2d41a8ecb1dffce9/node/src/components/consensus/highway_core/state/panorama.rs#L25
 
 
@@ -75,7 +78,7 @@ enum ObservationSeqNum {
 ```
 
 `None` means that we haven't seen any unit from that validator yet, `Faulty` means they have equivocated.
-`Correct(n)` is the direct citation of the validator's `1 + n`-th unit.
+`Correct(n)` is the direct citation of the validator's unit with sequence number `n`.
 
 Upon receiving a unit, we request all missing dependencies from the sender.
 This is now a bit more complicated than before, since we cannot request all units by hash anymore:
