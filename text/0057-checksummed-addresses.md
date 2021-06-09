@@ -58,17 +58,12 @@ correspond to hexadecimal digits.
 
 ```rust
 fn bytes_to_nibbles(bytes: &[u8]) -> Vec<u8> {
-  let output_nibble_count = bytes.len() * 2;
-  let mut output_nibbles = Vec::with_capacity(output_nibble_count);
-  for i in 0..output_nibble_count {
-    let byte_value = bytes[i / 2];
-    let nibble = byte_value
-            .checked_shr((((i + 1) % 2) * 4) as u32)
-            .unwrap_or(0)
-            & 0xf;
-    output_nibbles.push(nibble);
-  }
-  output_nibbles
+    let mut output_nibbles = Vec::with_capacity(bytes.len() * 2);
+    for b in bytes {
+        output_nibbles.push(b >> 4);
+        output_nibbles.push(b & 0x0f);
+    }
+    output_nibbles
 }
 ```
 
