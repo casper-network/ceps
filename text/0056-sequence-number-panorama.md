@@ -33,7 +33,7 @@ If `u → v → w` that means the creator of `u` must also have known about `w`,
 We write `u > v` if `v` is reachable from `u` by following any number of arrows.
 
 In particular, the actual message `u` that gets sent over the wire does not need to _directly_ cite every `v < u`.
-In the current implementation, `u` contains a _panorama_, which is a list containing for each (honest) validator the hash of the latest `v < u` created by that validator.
+In the current implementation, `u` contains a _panorama_, which is a list containing for each (non-faulty) validator the hash of the latest `v < u` created by that validator.
 
 We propose replacing the hash with the _sequence number_ instead, i.e. the number of earlier units by the same validator.
 If Alice has created units `a0`, `a1` and `a2` so far, and Bob wants to cite `a2`, instead of its hash, he will now write `2` in the panorama of his unit.
