@@ -27,10 +27,6 @@ The synchronizer's job is to decide when to request dependencies, and from which
 
 The current implementation started off as a naive way of doing this, and has received some isolated improvements, but still makes redundant requests sometimes and is not as efficient as it could be.
 
-Also, the protocol overhead and even its asymptotic best-case complexity could be reduced considerably by replacing the panoramas — the lists of validators' latest unit hashes in each unit — with compressed lists of unit sequence numbers and a single checksum. Using sequence numbers instead of hashes changes the synchronizer logic considerably. This idea is based on section A.3 of [_Aleph: Efficient Atomic Broadcast in Asynchronous Networks with Byzantine Nodes_][Aleph].
-
-[Aleph]: https://arxiv.org/pdf/1908.05156.pdf
-
 
 ## Guide-level explanation
 
@@ -68,19 +64,6 @@ We add new parameters to the Highway config:
 * `max_pending_endorsements: u64` — The maximum number of pending endorsements that are kept in the synchronizer.
 
 The `pending_vertex_timeout` and `max_requests_for_vertex` options are deprecated.
-
-
-### Use sequence numbers in the unit wire format
-
-Currently the panorama of a unit `u` — the set of other units or evidence it depends on — is specified as a list, with one entry for each validator, containing either the hash of that validators' latest unit that `u` depends on, or `None` if no units by that validators were known to the creator of `u`, or `Faulty` if they have evidence for malicious behavior of that validator. Since that involves a hash and an enum discriminator it usually means 33 bytes per entry.
-
-Using the 64-bit sequence number instead of the hash would reduce that to 9 bytes per entry. However, if a validator equivocates, the sequence number does not uniquely specify the unit anymore, so we need to add the XOR of the actual hashes as a checksum, and if it doesn't match, the recipient of the unit would ask for the full panorama (with the hashes).
-
-If instead of the sequence numbers themselves we use _differences_ of sequence numbers, those will tend to be small; in fact, they will usually be 1. We'd still need a special value for `Faulty`, but `None` could be considered to be `-1`. That would make the panorama much more compressible.
-
-We will still explicitly include the hash of the creator's previous message, though, so that we can always verify that we are applying the diff to the right panorama.
-
-This CEP does not yet introduce the actual compression, but it needs to be compatible with it, so it can be added in the future. That means panoramas will already consist of sequence number differences.
 
 
 ### Events handled by the synchronizer
@@ -187,15 +170,6 @@ But we also know that the existing synchronizer can potentially stall for a long
 We could try to find other synchronization methods in the scientific literature, and potentially improve the design before implementing.
 
 A lot of our design is rather specific to Highway, though, and the design choices seem relatively straightforward.
-
-
-### Keep the hash-based panorama and remove redundancies
-
-The sequence number difference-based panorama adds a lot of complexity to the implementation.
-
-Another way to reduce panorama sizes would be to omit all redundant citations from the wire format: If we cite units `a` and `b`, but `a` already cites `b`, then our explicit inclusion of `b`'s hash is redundant.
-
-This would considerably compress confirmation units. However, witness and proposal units tend to contain very few redundant citations. Addressing that would likely involve a change in the schedule for sending messages (e.g. only one bunch of units per round, but then finalization would require two honest leaders in a row).
 
 
 ## Future possibilities
