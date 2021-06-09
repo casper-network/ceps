@@ -149,7 +149,7 @@ optional checksum fields are appropriate.
 
 [prior-art]: #prior-art
 
-As discussed, this work simply generalized [EIP-55][1].
+As discussed, this work generalizes [EIP-55][1].
 
 [1]: https://eips.ethereum.org/EIPS/eip-55
 
