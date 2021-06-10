@@ -39,22 +39,26 @@ In order to only consider fully signed blocks as finalized, we'll have to change
 3. Contract runtime executes the block and announces a `Block`.
 4. In response to the announcement, linear chain component caches the block, and consensus creates a finality signature.
 5. Linear chain stores the signature and gossips it. It also receives signatures sent over the network.
-6. Once the linear chain gathers enough signatures for the block, it considers it finalized.
+6. Once the linear chain collects enough signatures for the block, it considers it finalized.
     - If the block is unknown yet, it requests the block from the sender of the last signature.
-    - If the block is known, but it isn't the immediate descendant of the highest block so far, it requests the range of blocks from the immediate descendant of the highest block to the just finalized block.
+    - If the block is known, but it isn't the immediate descendant of the highest block stored so far, it requests the range of blocks from the immediate descendant of the highest block to the just finalized block.
     - If the block is known and it is the immediate descendant of the highest block so far, it adds the block to the chain as the new highest block.
 
+Note: with this process, if a block is stored in the linear chain, it also implies that it is known (that is, we know not just its hash, but all its contents), finalized by consensus and fully signed, because we will only store blocks after they meet all these criteria.
+
 A node receiving the request sent in point 6 would respond with the following:
+
 - To the request for a single fully signed block, send the block along with signatures proving it is fully signed.
 - To the request for a range of fully signed blocks, send the fully signed blocks one by one, starting from the oldest one.
 
 Upon receiving a block with signatures as a response:
-    - If it's not fully signed, discard and re-request it from someone else.
-    - If it's the immediate descendant of the highest known block:
-        - Request execution by the contract runtime.
-        - Compare the execution results to the block - if they don't match, discard the block and re-request it from someone else.
-        - If everything fits, store the block as the new highest block.
-    - If it's not the immediate descendant of the highest known block, request the range of blocks from the immediate descendant of the highest block to this one.
+
+- If it's not fully signed, cache the signatures received and re-request it from someone else.
+- If it's the immediate descendant of the highest known block:
+    - Request execution by the contract runtime.
+    - Compare the execution results to the block - if they don't match, print an error and shut down the node. This would mean that either the node software has a major bug, or the network was taken over by malicious actors.
+    - If everything fits, store the block as the new highest block.
+- If it's not the immediate descendant of the highest known block, request the range of blocks from the immediate descendant of the highest block to this one.
 
 ## Reference-level explanation
 
