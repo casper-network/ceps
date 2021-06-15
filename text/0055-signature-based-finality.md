@@ -32,43 +32,42 @@ The current process of block finalization is this:
 5. Consensus creates a finality signature for the block.
 6. Linear chain stores the signature and gossips it.
 
-In order to only consider fully signed blocks as finalized, we'll have to change this process to the following:
+We wouldn't change the meaning of "finalized" in order not to introduce confusion - a block being finalized would still mean finalized by consensus. However, we would add a new, "signed" status of the block, which would be used instead of "finalized" for some purposes (for example, advancing to the next era will require the switch block to be signed, instead of only finalized). The process would then look the following way:
 
 1. A `BlockPayload` gets finalized by a consensus instance.
 2. The consensus component announces a `FinalizedBlock`.
 3. Contract runtime executes the block and announces a `Block`.
-4. In response to the announcement, linear chain component caches the block, and consensus creates a finality signature.
-5. Linear chain stores the signature and gossips it. It also receives signatures sent over the network.
-6. Once the linear chain collects enough signatures for the block, it considers it finalized.
+4. In response to the announcement, linear chain component caches the block and announces that it was added.
+5. Consensus creates a finality signature for the block.
+6. Linear chain stores the signature and gossips it. It also receives signatures sent over the network.
+7. Once the linear chain collects enough signatures for the block, the block is considered signed.
     - If the block is unknown yet, it requests the block from the sender of the last signature.
-    - If the block is known, but it isn't the immediate descendant of the highest block stored so far, it requests the range of blocks from the immediate descendant of the highest block to the just finalized block.
-    - If the block is known and it is the immediate descendant of the highest block so far, it adds the block to the chain as the new highest block.
+    - If the block is known, but it isn't the immediate descendant of the highest signed block so far, it requests the range of blocks from the immediate descendant of the highest block to the just signed block.
+    - If the block is known and it is the immediate descendant of the highest signed block, it adds the block to the chain as the new highest signed block.
 
-Note: with this process, if a block is stored in the linear chain, it also implies that it is known (that is, we know not just its hash, but all its contents), finalized by consensus and fully signed, because we will only store blocks after they meet all these criteria.
+Note: with this process, if a block is signed, it also implies that it is known (that is, we know not just its hash, but all its contents) and finalized by consensus.
 
 A node receiving the request sent in point 6 would respond with the following:
 
-- To the request for a single fully signed block, send the block along with signatures proving it is fully signed.
-- To the request for a range of fully signed blocks, send the fully signed blocks one by one, starting from the oldest one.
+- To the request for a single signed block, send the block along with signatures proving it is fully signed.
+- To the request for a range of signed blocks, send the fully signed blocks one by one, starting from the oldest one.
 
 Upon receiving a block with signatures as a response:
 
 - If it's not fully signed, cache the signatures received and re-request it from someone else.
-- If it's the immediate descendant of the highest known block:
+- If it's the immediate descendant of the highest known signed block:
     - Request execution by the contract runtime.
     - Compare the execution results to the block - if they don't match, print an error and shut down the node. This would mean that either the node software has a major bug, or the network was taken over by malicious actors.
-    - If everything fits, store the block as the new highest block.
-- If it's not the immediate descendant of the highest known block, request the range of blocks from the immediate descendant of the highest block to this one.
+    - If everything fits, store the block as the new highest signed block.
+- If it's not the immediate descendant of the highest known signed block, request the range of blocks from the immediate descendant of the highest block to this one.
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-The `ContractRuntimeAnnouncement::LinearChainBlock` has to be handled both by the `LinearChain` and consensus.
+`LinearChain`, instead of storing the block announced in a `ContractRuntimeAnnouncement::LinearChainBlock` immediately, would first cache it. It would also emit a `BlockAdded` announcement and wait for finality signatures as before. After the block is fully signed and the immediate ancestor of the highest signed block, will it be appended to the linear chain and announced in a `BlockSigned` announcement.
 
-`LinearChain`, instead of storing it immediately, would first cache it and wait for finality signatures. Only after it is fully signed and the immediate ancestor of the highest finalized block, will it be appended to the linear chain and announced in a `BlockAdded` announcement.
-
-Consensus would react to the `LinearChainBlock` announcement the way it currently handles a `BlockAdded` announcement - it would create and announce a finality signature.
+Consensus would react to the `BlockAdded` announcement the way it does now - it would create and announce a finality signature.
 
 The `ConsensusAnnouncement::CreatedFinalitySignature` would be handled by the linear chain as before, except now the `LinearChain` component would check whether the signed block is now fully signed. If it is, it would do the checks described in the sub-points of point 6 in the [Guide level explanation](#guide-level-explanation).
 
@@ -80,11 +79,13 @@ Whenever the `LinearChain` component collects enough finality signatures for a b
 
 `FullySignedBlock(block, signatures)` would be used as a response to a `RequestBlockRange`. Sometimes, multiple such responses would be required.
 
+The event of a block becoming the new highest signed block should also be exposed to clients. In addition to notifying the clients of `BlockAdded` announcements via the event stream like we do now, we would also emit notifications about `BlockSigned` announcements.
+
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
-This complicates the process of finalization slightly, and will probably increase time to finality (the time elapsed between when the block was proposed and when it was fully finalized, ie. fully signed). However, the significant memory savings enabled by this are worth the tradeoff.
+This complicates the process of finalization slightly, and will probably increase some delays, eg. delay in transitioning to the next era (we only waited for the switch block to be finalized so far, now we'll have to wait for it to be fully signed). However, the significant memory savings enabled by this are worth the tradeoff.
 
 ## Rationale and alternatives
 
