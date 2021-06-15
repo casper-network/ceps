@@ -47,7 +47,7 @@ We wouldn't change the meaning of "finalized" in order not to introduce confusio
 
 Note: with this process, if a block is signed, it also implies that it is known (that is, we know not just its hash, but all its contents) and finalized by consensus.
 
-A node receiving the request sent in point 6 would respond with the following:
+A node receiving the request sent in point 7 would respond with the following:
 
 - To the request for a single signed block, send the block along with signatures proving it is fully signed.
 - To the request for a range of signed blocks, send the fully signed blocks one by one, starting from the oldest one.
