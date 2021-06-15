@@ -69,7 +69,7 @@ Upon receiving a block with signatures as a response:
 
 Consensus would react to the `BlockAdded` announcement the way it does now - it would create and announce a finality signature.
 
-The `ConsensusAnnouncement::CreatedFinalitySignature` would be handled by the linear chain as before, except now the `LinearChain` component would check whether the signed block is now fully signed. If it is, it would do the checks described in the sub-points of point 6 in the [Guide level explanation](#guide-level-explanation).
+The `ConsensusAnnouncement::CreatedFinalitySignature` would be handled by the linear chain as before, except now the `LinearChain` component would check whether the signed block is now fully signed. If it is, it would do the checks described in the sub-points of point 7 in the [Guide level explanation](#guide-level-explanation).
 
 Two new network message variants would be added to `protocol::Message`: `RequestBlockRange` and `FullySignedBlock`.
 
