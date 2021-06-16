@@ -32,7 +32,7 @@ The current process of block finalization is this:
 5. Consensus creates a finality signature for the block.
 6. Linear chain stores the signature and gossips it.
 
-We wouldn't change the meaning of "finalized" in order not to introduce confusion - a block being finalized would still mean finalized by consensus. However, we would add a new, "signed" status of the block, which would be used instead of "finalized" for some purposes (for example, advancing to the next era will require the switch block to be signed, instead of only finalized). The process would then look the following way:
+We wouldn't change the meaning of "finalized" in order not to introduce confusion - a block being finalized would still mean finalized by consensus. However, we would add a new, "signed" status of the block. Similarly to how a "finalized" status means having a proof of finality of the block in the form of a Highway summit within the protocol state, the "signed" status would mean having a more concise proof of finality in the form of finality signatures with sufficient weight. It would be used instead of "finalized" for some purposes (for example, advancing to the next era will require the switch block to be signed, instead of only finalized). The process would then look the following way:
 
 1. A `BlockPayload` gets finalized by a consensus instance.
 2. The consensus component announces a `FinalizedBlock`.
@@ -41,7 +41,7 @@ We wouldn't change the meaning of "finalized" in order not to introduce confusio
 5. Consensus creates a finality signature for the block.
 6. Linear chain stores the signature and gossips it. It also receives signatures sent over the network.
 7. Once the linear chain collects enough signatures for the block, the block is considered signed.
-    - If the block is unknown yet, it requests the block from the sender of the last signature.
+    - If the block is unknown yet, it requests the block from the sender of the last signature. If that times out, the block will be requested from the sender of the next signature, and so on.
     - If the block is known, but it isn't the immediate descendant of the highest signed block so far, it requests the range of blocks from the immediate descendant of the highest block to the just signed block.
     - If the block is known and it is the immediate descendant of the highest signed block, it adds the block to the chain as the new highest signed block.
 
