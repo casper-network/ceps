@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0058](https://github.com/casperlabs/ceps/pull/0058)
 
 To ensure stable and fair service of requests even under load, we throttle incoming traffic from a peer to a fixed rate of requests. Peers are subjected to similar restrictions as those for outbound bandwidth described in [CEP42](0042-network-qos.md), although instead of bytes we use a request count.
 
