@@ -63,13 +63,15 @@ blake2b256(uref_addr || key_bytes)
 
 Further operations such as reading or writing use the earlier algorithm to access the `Key::Dictionary` space.
 
-### dictionary_new
+### new_dictionary
 
 ```rust
-fn dictionary_new(name: &str) -> URef;
+fn new_dictionary(name: &str) -> URef;
 ```
 
-Host provisions an URef of "unit" type under the hood used internally to secure access to the dictionary. Resulting URef will be automatically put into named keys, retaining his ability to add new data.
+Host provisions an URef of "unit" type under the hood used internally to secure access to the dictionary. Resulting URef will be automatically put into named keys, retaining the ability to add new data.
+
+The name argument should not be empty, and additionally, the caller should not have a given key set already.
 
 Newly created URef will have a type set to "unit" to hide the implementation details and discourage using "read" or "write" APIs to operate on dictionary keyspace. The host will also secure this possibility on the backend, and inside of these host functions, a particular check will verify and forbid direct operations on the `Key::Dictionary` space.
 
@@ -79,7 +81,7 @@ Newly created URef will have a type set to "unit" to hide the implementation det
 fn dictionary_get(dictionary_uref, key) -> T;
 ```
 
-Reads data from a dictionary under "URef" and "key" bytes and returns a stored value. The system then verifies that URef is valid in the caller context and performs hashing of the "URef" address and the key bytes.
+Reads data from a dictionary under "URef" and "key" bytes and returns a stored value. The system then verifies that URef is valid in the caller context, has a "READ" permission bit, and performs hashing of the "URef" address and the key bytes.
 
 A secondary key index is not involved in this operation.
 
