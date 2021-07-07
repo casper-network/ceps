@@ -39,10 +39,9 @@ Building Altchain maybe it using etherhum virtual chain
 Step 2-
 Writing Smart Contract on Rust & Soldity
 
-                 ---->                     ---->
-Casper Network            Casper X-Chain            Etherhum & Binance Smartchain Ecosytem
-                 <----                     <----
-                 
+                                      
+Casper Network      <---->      Casper X-Chain     <----->       Etherhum & Binance Smartchain Ecosytem
+                                  
 if you write smart contract on x-chain, your token run Casper Network and BSC,Etherum network
 
 Step 3-
