@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#61](https://github.com/casperlabs/ceps/pull/61)
 
 Currently changing the validator fees is very quick, this can catch all the delegators off-guard and provides a room for malicious actors to play the system to their advantage. 
 
