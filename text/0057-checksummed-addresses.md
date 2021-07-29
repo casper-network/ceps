@@ -30,12 +30,17 @@ The scheme encodes a checksum in the letter capitalization of hex-encodings.
 It extends [EIP-55][1] to work with arbitrary length arrays.
 
 The encoding uses the hash of the input to determine capitalization.
-The hash is broken into 4-bit chunks called *nibbles*. A nibble
-corresponds to a hexadecimal digit. The procedure also breaks the
-input into nibbles. Each input nibble uses the hash nibble with the
-same index for capitalization. If the corresponding hash nibble is
-less than or equal to 7, the hex character is capitalized. Otherwise,
-it is lower case.
+The procedure converts the hash into an infinite stream of bits. The
+procedure also breaks the input into 4-bit chunks called *nibbles*. A
+nibble corresponds to a hexadecimal digit. The algorithm walks through
+each nibble. For each nibble, there are two cases:
+
+1. If the nibble corresponds to a digit 1-10, the algorithm writes
+   that digit and continues.
+2. If the nibble corresponds to some letter A-F, the algorithm takes
+   the next hash bit from the stream. If the hash bit is `1` it
+   capitalizes the hexadecimal letter and writes that. If not, the
+   procedure writes a lower-case letter.
 
 Decoding verifies the correct capitalization of each letter. The
 decoder skips verification if all letters are lower case or upper
@@ -50,11 +55,13 @@ case.
 The design leverages two special `encode` and `decode` function which
 work on hexadecimal strings.
 
-### Converting Bytes to Nibbles
+### Converting Bytes to Nibbles and Bits
 
-The encoding procedure relies a helper function which converts bytes
-to nibbles. As mentioned in the [guide-level explanation](#guide-level-explanation), 
-nibbles are 4-bit chunks. They correspond to hexadecimal digits.
+The encoding procedure relies two helper functions.
+
+The first function converts bytes to nibbles. As mentioned in the
+[guide-level explanation](#guide-level-explanation), nibbles are 4-bit
+chunks. They correspond to hexadecimal digits.
 
 ```rust
 fn bytes_to_nibbles(bytes: &[u8]) -> Vec<u8> {
@@ -64,6 +71,18 @@ fn bytes_to_nibbles(bytes: &[u8]) -> Vec<u8> {
         output_nibbles.push(b & 0x0f);
     }
     output_nibbles
+}
+```
+
+The other function converts bytes to a cyclic stream of bits. Bits are
+represented as `bool`s.
+
+```rust
+fn bytes_to_bits_cycle(bytes: Vec<u8>) -> impl Iterator<Item = bool> {
+    bytes
+        .into_iter()
+        .cycle()
+        .flat_map(move |byte| (0..8usize).map(move |offset| ((byte >> offset) & 0x01) == 0x01))
 }
 ```
 
@@ -81,16 +100,15 @@ const HEX_CHARS: [char; 16] = [
 
 pub fn encode(input: &[u8]) -> String {
   let input_nibbles = bytes_to_nibbles(input);
-  let hash_nibbles = bytes_to_nibbles(&blake2b_hash(input));
-  let hash_nibble_count = hash_nibbles.len();
+  let mut hash_bits = bytes_to_bits_cycle(blake2b_hash(input));
   let mut hex_output_string = String::with_capacity(input_nibbles.len());
-  for idx in 0..input_nibbles.len() {
-    let c = HEX_CHARS[input_nibbles[idx] as usize];
-    if hash_nibbles[idx % hash_nibble_count] <= 7 {
-      hex_output_string.extend(c.to_uppercase())
-    } else {
-      hex_output_string.extend(c.to_lowercase())
-    }
+  for nibble in input_nibbles {
+      let c = HEX_CHARS[nibble as usize];
+      if c.is_alphabetic() && hash_bits.next().unwrap_or(true) {
+          hex_output_string.extend(c.to_uppercase())
+      } else {
+          hex_output_string.extend(c.to_lowercase())
+      }
   }
   hex_output_string
 }
