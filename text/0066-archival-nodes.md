@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0066](https://github.com/casperlabs/ceps/pull/66)
 
 This CEP outlines the design of archival nodes, that is, nodes keeping the complete history of the Casper blockchain.
 
