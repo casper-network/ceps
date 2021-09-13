@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps# ](https://github.com/casperlabs/ceps/pull/)
+CEP PR: [casperlabs/ceps#0068](https://github.com/casperlabs/ceps/pull/0068)
 
 We propose enabling the dormant gas refund feature, additionally introducing a variable delay to disbursement of refunded tokens which depends on recently observed user behavior.
 
