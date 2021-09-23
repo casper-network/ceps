@@ -24,14 +24,13 @@ Until Fast Sync is introduced, all nodes are effectively archival nodes, as ever
 
 Fast Sync is going to change that picture. Once it starts being the method used for syncing, the joining nodes will only download some of the switch block headers and the global state from a recent block, ignoring a huge part of the network's history. This means that if a fast syncing node didn't have all the history already, it won't have at least some of it afterwards, either.
 
-Since Fast Sync has to be able to download full data of at least a single block, we propose for the archival nodes to use Fast Sync capabilities to sync block by block, from genesis up to the most recent blocks.
+Since Fast Sync has to be able to download full data of at least a single block, we propose for the archival nodes to use Fast Sync capabilities to sync each block in the chain separately.
 
-The process will be analogous to the pre-fast-sync Linear Chain Sync:
+To improve performance, we also propose for the archival sync process to run in the background while the node already participates in the network. Thus, the process would look the following way:
 
-1. Walk back from trusted hash back to genesis.
-2. Download blocks one at a time starting from genesis upwards.
-    - The difference here would be that instead of executing the blocks, we would just download the global state trie from our peers.
-3. When we're in the current protocol version and can't fetch any more blocks, stop.
+1. Start like a regular joining node.
+2. Fast sync to the latest block like a regular, non-archival node and transition to the "participating" state.
+3. In the background, walk back along the chain, downloading all the blocks down to genesis.
 
 After completing this process, the node will have the complete chain and all historical global state tries.
 
@@ -41,13 +40,13 @@ After completing this process, the node will have the complete chain and all his
 
 Going into more details of the process explained above, it would look like this:
 
-1. Download the header corresponding to the trusted hash.
-2. While the current header's height isn't 0, download the parent header by hash.
-3. When height 0 is reached, read the genesis set of validators for validating finality signatures.
-4. Download subsequent blocks with all the deploys, the global state trie and finality signatures in a loop.
-5. When no next block is available, stop.
-
-If we reach a block with a newer protocol version than our own during this process, we stop and attempt to upgrade.
+1. Launch the node, fast sync to the latest block, transition to the "participating state".
+2. In the background:
+    - Set the current block to the latest one.
+    - Loop:
+        - download the block's global state trie, deploys and finality signatures, if not already present in storage
+        - if the current block height is 0, break
+        - set the current block to the current block's parent
 
 ## Drawbacks
 
