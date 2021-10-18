@@ -46,6 +46,9 @@ In the event that the **Vault Password** is lost or forgotten the user can reset
 There is a non-trivial amount of work involved in the implementation as well as the introduction of potential security risks to what is otherwise a very secure setup.  
 It is also another secret for users to manage (in addition to the current **Vault Password**).
 
+In the CEP's current state there would need to be a **Secret Phrase** per keypair which could be an inconvenience for users looking to manage multiple keypairs.  
+See the [future possibilities][future-possibilities] section for a potential enhancement.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
