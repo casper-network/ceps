@@ -71,6 +71,8 @@ Using mnemonics/phrases to recover keys is common throughout the crypto space as
 
 <sup>[1]</sup> The length of the phrase is commonly 12 words however it can be set to 24 for added security although I feel that benefit is outweighed by the shorter, more ergononmic 12 word phrase.
 
+As part of this change should we also phase out the ability to download the key files themselves - opting to purely use the phrase as a backup?
+
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
