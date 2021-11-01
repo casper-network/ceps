@@ -27,8 +27,8 @@ Another benefit is that users can opt to store only the **Secret Phrase** instea
 A user starts out by installing the extension from the [Chrome Web Store][signer_link].
 Once installed they are prompted to set the **Vault Password** and will be presented with their new **Secret Phrase** (they can also recover keypairs with an existing **Secret Phrase** at this point).  
 They will be instructed to take note of the 12<sup>[1][unresolved-questions]</sup> words by writing it down and storing it securely or save it in a password manager.  
-In the next screen the user needs to confirm the phrase by typing it in order (copying/pasting will be disabled), this is to ensure they have stored it somewhere other than their clipboard.  
-Finally, the user is directed to the home screen with a single keypair in their vault.
+In the next screen the user needs to confirm the phrase by typing it in order (copying/pasting will be disabled), this is to ensure they have stored it somewhere other than their clipboard. Failure to correctly provide the **Secret Phrase** would prevent the keypair from being created and stored in the Vault - **the user is required to confirm their Secret Phrase to initialise the Vault**.  
+Having confirmed the **Secret Phrase**, the user is directed to the home screen with a single keypair in their vault.
 
 ## Reference-level explanation
 
