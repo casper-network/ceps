@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0074](https://github.com/casperlabs/ceps/pull/0074)
 
 In summary, transfer ID's will be extended to accept alphanumeric strings. Currently, transfer IDs are an optional integral type. The goal of this CEP is to update transfer IDs to be a string of alphanumeric characters, an integer or empty.
 
