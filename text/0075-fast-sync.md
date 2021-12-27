@@ -36,7 +36,7 @@ Fast syncing nodes use a trusted hash to download the database in a
 secure manner. The trusted hash enables secure download of the latest
 block header. That header contains the hash of the database state. Using
 that database hash, nodes download the database state in a
-BitTorent-like manner. After that nodes execute blocks. When they have
+BitTorrent-like manner. After that nodes execute blocks. When they have
 caught up to the current *era* they run the consensus algorithm.
 
 ## Reference-level explanation
