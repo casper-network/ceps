@@ -26,7 +26,7 @@ executing old blocks. New versions need to support old executables
 downloading blocks.
 
 After implementation nodes will join the network by fast syncing.
-Operators will only need the current to join the network.
+Operators will only need the current version to join the network.
 
 ## Guide-level explanation
 
@@ -96,6 +96,7 @@ pub async fn fast_sync(trusted_hash: Digest, chainspec: &Chainspec) -> BlockHead
     }
 
     // Download and execute blocks to current
+    // Fetching the trie-store can take a long time, so current_header could already be old.
     while !is_current_era(current_header) {
         let next_height: u64 = current_header.height() + 1;
         if let Some(next_block) = fetch_block_by_height(validators, next_height).await {
