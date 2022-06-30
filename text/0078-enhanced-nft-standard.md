@@ -301,5 +301,9 @@ by using the provided `Makefile` and running the `make test` command.
 
 [prior-art]: #prior-art
 
+The Casper NFT Protocol [1]
+The Ethereum NFT standard EIP-721[2]
+
+
 1. [`CEP-47`](https://github.com/casper-network/ceps/pull/47)
 2. [`EIP-721`](https://eips.ethereum.org/EIPS/eip-721)
