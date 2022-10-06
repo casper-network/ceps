@@ -30,10 +30,13 @@ The scheme encodes a checksum in the letter capitalization of hex-encodings.
 It extends [EIP-55][1] to work with arbitrary length arrays.
 
 The encoding uses the hash of the input to determine capitalization.
-The procedure converts the hash into an infinite stream of bits. The
-procedure also breaks the input into 4-bit chunks called *nibbles*. A
-nibble corresponds to a hexadecimal digit. The algorithm walks through
-each nibble. For each nibble, there are two cases:
+The procedure converts the hash into an infinite stream of bits. The 
+stream of bits works by reading the least significant bit (LSB)  of the 
+byte array of the hash of the input stored in little endian format
+and by right shifting the stream after the read. The procedure continues 
+by breaking the input into 4-bit chunks called *nibbles*. A nibble corresponds 
+to a hexadecimal digit. The algorithm walks through each nibble. For each 
+nibble, there are two cases:
 
 1. If the nibble corresponds to a digit 1-10, the algorithm writes
    that digit and continues.
