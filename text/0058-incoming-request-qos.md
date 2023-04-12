@@ -18,9 +18,9 @@ By restricting the number of requests, we ensure a high quality of service (i.e.
 
 [guide-level-explanation]: #guide-level-explanation
 
-Each incoming request is subtracted from a periodically refreshed per-peer allowance (see [CEP42](0042-network-qos.md) for details). Should a node exceed this allowance, incoming messages are temporarily delayed and no further data is read from the peers connection, causing regular backpressure through the underlying TCP/IP connection. It is important to note that in this case the burden of buffering requests is on the requesting peer, which is ideal.
+Each incoming request is subtracted from a periodically refreshed per-peer allowance (see [CEP42](0042-network-qos.md) for details). Should a node exceed this allowance, incoming messages are temporarily delayed and no further data is read from the peer's connection, causing regular backpressure through the underlying TCP/IP connection. It is important to note that in this case the burden of buffering requests is on the requesting peer, which is ideal.
 
-Initially, only `GetRequest` messages, which typically make up the bulk of the traffic when joining, are subject to this limitation, although this can easily expanded to other network message types.
+Initially, only `GetRequest` messages, which typically make up the bulk of the traffic when joining, are subject to this limitation, although this can easily be expanded to other network message types.
 
 ## Reference-level explanation
 
@@ -28,7 +28,7 @@ Initially, only `GetRequest` messages, which typically make up the bulk of the t
 
 The implementation itself is expected to reuse the existing facilities for this kind of rate limiting implemented with [CEP42](0042-network-qos.md). Since no deep introspection into the incoming messages is required, there is no large portion of business logic that needs to be moved into the networking component.
 
-A single integer value determines the amount of allowance to subtract for a given message, which is realized as a method of the `Payload` trait. By setting this value to `0` or `1`, different message types can be in- or excluded.
+A single integer value determines the amount of allowance to subtract for a given message, which is realized as a method of the `Payload` trait. By setting this value to `0` or `1`, different message types can be included or excluded.
 
 ## Drawbacks
 
