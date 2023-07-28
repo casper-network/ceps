@@ -1,87 +1,210 @@
-# Title
+# Casper Multi-Token Standard 
+CEP PR: casperlabs/ceps#0085
 
 ## Summary
-
-[summary]: #summary
-
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
-
-One paragraph explanation of the feature.
+A standard that enables multiple fungible and non-fungible tokens to exist within a single smart contract instance on a Casper network.
 
 ## Motivation
+We aim to provide a reference for the Multi Token Standard that in design and quality that should be adhered to for optimal execution of contracts upon the Casper blockchain system.
 
-[motivation]: #motivation
+A Multi-Token standard enables functionality that cannot be served by Fungible and Non-Fungible token standards separately. Creating a smart contract that combines these two features brings Casper in line with other top-tier blockchain platforms, and bolsters the use cases available on Casper networks. This standard ostensibly allows for limited-supply fungible tokens with added information, i.e., digital admission tickets, open-edition art and so on.
 
-Why are we doing this? What use cases does it support? What is the expected outcome?
+## Guide-level Explanation
 
-## Guide-level explanation
+### Interface
 
-[guide-level-explanation]: #guide-level-explanation
+Any compliant contract should contain the following endpoints:
 
-Explain the proposal as if it was already approved and implemented. That generally means:
+#### balance_of
 
-- Introducing new named concepts.
-- Explaining the feature largely in terms of examples.
+Returns the amount of a specified token that a given address holds.
 
-For implementation-oriented CEPs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy CEPs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+```rust
+fn balance_of(account: Key, id: U256) -> U256
+```
 
-## Reference-level explanation
+#### balance_of_batch
 
-[reference-level-explanation]: #reference-level-explanation
+Returns the balance of a batch of accounts for a specified token.
 
-This is the technical portion of the CEP. Explain the design in sufficient detail that:
+```rust
+fn balance_of_batch(accounts: Vec<Key>, ids: Vec<U256) -> Vec<U256>
+```
 
-- Its interaction with other features is clear.
-- It is reasonably clear how the feature would be implemented.
-- Corner cases are dissected by example.
+#### mint
 
-The section should return to the examples given in the previous section, and explain more fully how the detailed proposal makes those examples work.
+Mints an amount of the specified token and places it in the balance of the `recipient`.
 
-## Drawbacks
+```rust
+fn mint(recipient: Key, id: U256, amount: U256)
+```
 
-[drawbacks]: #drawbacks
+#### batch_mint
 
-Why should we *not* do this?
+Batch mints the provided amount of multiple tokens and places them in the balance of the `recipient`.
 
-## Rationale and alternatives
+```rust
+fn batch_mint(recipient: Key, ids: Vec<U256>, amounts: Vec<U256>)
+```
 
-[rationale-and-alternatives]: #rationale-and-alternatives
+#### burn
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
+Eliminates the provided amount of a specified token from the balance of the owner and the overall total supply.
 
-A very important thing to list here is ideas that were discarded in the process, as these tend to crop up again after a while. Describing them here saves time as it allows people discussing those ideas again in the future to refer to this document.
+```rust
+fn burn(owner: Key, id: U256, amount: U256)
+```
 
-## Prior art
+#### batch_burn
 
-[prior-art]: #prior-art
+Burns a batch of multiple tokens from the specified owner.
 
-Discuss prior art, both the good and the bad, in relation to this proposal.
-A few examples of what this can include are:
+```rust
+fn batch_burn(owner: Key, ids: Vec<U256>, amounts: Vec<U256>)
+```
 
-- For development focused proposals: Does this feature exist in other applications and what experience have their community had?
-- For community proposals: Is this done by some other community and what were their experiences with it?
-- For other teams: What lessons can we learn from what other communities have done here?
-- Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
+#### set_approval_for_all
 
-This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your CEP with a fuller picture.
+Approves an account to act as an operator for the calling account, allowing the new account to take actions with the owner's tokens.
 
-## Unresolved questions
+```rust
+fn set_approval_for_all(operator: Key, approved: Boolean)
+```
 
-[unresolved-questions]: #unresolved-questions
+#### is_approved_for_all
 
-- What parts of the design do you expect to resolve through the CEP process before this gets merged?
-- What related issues do you consider out of scope for this CEP that could be addressed in the future independently of the solution that comes out of this CEP?
+Returns a `boolean` response indicating whether the operator is approved to act on behalf of an owner.
 
-## Future possibilities
+```rust
+fn is_approved_for_all(owner: Key, operator: Key) -> bool
+```
 
-[future-possibilities]: #future-possibilities
+#### safe_transfer_from
 
-Think about what the natural extension and evolution of your proposal would be and how it would affect the project as a whole in a holistic way. Try to use this section as a tool to more fully consider all possible interactions with the project and language in your proposal. Also consider how this all fits into the roadmap for the project and of the relevant sub-team.
+Transfers an amount of the specified tokens from the `sender` to the `recipient`.
 
-This is also a good place to "dump ideas", if they are out of scope for the CEP you are writing but otherwise related.
+```rust
+fn safe_transfer_from(from: Key, to: Key, id: U256, amount: U256)
+```
 
-If you have tried and cannot think of any future possibilities, you may simply state that you cannot think of anything.
+#### safe_batch_transfer_from
 
-Note that having something written down in the future-possibilities section is not a reason to accept the current or a future CEP; such notes should be in the section on motivation or rationale in this or subsequent CEPs. The section merely provides additional information.
+Batch transfers specified amount of multiple tokens from the `sender` to the `recipient`.
+
+```rust
+fn safe_batch_transfer_from(ids: Vec<U256>, amounts: Vec<u256>, from: Key, to: Key)
+```
+
+#### supply_of
+
+Returns the supply of the specified token.
+
+```rust
+fn supply_of(id: U256) -> U256
+```
+
+#### supply_of_batch
+
+Returns the current supply for the specified tokens.
+
+```rust
+fn supply_of_batch(ids: Vec<U256>) -> Vec<U256>
+```
+
+#### total_supply_of
+
+Returns the total supply of the specified token.
+
+```rust
+fn total_supply_of(id: U256) -> U256
+```
+
+#### total_supply_of_batch
+
+Returns the total supply of the specified tokens.
+
+```rust
+fn total_supply_of_batch(ids: Vec<U256>) -> Vec<U256>
+```
+
+#### set_total_supply_of
+
+Sets the total supply of the specified token.
+
+```rust
+fn set_total_supply_of(id: U256, total_supply: U256)
+```
+
+#### set_total_supply_of_batch
+
+Sets the total supply of the batch of specified tokens.
+
+```rust
+fn set_total_supply_of_batch(ids: Vec<U256>, total_supplies: Vec<U256>)
+```
+
+#### uri
+
+Returns a string URI for any off-chain resource associated with the token.
+
+```rust
+fn uri(id: Option<U256>) -> String
+```
+
+#### set_uri
+
+Sets the assigned string as the token's URI.
+
+```rust
+fn set_uri(id: Option<u256>, uri: String)
+```
+
+#### is_non_fungible
+
+Returns a `true` or `false` value for whether the specified token is non-fungible.
+
+```rust
+fn is_non_fungible(id: U256) -> bool
+```
+
+#### total_fungible_supply
+
+Calculates the difference between the total supply and the current supply of a token. If the token is non-fungible, or if total supply has been reached, this returns 0.
+
+```rust
+fn total_fungible_supply(id: U256) -> U256
+```
+
+#### change_security
+
+This is an admin endpoint to manipulate the security access granted to users. Each user can only possess one access group badge (None, Admin or Minter).
+
+```rust
+fn change_security(admin_list: Option<Vec<Key>>, minter_list: Option<Vec<Key>>, meta_list: Option<Vec<Key>>, none_list: Option<Vec<Key>>)
+```
+
+## Reference-level Explanation
+
+### Batch Actions
+
+This standard features the option to take actions on 'batches' of tokens - reducing gas costs for large transfers.
+
+### Requirement for Security
+
+### Fungible and Non-Fungible Token Differences
+
+Although handled within the same contract, CEP-85 allows for both fungible and non-fungible tokens. These tokens are entirely separate within the contract instance, recorded in their associated dictionaries.
+
+## Drawbacks and Alternatives
+
+The major drawback to this standard is the potential for feature bloat and inefficiencies if the contract is forced to account for excessive, disparate data.
+
+The simplest alternative would be the use of separate CEP-18 and CEP-78 token standard contracts with a custom contract to handle any crossover actions.
+
+## Prior Art
+[Ethereum request for comment 1155](https://eips.ethereum.org/EIPS/eip-1155) established the concept of a Multi-Token standard and can be considered the most impactful prior art.
+
+## Unresolved Questions
+Through our continuous iterative process we aim to iron out inefficiencies.
+
+While CEP-18 and CEP-78 are well established standards, the combination of both types of token in a single contract may lead to unforeseen issues. We will listen to community feedback and refine over time.
