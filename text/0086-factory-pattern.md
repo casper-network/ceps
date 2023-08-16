@@ -6,82 +6,72 @@
 
 CEP PR: [casper-network/ceps#0086](https://github.com/casper-network/ceps/pull/86)
 
-One paragraph explanation of the feature.
+Implementing host-side support for a factory pattern.
 
 ## Motivation
 
 [motivation]: #motivation
 
-Why are we doing this? What use cases does it support? What is the expected outcome?
+This proposal introduces a host-side factory pattern to enhance the contract deployment process.
+
+Contract developers have expressed a desire to use the factory pattern, enabling scenarios like creating multiple contracts with a custom logic. While the EE technically supports this pattern, it lacks proper tests and documentation. The existing support for this was considered an undocumented feature that relies on implementation details.
+
+The proposed solution involves implementing a proper support on the host, adding relevant tests for deploying a factory contract and creating new contracts through it, using a newly introduced support in the smart contract API.
 
 ## Guide-level explanation
 
 [guide-level-explanation]: #guide-level-explanation
 
-Explain the proposal as if it was already approved and implemented. That generally means:
-
-- Introducing new named concepts.
-- Explaining the feature largely in terms of examples.
-
-For implementation-oriented CEPs (e.g. for node internals), this section should focus on how other developers should think about the change, and give examples of its concrete impact. For policy CEPs, this section should provide an example-driven introduction to the policy, and explain its impact in concrete terms.
+The host-side factory pattern introduces a way for contract developers to deploy contracts with custom logic through factory contracts. These factory contracts are created using a new entry point type called `EntryPointType::Install`, which marks an entry point as a factory method. Additionally, a new variant, `EntryPointType::Normal`, serves as the default entry point type and will behave like the existing `EntryPointType::Contract` in version 1.x. The proposal also introduces `EntryPointAccess::Abstract`, marking an entry point export as existing in the bytecode but not callable. This feature allows referencing WebAssembly exports from within entry points marked as `EntryPointType::Install`. Developers can even define nested factory contracts for more complex scenarios.
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-This is the technical portion of the CEP. Explain the design in sufficient detail that:
+In technical detail, this proposal introduces two new entry point types: `EntryPointType::Install` and `EntryPointType::Normal`. And a new entry point access type `EntryPointAccess::Abstract`.
 
-- Its interaction with other features is clear.
-- It is reasonably clear how the feature would be implemented.
-- Corner cases are dissected by example.
+* `EntryPointType::Install` marks an entry point as a factory method responsible for deploying contracts.
+* `EntryPointType::Normal` behaves similarly to `EntryPointType::Contract` in version 1.x, while also serving as the default entry point type in version 2.0.
+* Additionally, `EntryPointAccess::Abstract` is introduced to signify an entry point export that exists in bytecode but is not callable.
+* This feature facilitates referencing contracts stored as `EntryPointType::Install`.
 
-The section should return to the examples given in the previous section, and explain more fully how the detailed proposal makes those examples work.
+When creating new smart contract with an `Install` entry points, the host, then ensures that no `Abstract` entry points can be called. Entry points marked as `Install`, however, can reference the exports at the byte level, including `Install`.
+
+Example smart contract that demonstrates new functionality is located here: https://github.com/mpapierski/casper-node/blob/gh-2064-factory-pattern/smart_contracts/contracts/test/counter-factory/src/main.rs
+
 
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
-Why should we *not* do this?
+The only known drawback of this new feature is that it does not allow deploying custom bytecode in the factory entrypoints - that means, you can't load a bytecode into the Wasm, modify it, and create new modified smart contract. All the smart contracts created with a factory pattern are sharing the same bytecode that originates from within the original session bytes.
 
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
 
-- Why is this design the best in the space of possible designs?
-- What other designs have been considered and what is the rationale for not choosing them?
-- What is the impact of not doing this?
+The proposed design is chosen to enhance contract deployment while maintaining compatibility with existing entry point types.
 
-A very important thing to list here is ideas that were discarded in the process, as these tend to crop up again after a while. Describing them here saves time as it allows people discussing those ideas again in the future to refer to this document.
+This proposal is strictly considered as making an previously undocumented feature an officially supported pattern by making certain behaviours of the host explicit.
 
 ## Prior art
 
 [prior-art]: #prior-art
 
-Discuss prior art, both the good and the bad, in relation to this proposal.
-A few examples of what this can include are:
+The factory pattern is a widely recognized software design concept used in various programming contexts.
 
-- For development focused proposals: Does this feature exist in other applications and what experience have their community had?
-- For community proposals: Is this done by some other community and what were their experiences with it?
-- For other teams: What lessons can we learn from what other communities have done here?
-- Papers: Are there any published papers or great posts that discuss this? If you have some relevant papers to refer to, this can serve as a more detailed theoretical background.
-
-This section is intended to encourage you as an author to think about the lessons from other languages, provide readers of your CEP with a fuller picture.
+Although other blockchain platforms might have similar deployment patterns, this proposal's focus is on seamless integration with existing entry point on the Casper blockchain that sets it apart.
 
 ## Unresolved questions
 
 [unresolved-questions]: #unresolved-questions
 
-- What parts of the design do you expect to resolve through the CEP process before this gets merged?
-- What related issues do you consider out of scope for this CEP that could be addressed in the future independently of the solution that comes out of this CEP?
+Proposed names of symbols introduced in this feature may be discussed and improved through PR comments.
 
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
-Think about what the natural extension and evolution of your proposal would be and how it would affect the project as a whole in a holistic way. Try to use this section as a tool to more fully consider all possible interactions with the project and language in your proposal. Also consider how this all fits into the roadmap for the project and of the relevant sub-team.
+This proposal sets the foundation for more advanced contract deployment patterns, potentially enabling smart contract factories that can create contracts by passing a bytecode at runtime.
 
-This is also a good place to "dump ideas", if they are out of scope for the CEP you are writing but otherwise related.
-
-If you have tried and cannot think of any future possibilities, you may simply state that you cannot think of anything.
-
-Note that having something written down in the future-possibilities section is not a reason to accept the current or a future CEP; such notes should be in the section on motivation or rationale in this or subsequent CEPs. The section merely provides additional information.
+Future enhancements may also involve refining the entry point types and expanding factory contract.
