@@ -22,16 +22,15 @@ The proposed solution involves implementing a proper support on the host, adding
 
 [guide-level-explanation]: #guide-level-explanation
 
-The host-side factory pattern introduces a way for contract developers to deploy contracts with custom logic through factory contracts. These factory contracts are created using a new entry point type called `EntryPointType::Install`, which marks an entry point as a factory method. Additionally, a new variant, `EntryPointType::Normal`, serves as the default entry point type and will behave like the existing `EntryPointType::Contract` in version 1.x. The proposal also introduces `EntryPointAccess::Abstract`, marking an entry point export as existing in the bytecode but not callable. This feature allows referencing WebAssembly exports from within entry points marked as `EntryPointType::Install`. Developers can even define nested factory contracts for more complex scenarios.
+The host-side factory pattern introduces a way for contract developers to deploy contracts with custom logic through factory contracts. These factory contracts are created using a new entry point type called `EntryPointType::Install`, which marks an entry point as a factory method. The proposal also introduces `EntryPointAccess::Abstract`, marking an entry point export as existing in the bytecode but not callable. This feature allows referencing WebAssembly exports from within entry points marked as `EntryPointType::Install`. Developers can even define nested factory contracts for more complex scenarios.
 
 ## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
-In technical detail, this proposal introduces two new entry point types: `EntryPointType::Install` and `EntryPointType::Normal`. And a new entry point access type `EntryPointAccess::Abstract`.
+In technical detail, this proposal introduces two new entry point types: `EntryPointType::Install`. And a new entry point access type `EntryPointAccess::Abstract`.
 
 * `EntryPointType::Install` marks an entry point as a factory method responsible for deploying contracts.
-* `EntryPointType::Normal` behaves similarly to `EntryPointType::Contract` in version 1.x, while also serving as the default entry point type in version 2.0.
 * Additionally, `EntryPointAccess::Abstract` is introduced to signify an entry point export that exists in bytecode but is not callable.
 * This feature facilitates referencing contracts stored as `EntryPointType::Install`.
 
