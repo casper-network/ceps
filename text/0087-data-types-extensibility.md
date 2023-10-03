@@ -72,7 +72,7 @@ Components that never need to touch the legacy types should directly use the mos
 
 The `Fetcher` on the other hand must be able to deal with all variants of the datatype, because it must be able to fetch and understand all historical blocks up to genesis.
 
-## Storage
+### Storage
 
 Storage is the main component that should understand and work with the versioned types. For each data type that needs to be extensible we create a separate DB which will be used to store the top-level `enum` wrapper. The legacy DB is left intact and it's going to be accessed only when old-enough data is requested. Therefore, upon the request to the storage being sent, storage will first look for a particular item in the new database and only if it is not found it'll reach out to the legacy DB and try to obtain data from there.
 
@@ -93,11 +93,10 @@ There is no noticeable performance degradation expected because most of the requ
 
 Upon storage initialization, indices are built based on the content of both DBs. Similarly, all utility functions, like `value_exists()` will be updated to check both databases.
 
-# Alternatives
+## Alternatives
 
-[unresolved-questions]: #unresolved-questions
-
-## Magic bytes
+[alternatives]: #alternatives
+### Magic bytes
 
 Upon serialization we add the magic-string prefix to the serialized bytes. Similarly, upon deserialization we first check for existence of such magic-string and decide whether we're gonna be deserializing new or legacy data type.
 
@@ -105,7 +104,7 @@ Such approach has already been used (`UNBONDING_PURSE_V2_MAGIC_BYTES`) but it wa
 1. While the probability is low, magic strings are prone to collisions, especially when attached to types for which we cannot reason about what bytes are at the beginning of a struct. For example, `Block` starts with `BlockHash` which can be any combination of bytes. This approach would work better for types which starts, for example, with a `Vec` or `String` because we can reason that in such case first 4 bytes would be rather small as they describe the size of the collection.
 2. To minimize the collision risk the magic-string should consist of at least several bytes. This may induce a significant data overhead if the type we're going to extend is small, such as `struct EraId(u64)`.
 
-## Key-value map
+### Key-value map
 
 Serialization code converts every struct to a `BTreeMap` collection and such collection is then serialized. For example, the `Block` serialization pseudocode may look like this:
 ```rust
@@ -121,10 +120,10 @@ fn to_bytes(&self) -> Result<Vec<u8>, bytesrepr::Error> {
 ```
 It's worth noting that this alone doesn't solve the extensibility. We'd still need some kind of magic-string to check if we're about to deserialize new or legacy type. It'll however, make the extensibility future-proof, because once the type is "migrated" to the `field_map`, we can keep adding as many new fields as we like without affecting (de)serialization compatibility.
 
-## Self-describing format
+### Self-describing format
 
 Similar to the above, but instead of converting the struct to `field_map` we'll prepend the standardized header which will describe the structure of the datatype. Alternatively, we may consider adding the explicit version number (`u8`) to each type.
 
-## `Versionize` crate
+### `Versionize` crate
 
 Use the `versionize` crate, which gives the versioning capability out-of-the box, but is strongly tied to the `bincode` backend. This possibility was not thoroughly explored.
