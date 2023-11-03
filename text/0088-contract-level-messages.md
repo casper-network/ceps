@@ -136,7 +136,7 @@ pub struct MessageChecksum(
 
 When a new message is emitted on a specified topic the `message_count` in the `MessageTopicSummary` record is incremented.
 Messages have ephemeral nature by design. In order to not increase the size of global state in an uncontrolled manner, the message count is reset to zero with every newly emitted message that belongs to a new block and the block time is updated as well. The old message checksum entries are pruned from global state.
-Of-chain applications can still query the old message checksums if required by using the state root hash of the block where the messages were emitted.
+Off-chain applications can still query the old message checksums if required by using the state root hash of the block where the messages were emitted.
 
 ### Node changes
 
@@ -152,7 +152,7 @@ pub struct Message {
     entity_addr: AddressableEntityHash,
     /// The payload of the message.
     message: MessagePayload,
-    /// The name of the topic on which the message was emitted on.
+    /// The name of the topic on which the message was emitted.
     topic_name: String,
     /// The hash of the name of the topic.
     topic_name_hash: TopicNameHash,
