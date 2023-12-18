@@ -84,11 +84,47 @@ pub fn casper_emit_message(
 );
 ```
 
-The `MessagePayload` enum initially allows for sending human readable strings as messages in the first iteration:
+Apart from the new special purpose FFIs, a parameter is added to the `casper_add_package_version` FFI that allows managing message topics directly on contract install or upgrade.
+Callers would need to pass the `message_topics_ptr` and `message_topics_size` which are a pointer to a map specifying the names of the topics and the operations to be performed on those topics.
+```rust
+/// Adds a new version to a package.
+///
+/// # Arguments
+///
+/// * `package_hash_ptr` - pointer to serialized package hash.
+/// * `package_hash_size` - size of package hash in serialized form.
+/// * `version_ptr` - output parameter where new version assigned by host is set
+/// * `entry_points_ptr` - pointer to serialized [`casper_types::EntryPoints`]
+/// * `entry_points_size` - size of serialized [`casper_types::EntryPoints`]
+/// * `named_keys_ptr` - pointer to serialized [`casper_types::addressable_entity::NamedKeys`]
+/// * `named_keys_size` - size of serialized [`casper_types::addressable_entity::NamedKeys`]
+/// * `message_topics_ptr` - pointer to serialized [`BTreeMap<String, MessageTopicOperation>`]
+///   containing message topic names and the operation to pe performed on each one.
+/// * `message_topics_size` - size of serialized [`BTreeMap<String, MessageTopicOperation>`]
+/// * `output_ptr` - pointer to a memory where host assigned contract hash is set to
+/// * `output_size` - expected width of output (currently 32)
+pub fn casper_add_package_version(
+    package_hash_ptr: *const u8,
+    package_hash_size: usize,
+    version_ptr: *const u32,
+    entry_points_ptr: *const u8,
+    entry_points_size: usize,
+    named_keys_ptr: *const u8,
+    named_keys_size: usize,
+    message_topics_ptr: *const u8,
+    message_topics_size: usize,
+    output_ptr: *mut u8,
+    output_size: usize,
+) -> i32;
+```
+
+The `MessagePayload` enum initially allows for sending messages represented either as human readable strings or `bytesrepr::Bytes` in the first iteration:
 ```rust
 pub enum MessagePayload {
     /// Human readable string message.
     String(String),
+    /// Message represented as raw bytes.
+    Bytes(bytesrepr::Bytes),
 }
 ```
 
@@ -208,6 +244,39 @@ When a new topic is added 2 records are written in global state: the topic contr
 When a new contract version is added the message topics registered from the previous version are carried over to the new contract automatically.
 The `message_topics` of the previous `AddressableEntity` will be copied to the new one and a new control record will be written for each topic for the new entity.
 
+### Corelation of messages across multiple topics and contracts
+
+Messages are always ordered within a topic. In some cases, users would like to know the sequencing of emitted messages across multiple topics. This can be achieved in a few ways:
+
+#### Using an ordering topic inside the contract (user-level)
+If a contract wants to allow other parities to check the sequence of messages that were emitted across two or more message topics, it can create a new topic that is used to keep the ordering of messages across the other topics. Every time that a message is emitted on a specific topic, the contract would also emit a message on the ordering topic with the ID or Key of the original message.
+The disadvantage of this method is that it's a technique that is only available if the contract opts in to do this work; some contracts may not implement this so consumers of the contract would not be able to easily understand the sequencing of messages across multiple topics. Also this works only for topics registered under a single contract.
+The advantage of this method is that it can provide lightweight correlation of message topics that leverages the existing messaging infrastructure and provides low noise (only messages from topics that need to be correlated will end up on the ordering topic).
+
+#### Inspecting the execution journal (off-chain metadata)
+When a transaction/deploy is processed, a log of the transforms that were applied to global state is emitted in the form of the execution results. Since every emitted message has a direct side-effect in global state by writing the message checksum, contract consumers can determine the sequence of the emitted messages by tracking the writes under the `Key::Message` in the log. By doing this, consumers can even track sequencing across messages emitted by multiple different contracts since the keys under which checksums are written are derived from the addressable entity hash.
+However this log of transforms is not committed in global state so consumers must ensure that the node providing the log can be trusted.
+
+#### Transaction message log (on-chain)
+In order to allow the sequencing of messages across contracts to be verified this change proposes the creation of an additional log in global state that will track the messages emitted by transaction hash.
+Whenever a message is emitted, the message checksum is written under `Key::Message(entity_addr, topic_name_hash, message_index)`. Apart from that, another value that consists of this same key will be written to Global State under `Key::TransactionMessages(transaction_hash, message_sequence)`.
+Consumers can query global state by transaction hash and message sequence to get the keys of the individual messages that were emitted by the contracts. A summary value will also be available for consumers to be able to determine how many messages were emitted as part of the transaction.
+
+If for example a transaction is processed where two message emitting contracts will be called, the following entries will be written to global state:
+  * `Key::Message(contract_A, topic_A_hash, Some(0))` -> `StoredValue::Message(message_A_0_checksum)`
+  * `Key::Message(contract_A, topic_A_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
+  * `Key::Message(contract_B, topic_B_hash, Some(0))` -> `StoredValue::Message(message_B_0_checksum)`
+  * `Key::Message(contract_B, topic_B_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
+  * `Key::Message(contract_B, topic_B_hash, Some(1))` -> `StoredValue::Message(message_1_0_checksum)`
+  * `Key::Message(contract_B, topic_B_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
+  * `Key::TransactionMessages(Message(transaction_hash, 0)` -> `StoredValue::TransactionMessage(Key::Message(contract_A, topic_A_hash, Some(0)))`
+  * `Key::TransactionMessages(Message(transaction_hash, 1)` -> `StoredValue::TransactionMessage(Key::Message(contract_B, topic_B_hash, Some(0)))`
+  * `Key::TransactionMessages(Message(transaction_hash, 2)` -> `StoredValue::TransactionMessage(Key::Message(contract_B, topic_B_hash, Some(1)))`
+  * `Key::TransactionMessages(Summary(transaction_hash)` -> `StoredValue::TransactionMessageSummary(message_count: 3, block_time: 12345)`
+
+To enable this behavior the transaction will need to opt in by setting a parameter.
+This method allows message sequencing to be verifiable on chain but incurs an additional storage cost for the new global state entries.
+
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
@@ -234,4 +303,4 @@ See: [Logging data from smart contracts with events](https://ethereum.org/uz/dev
 
 [future-possibilities]: #future-possibilities
 
-Nothing planned at the moment.
+Currently this proposal focuses on allowing contracts to emit messages. In the future we might want to emit messages when certain system level events happen (e.g. when a contract is installed or upgraded). This will be considered for future iterations.
