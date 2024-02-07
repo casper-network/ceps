@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/27)
+CEP PR: [casperlabs/ceps#0089](https://github.com/casperlabs/ceps/pull/89)
 
 We propose introduction of a delayed gas fee refund feature, replacing the (currently inactive) refund feature.
 
