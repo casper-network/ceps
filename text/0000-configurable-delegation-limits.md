@@ -31,7 +31,7 @@ Delegation limits would be used to validate new delegation requests in the `dele
 
 As part of setting the limits we'd also forcibly unstake existing delegators whose bids are outside the specified range.
 
-## TODO: Reference-level explanation
+## Reference-level explanation
 
 [reference-level-explanation]: #reference-level-explanation
 
@@ -42,11 +42,33 @@ This would set a global maximum as a conterpart to the already existing `minimum
 
 ### Extending `ValidatorBid` struct
 
+To enable delegations validation `ValidatorBid` would be modified to include `minimum_delegation_amount` and `maximum_delegation_amount` fields. Those fields would be non-optional to avoid adding conditional logic whenever delegation limits are handled. If a user does not provide any custom values when placing a bid, global chainspec limits would be used as defaults.
+
+This change would also require implementing a data migration, to transform existing bids to a new format.
+
 ### Adding optional runtime args to `add_bid`
+
+`add_bid` entry point of the auction contract would be modified to include additional runtime arguments - `minimum_delegation_amount` and `maximum_delegation_amount`. Both of those are intended to be optional, so if a validator doesn't want to set their own limits they will be able to pass `null` values in the contract call. In this case global limits will be used as defaults.
+
+New arguments would be validated to be compliant with global limits. This also requires adding a new `Error` variant to indicate incorrect settings.
 
 ### Forced undelegation
 
+If we decide to forcibly unstake delegators whose bids are outside newly configured limits we'd need to implement a process of bulk delegation removal.
+
+To avoid repeadetly fetching all `DelegatorBids` on each `add_bid` execution, this process would be ran at the end of an era, after the auction has been ran.
+
+The implementation itself would be broadly similar to what happens currently when a validator withdraws their bid using the `withdraw_bid` entry point of the auction contract - we'd loop over all `ValidatorBids`, fetching all related `DelegatorBids` and validating their amounts. If a given stake is outside the configured limits, it would be transferred to an `UnbondingPurse` and returned to the delegator's main purse.
+
 ### Additional validation in `delegate`
+
+Actual enforcement of custom delegation limits would happen in auction contract's `delegate` entry point.
+
+Any new bids would be validated againsts a validator's configuration, similarly to how they are currently checked to comply with a global minimum amount.
+
+`ValidatorBid` is already being retrieved in the current implementation to validate that the specified validator actually exists, so changes would only include the validation and introduction of a new `Error` variant.
+
+Validation against the global limits would also be removed, since we can assume that a validator's custom configuration already respects those limits.
 
 ## Drawbacks
 
@@ -64,11 +86,6 @@ An alternative to modifying the `add_bid` entrypoint would be to introduce a ded
 
 This solution was discarded in part due to large functional overlap between both entry points 
 but also because introducing more granular entry points would lead to inefficient global state modifications.
-
-## TODO: Prior art
-
-[prior-art]: #prior-art
-
 
 ## Unresolved questions
 
