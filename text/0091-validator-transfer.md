@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casper-network/ceps#91](https://github.com/casper-network/ceps/pull/91)
 
 We propose giving operator an ability to "transfer" their validator from one public key to another.
 
