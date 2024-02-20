@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casper-network/ceps#90](https://github.com/casper-network/ceps/pull/90)
 
 We propose giving validators the ability to configure a minimum and maximum delegation amount which would then be enforced for their delegators.
 
