@@ -1,4 +1,4 @@
-# Title
+# Validator transfer
 
 ## Summary
 
@@ -34,7 +34,7 @@ Adding a new entry point to the auction contract would also require updating the
 
 ### Adding `transfer_validator` entry point
 
-Within the new entry point we'd first need to validate the caller, since the method whould only be called by the current validator. 
+Within the new entry point we'd first need to validate the caller, since the method would only be called by the current validator. 
 
 Then we'd verify that a `ValidatorBid` for the target public key does not exist yet. A new `Error` variant would have to be introduced to indicate a conflicting bid already exists.
 
@@ -47,8 +47,8 @@ This process is somewhat similar to the way delegator bids are currently process
 
 [drawbacks]: #drawbacks
 
-Itroducing this functionality would mean modifying delegators' bids without their explicit consent.
-Until now this could only happen if a validator completlely unstaked and delegations had to be returned.
+Introducing this functionality would mean modifying delegators' bids without their explicit consent.
+Until now this could only happen if a validator completely unstaked and delegations had to be returned.
 
 ## Rationale and alternatives
 
