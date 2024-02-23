@@ -257,26 +257,6 @@ The advantage of this method is that it can provide lightweight correlation of m
 When a transaction/deploy is processed, a log of the transforms that were applied to global state is emitted in the form of the execution results. Since every emitted message has a direct side-effect in global state by writing the message checksum, contract consumers can determine the sequence of the emitted messages by tracking the writes under the `Key::Message` in the log. By doing this, consumers can even track sequencing across messages emitted by multiple different contracts since the keys under which checksums are written are derived from the addressable entity hash.
 However this log of transforms is not committed in global state so consumers must ensure that the node providing the log can be trusted.
 
-#### Transaction message log (on-chain)
-In order to allow the sequencing of messages across contracts to be verified this change proposes the creation of an additional log in global state that will track the messages emitted by transaction hash.
-Whenever a message is emitted, the message checksum is written under `Key::Message(entity_addr, topic_name_hash, message_index)`. Apart from that, another value that consists of this same key will be written to Global State under `Key::TransactionMessages(transaction_hash, message_sequence)`.
-Consumers can query global state by transaction hash and message sequence to get the keys of the individual messages that were emitted by the contracts. A summary value will also be available for consumers to be able to determine how many messages were emitted as part of the transaction.
-
-If for example a transaction is processed where two message emitting contracts will be called, the following entries will be written to global state:
-  * `Key::Message(contract_A, topic_A_hash, Some(0))` -> `StoredValue::Message(message_A_0_checksum)`
-  * `Key::Message(contract_A, topic_A_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
-  * `Key::Message(contract_B, topic_B_hash, Some(0))` -> `StoredValue::Message(message_B_0_checksum)`
-  * `Key::Message(contract_B, topic_B_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
-  * `Key::Message(contract_B, topic_B_hash, Some(1))` -> `StoredValue::Message(message_1_0_checksum)`
-  * `Key::Message(contract_B, topic_B_hash, None)` -> `StoredValue::MessageTopic(MessageTopicSummary { message_count: 1, block_time: 12345 })`
-  * `Key::TransactionMessages(Message(transaction_hash, 0)` -> `StoredValue::TransactionMessage(Key::Message(contract_A, topic_A_hash, Some(0)))`
-  * `Key::TransactionMessages(Message(transaction_hash, 1)` -> `StoredValue::TransactionMessage(Key::Message(contract_B, topic_B_hash, Some(0)))`
-  * `Key::TransactionMessages(Message(transaction_hash, 2)` -> `StoredValue::TransactionMessage(Key::Message(contract_B, topic_B_hash, Some(1)))`
-  * `Key::TransactionMessages(Summary(transaction_hash)` -> `StoredValue::TransactionMessageSummary(message_count: 3, block_time: 12345)`
-
-To enable this behavior the transaction will need to opt in by setting a parameter.
-This method allows message sequencing to be verifiable on chain but incurs an additional storage cost for the new global state entries.
-
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
