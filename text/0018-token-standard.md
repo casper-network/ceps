@@ -47,22 +47,10 @@ Returns the amount of tokens given address holds.
 fn balanceOf(address: Address) -> U512
 ```
 
-#### batch_balance_of
-Returns the amounts of tokens given a list of addresses.
-```rust
-fn batch_balance_of(addresses: Vec<Address>) -> Vec<U512>
-```
-
 #### transfer
 Transfer tokens from the direct function caller to the `recipient`.
 ```rust
 fn transfer(recipient: Address, amount: U512)
-```
-
-#### batch_transfer
-Transfer tokens to multiple recipients.
-```rust
-fn batch_transfer(recipient_and_amount_list: Vec<(Address, U512)>)
 ```
 
 #### approve
@@ -71,22 +59,10 @@ Allow other address to transfer caller's tokens.
 fn approve(spender: Address, amount: U512)
 ```
 
-#### batch_approve
-Allow other addresses to transfer caller's tokens.
-```rust
-fn batch_approve(spender_and_amount_list: Vec<(Address, U512)>)
-```
-
 #### allowance
 Returns the amount allowed to spend.
 ```rust
 fn allowance(owner: Address, spender: Address) -> U512
-```
-
-#### batch_allowance
-Returns the amounts allowed to spend for given addresses.
-```rust
-fn allowance(owner_spender_list: Vec<(Address, Address)>) -> Vec<U512>
 ```
 
 #### transfer_from
@@ -97,24 +73,15 @@ The operation should decrement approved amount.
 fn transfer_from(owner: Address, recipient: Address, amount: U512)
 ```
 
-#### batch_transfer_from
-Transfer tokens from `onwer` address to the multiple `recipients` addresses if required
-amount was approved before to be spend by the direct caller.
-The operation should decrement approved amount.
-```rust
-fn batch_transfer_from(owner: Address, recipient_amount_list: Vec<(Address, U512)>)
-```
-
 ### Compare to ERC-20
 While very similar to ERC-20, this standard is a bit different:
 1. Methods: `name`, `symbol` and `decimals` are required.
 2. Names of arguments are part of the standard.
-3. Added batch versions of methods.
 
 ## Reference-level explanation
 ### Custom tokens
 We have successfully tested the implementation of ERC-20-based token.
-Code is available at https://github.com/CasperLabs/erc20. 
+Code is available at https://github.com/casper-ecosystem/cep18. 
 
 ### Casper Token
 Currently Casper Token implements purse-based model. To support presented
