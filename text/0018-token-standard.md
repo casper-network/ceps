@@ -59,6 +59,18 @@ Allow other address to transfer caller's tokens.
 fn approve(spender: Address, amount: U512)
 ```
 
+#### increase_allowance
+Atomically increases the allowance granted to spender by the caller.
+```rust
+fn increase_allowance(spender: Address, amount: U512)
+```
+
+#### decrease_allowance
+Atomically decreases the allowance granted to spender by the caller.
+```rust
+fn decrease_allowance(spender: Address, amount: U512)
+```
+
 #### allowance
 Returns the amount allowed to spend.
 ```rust
