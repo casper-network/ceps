@@ -128,6 +128,22 @@ pub enum MessagePayload {
 }
 ```
 
+#### A new singleton `Key::BlockMessageCount` variant is introduced to track message sequence:
+
+```rust
+pub enum Key {
+    ...
+    /// A `Key` under which the total number of emitted messages in the last block is stored.
+    BlockMessageCount,
+}
+```
+
+Each message that is emitted within a single block has an unique sequence number. This record is reset with every new created block.
+The value written under this key is a tuple type `CLValue` representing the `(block_time, block_message_count)`.
+The `block_message_count`represents the total number of messages emitted in the block with the corresponding `block_time`.
+The sequence id of the messages are global to the block and are not tied to entity address or topic.
+The first message emitted in the block has sequence id 0, the second message has id 1 and so on.
+
 #### A new `Key` variant is introduced for indexing the message topic and message checksums:
 
 ```rust
@@ -142,7 +158,7 @@ pub enum Key {
 ```rust
 pub struct MessageAddr {
     /// The entity addr.
-    entity_addr: AddressableEntityHash,
+    entity_addr: EntityAddr,
     /// A 32 byte BLAKE2b hash of the name of the message topic.
     topic_hash: TopicNameHash,
     /// The message index. If the message index is `None`, the `MessageAddr` points to the topic control record.
@@ -165,14 +181,19 @@ pub struct MessageTopicSummary {
 
 Checksum of the message payload that was emitted:
 ```rust
+//a 32 byte BLAKE2b hash of the serialized message sequence within the block and the `MessagePayload` that was emitted.
 pub struct MessageChecksum(
-    pub  [u8; 32], //a 32 byte BLAKE2b hash of the serialized `MessagePayload` that was emitted.
+    pub  [u8; 32],
 );
 ```
 
 When a new message is emitted on a specified topic the `message_count` in the `MessageTopicSummary` record is incremented.
+With every message emitted during the execution of a block, a count is increased in the record stored under the `BlockMessageCount` key.
+In summary, a message has an unique sequence number within the block it was emitted in and another unique sequence number within the topic it was emitted in. This allows tracking of the ordering of messages across multiple contract invocations within a single block.
 Messages have ephemeral nature by design. In order to not increase the size of global state in an uncontrolled manner, the message count is reset to zero with every newly emitted message that belongs to a new block and the block time is updated as well. The old message checksum entries are pruned from global state.
 Off-chain applications can still query the old message checksums if required by using the state root hash of the block where the messages were emitted.
+
+**Note:** The checksum of the message is calculated by concatenating the serialized block sequence index with the serialized message payload: `crypto::blake2b((message_block_index, message_payload).to_bytes())`.
 
 ### Node changes
 
@@ -185,7 +206,7 @@ The `TransactionProcessed` SSE event will contain a `messages` field that will h
 ```rust
 pub struct Message {
     /// The identity of the entity that produced the message.
-    entity_addr: AddressableEntityHash,
+    entity_addr: EntityAddr,
     /// The payload of the message.
     message: MessagePayload,
     /// The name of the topic on which the message was emitted.
@@ -235,7 +256,7 @@ The next execution will start again with the same gas cost.
 
 Storage cost will be charged based on the `wasm.storage_costs.gas_per_byte` chainspec parameter.
 
-For each emitted message 2 records are written in global state: the topic control record and the message checksum. Writing these records incurs a fixed cost based on `gas_per_byte`.
+For each emitted message 3 records are written in global state: the topic control record, the message checksum and the block message count record is changed. Writing these records incurs a fixed cost based on `gas_per_byte`.
 
 When a new topic is added 2 records are written in global state: the topic control record and the addressable entity record that is extended with the new topic name and topic name hash. Because the topic name is variable, the cost depends on the length of the topic name.
 
@@ -256,6 +277,11 @@ The advantage of this method is that it can provide lightweight correlation of m
 #### Inspecting the execution journal (off-chain metadata)
 When a transaction/deploy is processed, a log of the transforms that were applied to global state is emitted in the form of the execution results. Since every emitted message has a direct side-effect in global state by writing the message checksum, contract consumers can determine the sequence of the emitted messages by tracking the writes under the `Key::Message` in the log. By doing this, consumers can even track sequencing across messages emitted by multiple different contracts since the keys under which checksums are written are derived from the addressable entity hash.
 However this log of transforms is not committed in global state so consumers must ensure that the node providing the log can be trusted.
+
+#### Correlating block message sequence ids
+
+Each message gets assigned an unique sequence id within the block it was emitted in. For example, if in block with block time X contract A is executed and emits a message and then contract B is executed next and emits a different message, the first message will have block id 0, the second message will have block id 1. The value written under `Key::BlockMessageCount` will be `(X, 2)`.
+With this information available, we can strictly determine that the message generated by contract A was emitted before the one generated by contract B. We can be sure that this order is true because the checksum stored in global state is calculated by considering these block ids. We can also determine the exact number of messages that were emitted during the execution of this block.
 
 ## Rationale and alternatives
 
