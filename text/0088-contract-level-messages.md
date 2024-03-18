@@ -141,7 +141,7 @@ pub enum Key {
 Each message that is emitted within a single block has an unique sequence number. This record is reset with every new created block.
 The value written under this key is a tuple type `CLValue` representing the `(block_time, block_message_count)`.
 The `block_message_count`represents the total number of messages emitted in the block with the corresponding `block_time`.
-The block sequence id of the messages are global to the block and are not tied to entity address or topic.
+The block sequence ids of the messages are global to the block and are not tied to entity address or topic.
 The first message emitted in the block has block sequence id 0, the second message has block sequence id 1 and so on.
 
 #### A new `Key` variant is introduced for indexing the message topic and message checksums:
