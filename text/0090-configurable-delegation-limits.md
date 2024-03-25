@@ -54,11 +54,14 @@ New arguments would be validated to be compliant with global limits. This also r
 
 ### Forced undelegation
 
-If we decide to forcibly unstake delegators whose bids are outside newly configured limits we'd need to implement a process of bulk delegation removal.
+To enforce newly configured limits on existing delegators we'd implement a process of forced undelegation of delegator bids violating delegation limits.
 
-To avoid repeadetly fetching all `DelegatorBids` on each `add_bid` execution, this process would be ran at the end of an era, after the auction has been ran.
+To avoid repeatedly fetching all `DelegatorBids` on each `add_bid` execution, this process would be run in bulk at the end of each era,
+after the block rewards have been distributed, but before the auction is run.
 
-The implementation itself would be broadly similar to what happens currently when a validator withdraws their bid using the `withdraw_bid` entry point of the auction contract - we'd loop over all `ValidatorBids`, fetching all related `DelegatorBids` and validating their amounts. If a given stake is outside the configured limits, it would be transferred to an `UnbondingPurse` and returned to the delegator's main purse.
+The implementation itself would be broadly similar to what happens currently when a validator withdraws their bid using the `withdraw_bid` entry point 
+of the auction contract - we'd loop over all `ValidatorBids`, fetching all related `DelegatorBids` and validating their amounts. 
+If a given stake is outside the configured limits, it would be transferred to an `UnbondingPurse` and returned to the delegator's main purse after the unbonding delay.
 
 ### Additional validation in `delegate`
 
