@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casperlabs/ceps#0000](https://github.com/casperlabs/ceps/pull/0000)
+CEP PR: [casperlabs/ceps#0094](https://github.com/casperlabs/ceps/pull/94)
 
 We propose introducing a functionality of automatically undelegating all delegators from validators 
 who have been inactive for a set number of eras.
