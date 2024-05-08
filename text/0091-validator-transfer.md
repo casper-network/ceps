@@ -75,13 +75,40 @@ Previous delegator bids would have to be pruned after processing.
 
 This process is somewhat similar to the way delegator bids are currently processed within the [`withdraw_bid`](https://github.com/teonite/casper-node/blob/6d028df56ca7db2edc714603344c8888cb9e0e0e/execution_engine/src/system/auction.rs#L171) entry point or in the [`ValidatorBid` migration](https://github.com/teonite/casper-node/blob/6d028df56ca7db2edc714603344c8888cb9e0e0e/execution_engine/src/engine_state/mod.rs#L504) during protocol upgrade.
 
+### Handling `Bridge` records
+
+Bridge records will have to be followed to determine the current public key associated with a validator in following workflows:
+
+- distributing delegator rewards
+- processing unbonds
+
+To avoid potential unbounded computation issues (a looping bridge record chain) we propose limiting the max bridge record chain
+length to 20. This should handle all reasonably expected use cases, since currently a bid would have to be changed 3 times in each era 
+for an `UnbondingPurse` to become unprocessable.
+
+Additionally, we propose setting the cost of calling the `change_bid_public_key` entrypoint to twice that of `add_bid` to disincentivize
+using it as a potential attack vector.
+
 
 ## Drawbacks
 
 [drawbacks]: #drawbacks
 
+### No explicit delegator consent
+
 Introducing this functionality would mean modifying delegators' bids without their explicit consent.
 Until now this could only happen if a validator completely unstaked and delegations had to be returned.
+
+### Unprocessable entities
+
+While extremely unlikely, bridge record chains can potentialy introduce an uprocessable entity into the system. This must be handled to avoid
+breaking node functionality - a bridge record chain length error should be handled gracefully and not break the rewards distribution process.
+
+### Missing tokens
+
+If an active validator creates an unprocessable chain of bridge records it would make it impossible to distribute rewards
+and thus a lower than expected number of tokens would be minted. We believe that due to the resources needed the likelihood
+of this impacting the economy is effectively zero.
 
 ## Rationale and alternatives
 
