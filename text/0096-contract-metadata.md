@@ -8,7 +8,7 @@ This standard proposes a unified way for Casper smart contracts to self-describe
 
 All metadata is **immutable** (set once at deployment and never altered), ensuring consistency and integrity.
 
-By adopting this standard, Casper developers enable wallets, block explorers, and indexers to fetch and display contract information directly from the blockchain, much like how token standards (e.g. CEP-18 for fungible tokens or CEP-47/78 for NFTs) provide on-chain names and symbols, underscoring the community’s move toward rich on-chain identification.
+By adopting this standard, Casper developers enable wallets, network explorers, and indexers to fetch and display contract information directly from the blockchain, much like how token standards (e.g. CEP-18 for fungible tokens or CEP-95 for NFTs) provide on-chain names and symbols, underscoring the community’s move toward rich on-chain identification.
 
 **Metadata Fields**:
 
@@ -210,4 +210,4 @@ This Casper On-Chain Contract Metadata Standard, using named URef keys, provides
 - [ERC-721 (Ethereum NFT Standard)](https://eips.ethereum.org/EIPS/eip-721)
 - [Casper RPC Methods](https://docs.casper.network/developers/json-rpc/minimal-compliance)
 - [Casper Smart Contracts Guide](https://docs.casper.network/concepts/smart-contracts)
-- [CasperLabs Main GitHub](https://github.com/CasperLabs)
+- [Odra Framework](https://github.com/odradev/odra)
