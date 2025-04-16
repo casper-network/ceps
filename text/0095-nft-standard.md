@@ -4,7 +4,7 @@ Casper NFT Standard Proposal (Inspired by ERC-721 & adapted for the Casper ecosy
 
 ## Summary
 
-CEP PR: [casperlabs/ceps#0095]
+CEP PR: [casper-network/ceps#0095](https://github.com/casper-network/ceps/pull/95)
 
 This standard provides a non-fungible token (NFT) contract API that is consistent with the existing [CEP-18](https://github.com/casper-network/ceps/blob/master/text/0018-token-standard.md) fungible token standard. It aims to replace [CEP-47](https://github.com/casper-network/ceps/blob/master/text/0047-casper-nft-protocol.md) and [CEP-78](https://github.com/casper-network/ceps/blob/master/text/0078-enhanced-nft-standard.md), which have flaws that complicate their support in the ecosystem. CEP-47 lacks operator approval functionality, which makes it less convenient to integrate with NFT marketplaces. CEP-78 rather describes a configurable NFT contract that can modify its behavior to various needs, rather than a plain NFT contract API.
 
@@ -36,7 +36,7 @@ This proposal takes into account a possibility of off-chain indexing of NFTs by 
 
 [specification]: #specification
 
-### Core Casper NFT Interface
+### NFT Contract Interface
 
 [core-casper-nft-interface]: #core-casper-nft-interface
 
@@ -113,7 +113,7 @@ pub trait CEP95 {
     ///
     /// @param token_id - The NFT ID.
     /// @return Option<Key> - Approved spender account if one exists.
-    fn get_approved(&self, token_id: U256) -> Option<Key>;
+    fn approved_for(&self, token_id: U256) -> Option<Key>;
 
     /// Enables operator approval for all of the caller's NFTs.
     ///
@@ -134,7 +134,7 @@ pub trait CEP95 {
 }
 ```
 
-### Recommended Adoption of the Casper On-chain Contract Metadata Standard CEP-96
+### Contract Metadata Standard CEP-96
 
 To improve the integrity, discoverability, and user experience within the Casper ecosystem, implementers of the CEP-95 NFT Standard are strongly encouraged to also adopt the **CEP-96 Casper On-chain Contract Metadata Standard**.
 
@@ -142,9 +142,9 @@ By implementing these metadata standard, CEP-95 contracts become easily identifi
 
 We strongly recommend incorporating this metadata standard alongside CEP-95 implementations to contribute positively to ecosystem consistency, transparency, and user-friendliness.
 
-### Recommended Storage for contract data (symbol, etc.)
+### Contract symbol metadata
 
-According to the CEP-96 standard, it is recommended to store contract metadata as a form of contract level named keys using `Urefs`.
+To keep contract metadata storage consistent it is strongly recommended to follow the CEP-96 standard.
 
 **Example Named Key Usage (High-Level)**
 
@@ -183,9 +183,11 @@ According to the CEP-96 standard, it is recommended to store contract metadata a
 The CEP-95 standard provides a flexible, hybrid approach for NFT token metadata, allowing developers and consumers to leverage **both on-chain and off-chain metadata sources**.
 
 - **On-chain metadata** (`token_metadata`):
-  - This method allows direct storage of metadata within the blockchain. Metadata is stored as key-value pairs (`Vec<(String, String)>`), giving a clear yet flexible structure without enforcing a specific serialization format. When metadata is created or updated, the contract emits a `MetadataUpdate` event, ensuring that indexers and clients are immediately informed and can cache or display this data without additional lookups. 
+  - This method allows direct storage of metadata within the blockchain. Metadata is stored as key-value pairs (`Vec<(String, String)>`), giving a clear yet flexible structure without enforcing a specific serialization format.
 - **Off-chain metadata** (`token_uri`):
   - Additionally, CEP-95 supports traditional off-chain metadata retrieval via a URI. Contracts can provide a URI linking to external JSON metadata (e.g., hosted on IPFS or HTTP servers). This off-chain approach reduces on-chain storage costs and allows easier updates of non-critical metadata fields.
+
+When metadata is created or updated, the contract emits a `MetadataUpdate` event, ensuring that indexers and clients are immediately informed and can cache or display this data without additional lookups.
 
 Consumers, such as wallets, explorers, and marketplaces, benefit from this hybrid approach by first attempting to retrieve on-chain metadata for immediate trustworthiness and availability. If on-chain metadata is unavailable or limited, clients can fall back on the provided metadata URI. This method offers the best balance between efficiency, flexibility, trust, and ease of use, ensuring a smooth and user-friendly NFT experience within the Casper ecosystem.
 
@@ -211,18 +213,10 @@ pub trait CEP95TokenMetadata {
     /// @param token_id - The NFT ID.
     /// @return Option<Vec<(String, String)>> - optional metadata stored as a list of key-value pairs.
     fn token_metadata(&self, token_id: U256) -> Option<Vec<(String, String)>>;
-    
-    /// Returns a URI pointing to metadata for a specific token.
-    ///
-    /// @param token_id - The NFT ID.
-    /// @return Option<String> - A URI pointing to metadata if available.
-    fn token_uri(&self, token_id: U256) -> Option<String>;
 }
 ```
 
-### CEP-95 On-chain Metadata Schema
-
-When providing NFT metadata (either through the off-chain URI from token_uri or directly stored on-chain via token_metadata), it's highly recommended to follow this conventional JSON schema:
+### On-chain Token Metadata Schema
 
 ```json
 {
@@ -240,10 +234,26 @@ When providing NFT metadata (either through the off-chain URI from token_uri or 
         "asset_uri": {
             "type": "string",
             "description": "A URI pointing to a resource with mime type image/* representing the asset to which this NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
-        },
+        }
+    },
+    "required": []
+}
+```
+
+### Offchain Token Metadata Schema
+
+```json
+{
+    "title": "Casper NFT Metadata",
+    "type": "object",
+    "properties": {
         "token_uri": {
           "type": "string",
           "description": "A URI pointing to additional metadata stored off-chain (typically JSON format compatible with this schema)."
+        },
+        "checksum": {
+          "type": "string",
+          "description": "Checksum hash of the offchain metadata stored via token_uri"
         }
     },
     "required": []
@@ -348,6 +358,7 @@ Once an event (such as minting) is detected:
 [conclusion]: #conclusion
 
 The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and interoperability to NFT development on Casper. It provides simple methods for handling tokens, approvals, and optional metadata, making it easier for wallets, marketplaces, and indexers to work with NFTs. This proposal helps build a connected and thriving NFT ecosystem on Casper.
+
 ## Appendix
 
 [appendix]: #appendix
@@ -355,10 +366,10 @@ The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and inter
 ### Changelog
 
 - v1.0: Initial draft including CEP-95 and CEP95Metadata interfaces, event structures, and backend indexing guidelines.
-- v1.1: Updated approach with optional Token Metadata. Added examples for tracking offchain and onchain metadata. Added recommendations for storing contract metadata. Added ref with recommendation to utilise CEP-96 for contract metadata.
 
 ### References
 
 - [ERC-721 Standard on Ethereum](https://eips.ethereum.org/EIPS/eip-721)
+- [CEP-96 Contract Metadata Standard](https://github.com/casper-network/ceps/pull/96)
 - [Casper Documentation (for contract APIs and types)](https://docs.casper.network/concepts/smart-contracts)
 - [Example proposals and CEPs from the Casper community](https://github.com/make-software/casper-ceps/tree/master/text)
