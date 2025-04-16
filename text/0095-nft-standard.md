@@ -134,9 +134,9 @@ pub trait CEP95 {
 }
 ```
 
-### Recommended Adoption of the Casper On-chain Contract Metadata Standard CEP96
+### Recommended Adoption of the Casper On-chain Contract Metadata Standard CEP-96
 
-To improve the integrity, discoverability, and user experience within the Casper ecosystem, implementers of the CEP-95 NFT Standard are strongly encouraged to also adopt the **CEP96 Casper On-chain Contract Metadata Standard**.
+To improve the integrity, discoverability, and user experience within the Casper ecosystem, implementers of the CEP-95 NFT Standard are strongly encouraged to also adopt the **CEP-96 Casper On-chain Contract Metadata Standard**.
 
 By implementing these metadata standard, CEP-95 contracts become easily identifiable, understandable, and trustworthy to end-users, explorers, wallets, and marketplaces. The adoption of the On-chain Contract Metadata Standard enhances the overall integrity and usability of the Casper blockchain ecosystem and helps build user trust.
 
@@ -144,7 +144,7 @@ We strongly recommend incorporating this metadata standard alongside CEP-95 impl
 
 ### Recommended Storage for contract data (symbol, etc.)
 
-According to the CEP96 standard, it is recommended to store contract metadata as a form of contract level named keys using `Urefs`.
+According to the CEP-96 standard, it is recommended to store contract metadata as a form of contract level named keys using `Urefs`.
 
 **Example Named Key Usage (High-Level)**
 
@@ -355,7 +355,7 @@ The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and inter
 ### Changelog
 
 - v1.0: Initial draft including CEP-95 and CEP95Metadata interfaces, event structures, and backend indexing guidelines.
-- v1.1: Updated approach with optional Token Metadata. Added examples for tracking offchain and onchain metadata. Added recommendations for storing contract metadata. Added ref with recommendation to utilise CEP96 for contract metadata.
+- v1.1: Updated approach with optional Token Metadata. Added examples for tracking offchain and onchain metadata. Added recommendations for storing contract metadata. Added ref with recommendation to utilise CEP-96 for contract metadata.
 
 ### References
 
