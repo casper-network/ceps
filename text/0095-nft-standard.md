@@ -45,21 +45,14 @@ This proposal also addresses the backend indexing and tracking of NFT events (mi
 The core interface is designed to address the basic functionality required to manage non-fungible tokens. It uses Casper’s types (e.g., Key, U256) and aims to capture the semantics of ERC-721, adjusted for Casper’s execution model.
 
 ```rust
-#![no_std]
-
-use casper_contract::contract_api::{runtime, storage};
-use casper_types::{Key, URef, U256, ContractHash};
-
-/// Enum defining events that should be emitted by NFT operations
-#[derive(Debug)]
 pub enum CEP95Event {
-    /// Emitted when an NFT is minted (transfer - from=None)
+    /// Emitted when an NFT is minted
     Mint { to: Key, token_id: U256 },
 
     /// Emitted when an NFT is transferred
     Transfer { from: Key, to: Key, token_id: U256 },
     
-    /// Emitted when an NFT is burned (transfer - to=None)
+    /// Emitted when an NFT is burned
     Burn { from: Key, token_id: U256 },
 
     /// Emitted when a specific NFT is approved to an account/contract
@@ -80,7 +73,7 @@ pub trait CEP95 {
     /// Returns an optional short symbol or abbreviation for the NFT collection.
     fn symbol(&self) -> Option<String>;
 
-    /// Returns the number of NFTs owned by a given account
+    /// Returns the number of NFTs owned by a given account or contract
     ///
     /// @param owner - The account to query.
     /// @return U256 - The number of NFTs owned.
@@ -92,7 +85,7 @@ pub trait CEP95 {
     /// @return Option<Key> - The owner if it exists, else None.
     fn owner_of(&self, token_id: U256) -> Option<Key>;
 
-    /// Transfers the ownership of an NFT and performs a recipient check.
+    /// Performs a recipient check and transfers the ownership of an NFT.
     ///
     /// @param from - The current owner of the NFT.
     /// @param to - The new owner.
@@ -107,7 +100,7 @@ pub trait CEP95 {
     /// @param token_id - The NFT ID.
     fn transfer_from(&mut self, from: Key, to: Key, token_id: U256);
 
-    /// Approves another account to transfer a specific NFT.
+    /// Approves another account or contract to transfer a specific NFT.
     ///
     /// @param to - The account that will be granted approval.
     /// @param token_id - The NFT ID.
@@ -118,7 +111,7 @@ pub trait CEP95 {
     /// @param token_id - The NFT ID.
     fn revoke_approval(&mut self, token_id: U256);
 
-    /// Gets the approved account for a specific NFT.
+    /// Gets the approved account or contract for a specific NFT.
     ///
     /// @param token_id - The NFT ID.
     /// @return Option<Key> - Approved spender account if one exists.
@@ -206,7 +199,6 @@ Consumers, such as wallets, explorers, and marketplaces, benefit from this hybri
 ### Token Metadata Interface: CEP95MetadataEvent
 
 ```rust
-#[derive(Debug)]
 pub enum CEP95MetadataEvent {
     /// Emitted whenever on-chain metadata for a token is created or updated.
     ///
@@ -218,25 +210,18 @@ pub enum CEP95MetadataEvent {
     },
 }
 
-/// Optional interface for retrieving on-chain token metadata
+/// Optional interface for retrieving token metadata
 pub trait CEP95TokenMetadata {
-    /// Returns raw metadata for a given token ID.
+    /// Returns metadata for a given token ID.
     ///
     /// @param token_id - The NFT ID.
-    /// @return Option<Vec<(String, String)>> - optional metadata stored as key-value pairs.
+    /// @return Option<Vec<(String, String)>> - optional metadata stored as a list of key-value pairs.
     fn token_metadata(&self, token_id: U256) -> Option<Vec<(String, String)>>;
-    
-    /// Stores raw metadata for a given token ID.
-    /// - Optional convenience method for setting or updating on-chain metadata.
-    ///
-    /// @param token_id: The unique ID of the NFT.
-    /// @param metadata: metadata stored as key-value pairs.
-    fn set_token_metadata(&mut self, token_id: U256, metadata: Vec<(String, String)>);
     
     /// Returns a URI pointing to metadata for a specific token.
     ///
     /// @param token_id - The NFT ID.
-    /// @return Option<String> - A URI pointing to JSON metadata if available.
+    /// @return Option<String> - A URI pointing to metadata if available.
     fn token_uri(&self, token_id: U256) -> Option<String>;
 }
 ```
@@ -280,7 +265,6 @@ When providing NFT metadata (either through the off-chain URI from token_uri or 
 Efficient event tracking is essential for indexing and off-chain applications. Your NFT standard emits events for transfers, approvals, and operator approvals.
 
 ```rust
-#[derive(Debug)]
 pub enum CEP95Event {
     Mint { to: Key, token_id: U256 },
     Transfer { from: Key, to: Key, token_id: U256 },
@@ -292,9 +276,9 @@ pub enum CEP95Event {
 }
 ```
 
-- `Mint` is emitted when an NFT is minted (transfer - from=None).
+- `Mint` is emitted when an NFT is minted.
 - `Transfer` is emitted when an NFT is transferred.
-- `Burn` is emitted when an NFT is burned (transfer - to=None).
+- `Burn` is emitted when an NFT is burned.
 - `Approval` is emitted when a single NFT is approved to be transferred by another account/contract.
 - `RevokeApproval` is emitted when a specific NFT approval is revoked from an account/contract.
 - `ApprovalForAll` is emitted when an operator’s permissions for all NFTs are enabled.
@@ -303,12 +287,11 @@ pub enum CEP95Event {
 ### CEP95MetadataEvent Enum
 
 ```rust
-#[derive(Debug)]
 pub enum CEP95MetadataEvent {
     /// Emitted whenever on-chain metadata for a token is created or updated.
     ///
     /// @param token_id - The ID of the NFT whose metadata was updated
-    /// @param metadata - The raw metadata (e.g., JSON bytes)
+    /// @param metadata - The metadata represented in key/value pairs
     MetadataUpdate {
         token_id: U256,
         metadata: Vec<(String, String)>,
@@ -324,7 +307,7 @@ pub enum CEP95MetadataEvent {
 
 ### Minting an NFT
 
-- **Minting Process**: When minting a new NFT, the smart contract should emit a `Transfer` event with `from: None` and `to: Some(account_hash)`. 
+- **Minting Process**: When minting a new NFT, the smart contract should emit a `Mint` event with `to: Some(account_hash)`. 
 - **State Updates**: The contract will record the new NFT’s `token_id` with its owner and (optionally) associate metadata (via a dictionary or another persistent storage mechanism).
 
 ### Transferring an NFT
@@ -334,7 +317,7 @@ pub enum CEP95MetadataEvent {
 
 ### Approval Mechanisms
 
-- **Per-token Approval**: The `approve` function enables an account to transfer a specific NFT. If needed, revoke_approval clears that approval.
+- **Per-token Approval**: The `approve` function enables an account or contract to transfer a specific NFT. If needed, revoke_approval clears that approval.
 - **Operator Approvals**: The `approve_for_all` and `revoke_approval_for_all` functions allow a user to delegate transfer rights over their entire collection, with an event emitted to signal the change.
 
 
