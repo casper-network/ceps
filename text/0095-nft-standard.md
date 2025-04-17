@@ -43,6 +43,7 @@ This proposal takes into account a possibility of off-chain indexing of NFTs by 
 The core interface is designed to address the basic functionality required to manage non-fungible tokens. It uses Casper’s types (e.g., Key, U256) and aims to capture the semantics of ERC-721, adjusted for Casper’s execution model.
 
 ```rust
+/// Contract events
 pub enum CEP95Event {
     /// Emitted when an NFT is minted
     Mint { to: Key, token_id: U256 },
@@ -84,7 +85,14 @@ pub trait CEP95 {
     fn owner_of(&self, token_id: U256) -> Option<Key>;
 
     /// Performs a recipient check and transfers the ownership of an NFT.
-    ///
+    /// @dev Reverts unless `runtime::caller()` is the current owner, an authorised
+    ///  operator, or the approved spender for this NFT. Reverts if `from` is not
+    ///  the current owner, if `to` is the default (zero‑hash) account, or if
+    ///  `token_id` does not reference a valid NFT. Once ownership is updated and a
+    ///  `Transfer` event is emitted, the function checks whether `to` is a contract
+    ///  hash. If it is, the contract MUST call `on_cep95_received` on
+    ///  `to` and revert the entire transfer if that call is absent or returns any
+    ///  value other than `true`.
     /// @param from - The current owner of the NFT.
     /// @param to - The new owner.
     /// @param token_id - The NFT ID.
@@ -131,6 +139,23 @@ pub trait CEP95 {
     /// @param operator - The operator to check.
     /// @return bool - True if the operator is approved for all NFTs, false otherwise.
     fn is_approved_for_all(&self, owner: Key, operator: Key) -> bool;
+}
+
+/// Receiver interface
+pub trait CEP95Receiver {
+    /// Called after a `safe_transfer_from` completes its internal state update.
+    /// MUST return `true` to signal acceptance; returning `false` or reverting
+    /// causes the entire transfer to roll back.
+    ///
+    /// @param operator The account (EOA or contract) that invoked
+    ///        `safe_transfer_from`.
+    /// @param from     The previous owner of `token_id`.
+    /// @param token_id The NFT being transferred.
+    /// @param data     Opaque auxiliary data forwarded from the original call;
+    ///                 may be `None` if no extra data was supplied.
+    ///
+    /// @return bool `true` to accept the NFT, anything else to reject.
+    fn on_cep95_received(&mut self, operator: &Key, from: &Key, token_id: &U256, data: &Option<Bytes>) -> bool;
 }
 ```
 
@@ -241,7 +266,7 @@ pub trait CEP95TokenMetadata {
 }
 ```
 
-### Offchain Token Metadata Schema
+### Off-chain Token Metadata Schema
 
 ```json
 {
@@ -254,7 +279,7 @@ pub trait CEP95TokenMetadata {
         },
         "checksum": {
           "type": "string",
-          "description": "Checksum hash of the offchain metadata stored via token_uri"
+          "description": "Checksum hash of the off-chain metadata stored via token_uri"
         }
     },
     "required": []
@@ -345,7 +370,7 @@ Backend indexers or off-chain processors should listen for NFT-related events (`
   - Extract the `token_id` from the event.
   - Query the contracts metadata by either querying it from contract dictionary using `state_get_dictionary_item`, or making an onchain contract call to `token_metadata(token_id)`.
 
-### Tracking optional NFT Offchain Metadata
+### Tracking optional NFT Off-chain Metadata
 
 Once an event (such as minting) is detected:
 
@@ -368,7 +393,7 @@ The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and inter
 
 ### Changelog
 
-- v1.0: Initial draft including CEP-95 and CEP95Metadata interfaces, event structures, and backend indexing guidelines.
+- v1.0: Initial draft including CEP-95 and `CEP95Metadata` interfaces, event structures, and backend indexing guidelines.
 
 ### References
 
