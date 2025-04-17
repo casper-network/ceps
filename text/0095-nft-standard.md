@@ -69,7 +69,7 @@ pub enum CEP95Event {
 /// Casper-compatible NFT interface
 pub trait CEP95 {
     /// Returns an optional short symbol or abbreviation for the NFT collection.
-    fn symbol(&self) -> Option<String>;
+    fn symbol(&self) -> String;
 
     /// Returns the number of NFTs owned by a given account or contract
     ///
@@ -89,7 +89,7 @@ pub trait CEP95 {
     /// @param to - The new owner.
     /// @param token_id - The NFT ID.
     /// @param data - Optional payload to pass to a receiving contract.
-    fn safe_transfer_from(&mut self, from: Key, to: Key, token_id: U256, data: Option<Vec<u8>>);
+    fn safe_transfer_from(&mut self, from: Key, to: Key, token_id: U256, data: Option<Bytes>);
 
     /// Transfers the ownership of an NFT without checking the recipient contract.
     ///
@@ -150,26 +150,24 @@ To keep contract metadata storage consistent it is strongly recommended to follo
 
 1. Install/Constructor Phase:
     ```rust
-    let symbol_arg: Option<String> = runtime::get_named_arg("symbol");
-    if let Some(symbol_value) = symbol_arg {
-        // Create a new URef for the symbol and place it as a named key
-        let symbol_uref = storage::new_uref(symbol_value);
-        runtime::put_key("symbol", symbol_uref.into());
-    }
+    let symbol: String = runtime::get_named_arg("symbol");
+    
+    let symbol_uref = storage::new_uref(symbol);
+    runtime::put_key("symbol", symbol_uref.into());
     ```
 2. Interface Method:
     ```rust
     #[no_mangle]
     pub extern "C" fn symbol() {
-        let symbol: Option<String> = match runtime::get_key("symbol") {
-            Some(key) => {
-                let symbol_uref = key.into_uref().expect("symbol key is not a URef");
-                storage::read(symbol_uref).expect("unable to read symbol from storage")
-            }
-            None => None,
-        };
+        let key = runtime::get_key("symbol").expect("symbol key not found");
+
+        let symbol_uref = key.into_uref().expect("symbol key is not a URef");
+        let symbol: String = storage::read(symbol_uref)
+            .unwrap_or_revert()       // read() -> Result<Option<T>, _>
+            .unwrap_or_revert();      // Option<T> -> T (revert if None)
+    
         runtime::ret(CLValue::from_t(symbol).unwrap_or_revert());
-    } 
+    }
     ```
 
 ## Token Metadata Extension
@@ -180,12 +178,15 @@ To keep contract metadata storage consistent it is strongly recommended to follo
 
 [hybrid-approach-for-token-metadata-in-cep-95]: #hybrid-approach-for-token-metadata-in-cep-95
 
-The CEP-95 standard provides a flexible, hybrid approach for NFT token metadata, allowing developers and consumers to leverage **both on-chain and off-chain metadata sources**.
+The CEP-95 standard provides a flexible, hybrid approach for NFT token metadata, allowing developers and consumers to leverage **both on-chain and off-chain metadata sources**. Metadata is stored as key-value pairs (`Vec<(String, String)>`), giving a clear yet flexible structure without enforcing a specific serialization format.
 
-- **On-chain metadata** (`token_metadata`):
-  - This method allows direct storage of metadata within the blockchain. Metadata is stored as key-value pairs (`Vec<(String, String)>`), giving a clear yet flexible structure without enforcing a specific serialization format.
-- **Off-chain metadata** (`token_uri`):
-  - Additionally, CEP-95 supports traditional off-chain metadata retrieval via a URI. Contracts can provide a URI linking to external JSON metadata (e.g., hosted on IPFS or HTTP servers). This off-chain approach reduces on-chain storage costs and allows easier updates of non-critical metadata fields.
+- **On-chain metadata**:
+  - Contract stores all its NFT's metadata onchain.
+  - Typically, it its dictionary by `token_metadata` Uref on a contract level where key is a `token_id` and value is a metadata itself.
+- **Off-chain metadata**:
+  - Additionally, CEP-95 supports traditional off-chain metadata retrieval via a URI.
+  - Contracts can provide a `token_uri` within its onchain metadata that itself links to external metadata (e.g., hosted on IPFS or HTTP servers).
+  - This off-chain approach reduces on-chain storage costs and allows easier updates of non-critical metadata fields.
 
 When metadata is created or updated, the contract emits a `MetadataUpdate` event, ensuring that indexers and clients are immediately informed and can cache or display this data without additional lookups.
 
@@ -211,8 +212,8 @@ pub trait CEP95TokenMetadata {
     /// Returns metadata for a given token ID.
     ///
     /// @param token_id - The NFT ID.
-    /// @return Option<Vec<(String, String)>> - optional metadata stored as a list of key-value pairs.
-    fn token_metadata(&self, token_id: U256) -> Option<Vec<(String, String)>>;
+    /// @return Vec<(String, String)> - metadata stored as a list of key-value pairs.
+    fn token_metadata(&self, token_id: U256) -> Vec<(String, String)>;
 }
 ```
 
@@ -310,7 +311,7 @@ pub enum CEP95MetadataEvent {
 
 ### Minting an NFT
 
-- **Minting Process**: When minting a new NFT, the smart contract should emit a `Mint` event with `to: Some(account_hash)`. 
+- **Minting Process**: When minting a new NFT, the smart contract should emit a `Mint` event with `to: Key`. 
 - **State Updates**: The contract will record the new NFT’s `token_id` with its owner and (optionally) associate metadata (via a dictionary or another persistent storage mechanism).
 
 ### Transferring an NFT
@@ -332,24 +333,26 @@ pub enum CEP95MetadataEvent {
 
 Backend indexers or off-chain processors should listen for NFT-related events (`CEP95Event` event enum):
 
-- **Minting**: Detect a `Mint` event. Extract the `token_id` and `to` address.
-- **Transfers and Approvals**: Capture changes in ownership or approvals by parsing `Transfer`, `Approval`, `RevokeApproval`, `ApprovalForAll` and `RevokeApprovalForAll` events.
-- **Burning**: Detect a `Burn` event. Extract the `token_id` and `from` address.
-
-### Tracking optional NFT Onchain Metadata
-
-Backend indexers or off-chain processors should listen for NFT Metadata related events (`CEP95MetadataEvent` event enum):
-
-1. Detect `MetadataUpdate` event.
-2. Extract the `token_id` and `metadata` from the event.
-3. Store the NFT’s `token_id` and `metadata` in your database for efficient querying and display in applications
+- **Minting**:
+  - Detect a `Mint` event.
+  - Extract the `token_id` and `to` address.
+- **Transfers and Approvals**:
+  - Capture changes in ownership or approvals by parsing `Transfer`, `Approval`, `RevokeApproval`, `ApprovalForAll` and `RevokeApprovalForAll` events.
+- **Burning**:
+  - Detect a `Burn` event. Extract the `token_id` and `from` address.
+- **Metadata Update**:
+  - Detect `MetadataUpdate` event.
+  - Extract the `token_id` from the event.
+  - Query the contracts metadata by either querying it from contract dictionary using `state_get_dictionary_item`, or making an onchain contract call to `token_metadata(token_id)`.
 
 ### Tracking optional NFT Offchain Metadata
 
 Once an event (such as minting) is detected:
 
 1. **Extract `token_id`**: From the event, identify the newly minted NFT. 
-2. **Query token URI**: Invoke or query the contract’s `token_uri(token_id)` function using Casper’s JSON-RPC methods (e.g., `state_get_item` or `state_get_dictionary_item`) or a read-only contract call. 
+2. **Query token URI**:
+   - Query the contracts metadata by either querying it from contract dictionary using `state_get_dictionary_item`, or making an onchain contract call to `token_metadata(token_id)`.
+   - Extract `token_uri` from token onchain metadata.
 3. **Fetch Off-Chain Metadata**: With the obtained URI, perform an HTTP/IPFS fetch to retrieve the JSON metadata. Parse the fields (name, description, asset_uri, etc.). 
 4. **Indexing**: Store the NFT’s `token_id`, `owner`, and `metadata` in your database for efficient querying and display in applications.
 
