@@ -12,10 +12,10 @@ By adopting this standard, Casper developers enable wallets, network explorers, 
 
 **Metadata Fields**:
 
-- `name`: A human-readable name for the contract (e.g. "Casper DEX").
-- `description`: A brief description of the contract’s purpose or functionality.
-- `icon_uri`: A URI (URL) pointing to an icon image for the contract (e.g. a logo).
-- `project_uri`: A URI pointing to the contract’s project website or documentation.
+- `contract_name`: A human-readable name for the contract (e.g. "Casper DEX").
+- `contract_description`: A brief description of the contract’s purpose or functionality.
+- `contract_icon_uri`: A URI (URL) pointing to an icon image for the contract (e.g. a logo).
+- `contract_project_uri`: A URI pointing to the contract’s project website or documentation.
 
 Each field is optional – contracts may provide all, some, or none of these. If a field is not applicable, it simply returns `None`. By keeping these fields on-chain and unchangeable after deployment, users and tools can rely on the metadata as the authentic self-declared identity of the contract, improving transparency and reducing reliance on off-chain sources.
 
@@ -37,33 +37,33 @@ Contracts implementing this standard must expose the following entry points:
 ```rust
 pub trait CEP96ContractMetadata {
     /// Contract's human-readable name.
-    fn name(&self) -> Option<String>;
+    fn contract_name(&self) -> Option<String>;
 
     /// Brief description of the contract.
-    fn description(&self) -> Option<String>;
+    fn contract_description(&self) -> Option<String>;
 
     /// URI pointing to the contract's icon image.
-    fn icon_uri(&self) -> Option<String>;
+    fn contract_icon_uri(&self) -> Option<String>;
 
     /// URI pointing to the project's website or documentation.
-    fn project_uri(&self) -> Option<String>;
+    fn contract_project_uri(&self) -> Option<String>;
 }
 ```
 
 Each method returns `Option<String>`, allowing contracts to omit any metadata field.
 
 
-## Storage Recommendation
+## Storage Specification
 
-[storage-recommendation]: #storage-recommendation
+[storage-specification]: #storage-specification
 
 To enforce simplicity and immutability, we recommend storing each metadata field under a dedicated named URef key in the contract state. Each metadata entry (if provided at installation) is stored once and cannot be altered afterward.
 
 **URef keys**:
-- `name`
-- `description`
-- `icon_uri`
-- `project_uri`
+- `contract_name`
+- `contract_description`
+- `contract_icon_uri`
+- `contract_project_uri`
 
 If a field is omitted, its named `URef` is simply not created.
 
@@ -84,18 +84,18 @@ Here's a minimal Rust implementation demonstrating this storage pattern:
 use casper_contract::contract_api::{runtime, storage};
 use casper_types::{CLValue, URef};
 
-const NAME_KEY: &str = "name";
-const DESCRIPTION_KEY: &str = "description";
-const ICON_URI_KEY: &str = "icon_uri";
-const PROJECT_URI_KEY: &str = "project_uri";
+const NAME_KEY: &str = "contract_name";
+const DESCRIPTION_KEY: &str = "contract_description";
+const ICON_URI_KEY: &str = "contract_icon_uri";
+const PROJECT_URI_KEY: &str = "contract_project_uri";
 
 #[no_mangle]
 pub extern "C" fn init() {
     // Fetch optional metadata at deployment
-    let name: Option<String> = runtime::get_named_arg("name");
-    let description: Option<String> = runtime::get_named_arg("description");
-    let icon_uri: Option<String> = runtime::get_named_arg("icon_uri");
-    let project_uri: Option<String> = runtime::get_named_arg("project_uri");
+    let name: Option<String> = runtime::get_named_arg("contract_name");
+    let description: Option<String> = runtime::get_named_arg("contract_description");
+    let icon_uri: Option<String> = runtime::get_named_arg("contract_icon_uri");
+    let project_uri: Option<String> = runtime::get_named_arg("contract_project_uri");
 
     // Store each provided metadata field as immutable named URefs
     if let Some(name) = name {
@@ -121,25 +121,25 @@ pub extern "C" fn init() {
 }
 
 #[no_mangle]
-pub extern "C" fn name() {
+pub extern "C" fn contract_name() {
     let value: Option<String> = read_metadata(NAME_KEY);
     runtime::ret(CLValue::from_t(value).unwrap_or_revert());
 }
 
 #[no_mangle]
-pub extern "C" fn description() {
+pub extern "C" fn contract_description() {
     let value: Option<String> = read_metadata(DESCRIPTION_KEY);
     runtime::ret(CLValue::from_t(value).unwrap_or_revert());
 }
 
 #[no_mangle]
-pub extern "C" fn icon_uri() {
+pub extern "C" fn contract_icon_uri() {
     let value: Option<String> = read_metadata(ICON_URI_KEY);
     runtime::ret(CLValue::from_t(value).unwrap_or_revert());
 }
 
 #[no_mangle]
-pub extern "C" fn project_uri() {
+pub extern "C" fn contract_project_uri() {
     let value: Option<String> = read_metadata(PROJECT_URI_KEY);
     runtime::ret(CLValue::from_t(value).unwrap_or_revert());
 }
@@ -167,11 +167,11 @@ Developers can integrate this trait easily. For instance, a contract written usi
 
 To adopt this standard, tools and services in the Casper ecosystem should:
 
-- Detect compliance by checking for named keys (`name`, `description`, `icon_uri`, `project_uri`) in the contract's state via Casper RPC (`query_global_state`).
+- Detect compliance by checking for named keys (`contract_name`, `contract_description`, `contract_icon_uri`, `contract_project_uri`) in the contract's state via Casper RPC (`query_global_state`).
 - Directly query metadata via the Casper RPC interface without performing contract calls, leveraging the efficient, immutable state queries.
 - Display available metadata fields clearly:
-  - Use `name` and `icon_uri` prominently (e.g., wallet contract lists, explorer pages).
-  - Use `description` and `project_uri` in detailed views for contract transparency and user education.
+  - Use `contract_name` and `contract_icon_uri` prominently (e.g., wallet contract lists, explorer pages).
+  - Use `contract_description` and `contract_project_uri` in detailed views for contract transparency and user education.
 - Handle missions fields, since all fields are optional, gracefully handle `None` values.
 - Cache metadata permanently after initial retrieval since immutability is guaranteed.
 
