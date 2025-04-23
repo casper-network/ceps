@@ -159,14 +159,6 @@ pub trait CEP95Receiver {
 }
 ```
 
-### Contract Metadata Standard CEP-96
-
-To improve the integrity, discoverability, and user experience within the Casper ecosystem, implementers of the CEP-95 NFT Standard are strongly encouraged to also adopt the **CEP-96 Casper On-chain Contract Metadata Standard**.
-
-By implementing these metadata standard, CEP-95 contracts become easily identifiable, understandable, and trustworthy to end-users, explorers, wallets, and marketplaces. The adoption of the On-chain Contract Metadata Standard enhances the overall integrity and usability of the Casper blockchain ecosystem and helps build user trust.
-
-We strongly recommend incorporating this metadata standard alongside CEP-95 implementations to contribute positively to ecosystem consistency, transparency, and user-friendliness.
-
 ### Contract symbol metadata
 
 To keep contract metadata storage consistent it is strongly recommended to follow the CEP-96 standard.
