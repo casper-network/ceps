@@ -6,8 +6,6 @@
 
 This standard proposes a unified way for Casper smart contracts to self-describe with on-chain metadata, improving contract discoverability and trust. It defines optional metadata fields – `name`, `description`, `icon_uri`, and `project_uri` – which a contract can expose via dedicated entry points. These fields allow a contract to broadcast its human-readable name and purpose, along with links to an icon image and project website.
 
-All metadata is **immutable** (set once at deployment and never altered), ensuring consistency and integrity.
-
 By adopting this standard, Casper developers enable wallets, network explorers, and indexers to fetch and display contract information directly from the blockchain, much like how token standards (e.g. CEP-18 for fungible tokens or CEP-95 for NFTs) provide on-chain names and symbols, underscoring the community’s move toward rich on-chain identification.
 
 **Metadata Fields**:
@@ -25,8 +23,7 @@ Each field is optional – contracts may provide all, some, or none of these. If
 
 - Establish a uniform and simple approach for contract metadata storage. 
 - Enhance contract discoverability and transparency for end-users. 
-- Simplify indexing and display logic for tools like wallets and explorers. 
-- Ensure metadata integrity through immutability.
+- Simplify indexing and display logic for tools like wallets and explorers.
 
 ## Specification
 
@@ -57,7 +54,7 @@ Each method returns `Option<String>`, allowing contracts to omit any metadata fi
 
 [storage-specification]: #storage-specification
 
-To enforce simplicity and immutability, we recommend storing each metadata field under a dedicated named URef key in the contract state. Each metadata entry (if provided at installation) is stored once and cannot be altered afterward.
+To enforce simplicity, we recommend storing each metadata field under a dedicated named URef key in the contract state. Each metadata entry (if provided at installation) is stored once and cannot be altered afterward.
 
 **URef keys**:
 - `contract_name`
@@ -72,7 +69,6 @@ Here are the benefits of **URef-based Metadata Storage**:
 - **Simplicity**: Easy for developers and tools to implement; minimal complexity.
 - **Discoverability**: Named keys are easy to query directly via RPC.
 - **Efficiency**: No need to parse or manage additional storage structures; direct access to metadata.
-- **Immutability**: Reinforces trust and consistency across the ecosystem.
 
 ## Example Implementation
 
@@ -97,7 +93,6 @@ pub extern "C" fn init() {
     let icon_uri: Option<String> = runtime::get_named_arg("contract_icon_uri");
     let project_uri: Option<String> = runtime::get_named_arg("contract_project_uri");
 
-    // Store each provided metadata field as immutable named URefs
     if let Some(name) = name {
         let uref = storage::new_uref(name);
         runtime::put_key(NAME_KEY, uref.into());
@@ -117,7 +112,6 @@ pub extern "C" fn init() {
         let uref = storage::new_uref(project_uri);
         runtime::put_key(PROJECT_URI_KEY, uref.into());
     }
-    // No setters provided: immutability guaranteed
 }
 
 #[no_mangle]
@@ -154,8 +148,7 @@ fn read_metadata(key_name: &str) -> Option<String> {
 
 **Explanation**:
 - The `init` function creates and stores metadata URefs only once at contract deployment.
-- Metadata retrieval functions (`name`, `description`, etc.) expose the stored data immutably.
-- No setters are provided, enforcing immutability after deployment.
+- Metadata retrieval functions (`name`, `description`, etc.) expose the stored data.
 
 **Example Usage**: If a user (or another contract) calls the `name()` entry point (via an RPC query or contract call), the contract will respond with either `Some("Casper DEX")` (for example) or `None` if no name was set. Similarly, calling `icon_uri()` might return `Some("https://example.com/casperdex.png")` which a UI can use to load the icon, or `None` if the contract didn’t specify an icon.
 
@@ -168,12 +161,12 @@ Developers can integrate this trait easily. For instance, a contract written usi
 To adopt this standard, tools and services in the Casper ecosystem should:
 
 - Detect compliance by checking for named keys (`contract_name`, `contract_description`, `contract_icon_uri`, `contract_project_uri`) in the contract's state via Casper RPC (`query_global_state`).
-- Directly query metadata via the Casper RPC interface without performing contract calls, leveraging the efficient, immutable state queries.
+- Directly query metadata via the Casper RPC interface without performing contract calls, leveraging the efficient state queries.
 - Display available metadata fields clearly:
   - Use `contract_name` and `contract_icon_uri` prominently (e.g., wallet contract lists, explorer pages).
   - Use `contract_description` and `contract_project_uri` in detailed views for contract transparency and user education.
 - Handle missions fields, since all fields are optional, gracefully handle `None` values.
-- Cache metadata permanently after initial retrieval since immutability is guaranteed.
+- Cache metadata permanently after initial retrieval.
 
 ## Encouraging Community Adoption
 
@@ -189,7 +182,7 @@ To maximize impact, we recommend:
 
 [conclusion]: #conclusion
 
-This Casper On-Chain Contract Metadata Standard, using named URef keys, provides a simple yet powerful mechanism for contracts to publish immutable metadata directly on-chain. By standardizing metadata storage and access, the Casper community enhances transparency, usability, and integrity throughout the ecosystem. Broad adoption by contract developers and integration by ecosystem tools will significantly improve discoverability and user trust, positioning Casper at the forefront of user-friendly blockchain ecosystems.
+This Casper On-Chain Contract Metadata Standard, using named URef keys, provides a simple yet powerful mechanism for contracts to publish metadata directly on-chain. By standardizing metadata storage and access, the Casper community enhances transparency, usability, and integrity throughout the ecosystem. Broad adoption by contract developers and integration by ecosystem tools will significantly improve discoverability and user trust, positioning Casper at the forefront of user-friendly blockchain ecosystems.
 
 ## Appendix
 
