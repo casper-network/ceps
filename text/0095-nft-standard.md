@@ -29,7 +29,8 @@ The objective of this proposal is to define a Casper-compatible NFT standard tha
 - Tracking ownership of NFTs.
 - Transferring NFTs safely between accounts and contracts.
 - Managing per-token approvals as well as operator-level approvals.
-- (Optionally) exposing metadata (name, symbol, token URI) that describes the underlying asset details.
+- Exposing token contract metadata (token_name, token_symbol).
+- (Optionally) exposing token metadata that describes the underlying asset details (name, description, asset_uri, token_uri).
 
 This proposal takes into account a possibility of off-chain indexing of NFTs by specifying interfaces of the events that can be used to track the contract activity.
 ## Specification
@@ -69,7 +70,10 @@ pub enum CEP95Event {
 
 /// Casper-compatible NFT interface
 pub trait CEP95 {
-    /// Returns an optional short symbol or abbreviation for the NFT collection.
+    /// Returns a name of the NFT token/collection.
+    fn name(&self) -> String;
+
+    /// Returns a short symbol or abbreviation for the NFT token/collection.
     fn symbol(&self) -> String;
 
     /// Returns the number of NFTs owned by a given account or contract
@@ -159,7 +163,7 @@ pub trait CEP95Receiver {
 }
 ```
 
-### Contract symbol metadata
+### Token Contract metadata
 
 To keep contract metadata storage consistent it is strongly recommended to follow the CEP-96 standard.
 
@@ -167,23 +171,35 @@ To keep contract metadata storage consistent it is strongly recommended to follo
 
 1. Install/Constructor Phase:
     ```rust
-    let symbol: String = runtime::get_named_arg("symbol");
+    let token_name: String = runtime::get_named_arg("name");
+    let token_symbol: String = runtime::get_named_arg("symbol");
     
-    let symbol_uref = storage::new_uref(symbol);
-    runtime::put_key("symbol", symbol_uref.into());
+    let token_name_uref = storage::new_uref(token_name);
+    runtime::put_key("name", token_name_uref.into());
+   
+    let token_symbol_uref = storage::new_uref(token_symbol);
+    runtime::put_key("symbol", token_symbol_uref.into());
     ```
 2. Interface Method:
     ```rust
-    #[no_mangle]
+    pub extern "C" fn name() {
+        let key = runtime::get_key("name").expect("name key not found");
+
+        let token_name_uref = key.into_uref().expect("name key is not a URef");
+        let token_name: String = storage::read(token_name_uref)
+            .unwrap_or_revert();       // read() -> Result<String, _>
+    
+        runtime::ret(CLValue::from_t(token_name).unwrap_or_revert());
+    }
+   
     pub extern "C" fn symbol() {
         let key = runtime::get_key("symbol").expect("symbol key not found");
-
-        let symbol_uref = key.into_uref().expect("symbol key is not a URef");
-        let symbol: String = storage::read(symbol_uref)
-            .unwrap_or_revert()       // read() -> Result<Option<T>, _>
-            .unwrap_or_revert();      // Option<T> -> T (revert if None)
     
-        runtime::ret(CLValue::from_t(symbol).unwrap_or_revert());
+        let token_symbol_uref = key.into_uref().expect("symbol key is not a URef");
+        let token_symbol: String = storage::read(token_symbol_uref)
+            .unwrap_or_revert();       // read() -> Result<String, _>
+    
+        runtime::ret(CLValue::from_t(token_symbol).unwrap_or_revert());
     }
     ```
 
@@ -258,6 +274,9 @@ pub trait CEP95TokenMetadata {
 }
 ```
 
+* Named Key for dictionary: `token_metadata`
+* Key Structure: token_metadata[<token_id>]
+
 ### Off-chain Token Metadata Schema
 
 ```json
@@ -277,6 +296,9 @@ pub trait CEP95TokenMetadata {
     "required": []
 }
 ```
+
+* Named Key for dictionary: `token_metadata`
+* Key Structure: token_metadata[<token_id>]
 
 ## Event Structure
 
@@ -350,6 +372,8 @@ pub enum CEP95MetadataEvent {
 
 Backend indexers or off-chain processors should listen for NFT-related events (`CEP95Event` event enum):
 
+Note: Important mention that conventionally CES (Casper Event Standard) events should be used by default, but in the future the spec might be updated adding native events.
+
 - **Minting**:
   - Detect a `Mint` event.
   - Extract the `token_id` and `to` address.
@@ -393,3 +417,4 @@ The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and inter
 - [CEP-96 Contract Metadata Standard](https://github.com/casper-network/ceps/pull/96)
 - [Casper Documentation (for contract APIs and types)](https://docs.casper.network/concepts/smart-contracts)
 - [Example proposals and CEPs from the Casper community](https://github.com/make-software/casper-ceps/tree/master/text)
+- [Casper Event Standard](https://github.com/make-software/casper-event-standard)
