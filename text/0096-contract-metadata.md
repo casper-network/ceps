@@ -147,10 +147,10 @@ fn read_metadata(key_name: &str) -> Option<String> {
 ```
 
 **Explanation**:
-- The `init` function creates and stores metadata URefs only once at contract deployment.
+- The `call` function creates and stores metadata URefs only once at contract deployment.
 - Metadata retrieval functions (`name`, `description`, etc.) expose the stored data.
 
-**Example Usage**: If a user (or another contract) calls the `name()` entry point (via an RPC query or contract call), the contract will respond with either `Some("Casper DEX")` (for example) or `None` if no name was set. Similarly, calling `icon_uri()` might return `Some("https://example.com/casperdex.png")` which a UI can use to load the icon, or `None` if the contract didn’t specify an icon.
+**Example Usage**: If a user (or another contract) calls the `name()` entry point (via a contract call), the contract will respond with either `Some("Casper DEX")` (for example) or `None` if no name was set. Similarly, calling `icon_uri()` might return `Some("https://example.com/casperdex.png")` which a UI can use to load the icon, or `None` if the contract didn’t specify an icon.
 
 Developers can integrate this trait easily. For instance, a contract written using the Odra framework or similar could derive or implement the `CEP96ContractMetadata` trait, and internally it could manage the storage as shown. The important part is that the compiled contract exports the four functions with the correct signatures.
 
@@ -160,12 +160,11 @@ Developers can integrate this trait easily. For instance, a contract written usi
 
 To adopt this standard, tools and services in the Casper ecosystem should:
 
-- Detect compliance by checking for named keys (`contract_name`, `contract_description`, `contract_icon_uri`, `contract_project_uri`) in the contract's state via Casper RPC (`query_global_state`).
-- Directly query metadata via the Casper RPC interface without performing contract calls, leveraging the efficient state queries.
+- Detect compliance by checking for named keys (`contract_name`, `contract_description`, `contract_icon_uri`, `contract_project_uri`) in the contract's state querying metadata via Casper RPC (`query_global_state`).
 - Display available metadata fields clearly:
   - Use `contract_name` and `contract_icon_uri` prominently (e.g., wallet contract lists, explorer pages).
   - Use `contract_description` and `contract_project_uri` in detailed views for contract transparency and user education.
-- Handle missions fields, since all fields are optional, gracefully handle `None` values.
+- Handle missing fields, since all fields are optional, gracefully handle `None` values.
 - Cache metadata permanently after initial retrieval.
 
 ## Encouraging Community Adoption
