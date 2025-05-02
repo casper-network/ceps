@@ -86,7 +86,7 @@ const ICON_URI_KEY: &str = "contract_icon_uri";
 const PROJECT_URI_KEY: &str = "contract_project_uri";
 
 #[no_mangle]
-pub extern "C" fn init() {
+pub extern "C" fn call() {
     // Fetch optional metadata at deployment
     let name: Option<String> = runtime::get_named_arg("contract_name");
     let description: Option<String> = runtime::get_named_arg("contract_description");
