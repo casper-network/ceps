@@ -24,7 +24,7 @@ A standard interface for non-fungible tokens (NFTs) on the Casper network enable
 
 [objective]: #objective
 
-The objective of this proposal is to define a Casper-compatible NFT standard that supports:
+The goal of this proposal is to define a Casper-compatible NFT standard that supports:
 
 - Tracking ownership of NFTs.
 - Transferring NFTs safely between accounts and contracts.
@@ -81,7 +81,7 @@ pub trait CEP95 {
 
     /// Returns the number of NFTs owned by a given account or contract
     ///
-    /// @param owner - The account to query.
+    /// @param owner - The account or contract to query.
     /// @return U256 - The number of NFTs owned.
     fn balance_of(&self, owner: Key) -> U256;
 
@@ -94,7 +94,7 @@ pub trait CEP95 {
     /// Performs a recipient check and transfers the ownership of an NFT.
     /// @dev Reverts unless `runtime::caller()` is the current owner, an authorised
     ///  operator, or the approved spender for this NFT. Reverts if `from` is not
-    ///  the current owner, if `to` is the default (zero‑hash) account, or if
+    ///  the current owner, if `to` is the default (zero‑hash) address, or if
     ///  `token_id` does not reference a valid NFT. Once ownership is updated and a
     ///  `Transfer` event is emitted, the function checks whether `to` is a contract
     ///  hash. If it is, the contract MUST call `on_cep95_received` on
@@ -115,7 +115,7 @@ pub trait CEP95 {
 
     /// Approves another account or contract to transfer a specific NFT.
     ///
-    /// @param to - The account that will be granted approval.
+    /// @param spender - The account that will be granted approval.
     /// @param token_id - The NFT ID.
     fn approve(&mut self, spender: Key, token_id: U256);
 
@@ -127,7 +127,7 @@ pub trait CEP95 {
     /// Gets the approved account or contract for a specific NFT.
     ///
     /// @param token_id - The NFT ID.
-    /// @return Option<Key> - Approved spender account if one exists.
+    /// @return Option<Key> - Approved spender account or contract if one exists.
     fn approved_for(&self, token_id: U256) -> Option<Key>;
 
     /// Enables operator approval for all of the caller's NFTs.
@@ -160,7 +160,7 @@ pub trait CEP95Receiver {
     /// MUST return `true` to signal acceptance; returning `false` or reverting
     /// causes the entire transfer to roll back.
     ///
-    /// @param operator The account (EOA or contract) that invoked
+    /// @param operator The account or contract that invoked
     ///        `safe_transfer_from`.
     /// @param from     The previous owner of `token_id`.
     /// @param token_id The NFT being transferred.
@@ -226,7 +226,7 @@ The CEP-95 standard provides a flexible, hybrid approach for NFT token metadata,
 
 - **On-chain metadata**:
   - Contract stores all its NFT's metadata onchain.
-  - Typically, it its dictionary by `token_metadata` Uref on a contract level where key is a `token_id` and value is a metadata itself.
+  - Typically, it is stored as a dictionary under `token_metadata` Uref on a contract level where key is a `token_id` and value is a metadata itself.
 - **Off-chain metadata**:
   - Additionally, CEP-95 supports traditional off-chain metadata retrieval via a URI.
   - Contracts can provide a `token_uri` within its onchain metadata that itself links to external metadata (e.g., hosted on IPFS or HTTP servers).
@@ -383,5 +383,5 @@ The Casper NFT Standard (inspired by ERC-721) aims to bring uniformity and inter
 - [ERC-721 Standard on Ethereum](https://eips.ethereum.org/EIPS/eip-721)
 - [CEP-96 Contract Metadata Standard](https://github.com/casper-network/ceps/pull/96)
 - [Casper Documentation (for contract APIs and types)](https://docs.casper.network/concepts/smart-contracts)
-- [Example proposals and CEPs from the Casper community](https://github.com/make-software/casper-ceps/tree/master/text)
+- [Example proposals and CEPs from the Casper community](https://github.com/casper-network/ceps/tree/master/text)
 - [Casper Event Standard](https://github.com/make-software/casper-event-standard)
