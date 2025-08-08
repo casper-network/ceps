@@ -214,6 +214,54 @@ To keep contract metadata storage consistent it is strongly recommended to follo
     }
     ```
 
+## Storage structure
+
+#### Storage interface
+Querying token state from off-chain indexers requires a stable layout. The storage layout below is part of the CEP-95 standard.
+
+### Simple values (Named Keys)
+The following simple values are stored under the contract’s named keys:
+
+`name` → `String` — collection name.
+
+`symbol` → `String` — collection symbol.
+
+### Dictionaries
+All dictionaries are stored under the following named keys. Keys are derived from CLType-encoded bytes of the logical key and then encoded as noted.
+
+1. *Balances* — named key: `balances`
+    * *Logical key*: holder `Key`
+    * *Derivation*: `CLType` encode `Key` → `base64` string
+    * *Value*: `U256` (count of NFTs held)
+2. *Owners* — named key: `owners`
+   * *Logical key*: `token_id: U256`
+   * *Derivation*: CLType encode `U256` → base64 string
+   * *Value*: `Option<Key>` — `Some(owner)` if token exists; `None` if burned/unminted
+3. *Approvals* — named key: `approvals`
+   * *Logical key*: `token_id: U256`
+   * *Derivation*: `CLType` encode `U256` → `base64` string
+   * *Value*: `Option<Key>` — approved spender for that token, or `None`.
+4. *Operator approvals (approve-for-all)* — named key: `operators`
+   * *Logical key*: pair (owner: `Key`, operator: `Key`)
+   * *Derivation*: `CLType` encode owner and operator, concatenate, then blake2b hash the bytes; encode hash as hex string
+   * *Value*: `bool` — true if operator is approved to manage all of owner’s tokens
+5. *Token metadata* — named key: `token_metadata`
+   * *Logical key*: `token_id: U256`.
+   * *Derivation*: `CLType` encode `U256` → base64 string.
+   * *Value*: `BTreeMap<String, String>` — on-chain metadata key/value pairs.
+
+#### Key-derivation examples (illustrative)
+```rust
+// balances: base64(CLType(Key))
+base64(CLType::to_bytes(&address))
+
+// owners / approvals / metadata: base64(CLType(U256))
+base64(CLType::to_bytes(&token_id))
+
+// operators: hex(blake2b(CLType(owner) || CLType(operator)))
+hex(blake2b(join(CLType::to_bytes(&owner), CLType::to_bytes(&operator))))
+```
+
 ## Token Metadata
 
 [token-metadata]: #token-metadata
