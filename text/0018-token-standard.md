@@ -1,251 +1,261 @@
 # Casper Payments: Casper Token Standard
 
 ## Summary
-A standard interface for the CSPR and the custom made tokens.
-
-## Motivation
-Having a token standard enables other projects to generalized on top it and makes
-integration easy, especially for wallets, DAOs and DeFi products like decentralized
-exchanges and liquidity pools. Defining a token standard before releasing
-the mainnet gives use the unique opportunity to implement this standard for our
-native platform token CSPR. It allows developers to reduce amount of code, 
-because it is no longer required to handle 2 cases: one for native
-token and the other for a tokens implementing current token standard. 
-
-In the design we decided to get away from the purse based model and use 
-the account based model. As a main inspiration we point at ERC-20 standard
-known from Ethereum. It is the most widely adopted standard in the blockchain
-space, successfully ported outside of Ethereum. Thanks to the unique ability
-of Casper to execute code in the account's context, the main drawback of ERC-20,
-which is the "approve and call" pattern is no longer a problem.
-
-## Guide-level explanation
-### Interface
-The token contract should implement following endpoints.
-
-#### name
-Returns the token name.
-```rust
-fn name() -> String
-```
-
-#### symbol
-Returns the token symbol.
-```rust
-fn symbol() -> String
-```
-
-#### decimals
-Returns the number of token decimals.
-```rust
-fn decimals() -> u8
-```
-
-#### balance_of
-Returns the amount of tokens given address holds.
-```rust
-fn balanceOf(address: Address) -> U512
-```
-
-#### transfer
-Transfer tokens from the direct function caller to the `recipient`.
-```rust
-fn transfer(recipient: Address, amount: U512)
-```
-
-#### approve
-Allow other address to transfer caller's tokens.
-```rust
-fn approve(spender: Address, amount: U512)
-```
-
-#### increase_allowance
-Atomically increases the allowance granted to spender by the caller.
-```rust
-fn increase_allowance(spender: Address, amount: U512)
-```
-
-#### decrease_allowance
-Atomically decreases the allowance granted to spender by the caller.
-```rust
-fn decrease_allowance(spender: Address, amount: U512)
-```
-
-#### allowance
-Returns the amount allowed to spend.
-```rust
-fn allowance(owner: Address, spender: Address) -> U512
-```
-
-#### transfer_from
-Transfer tokens from `onwer` address to the `recipient` address if required
-amount was approved before to be spend by the direct caller.
-The operation should decrement approved amount.
-```rust
-fn transfer_from(owner: Address, recipient: Address, amount: U512)
-```
-
-### Compare to ERC-20
-While very similar to ERC-20, this standard is a bit different:
-1. Methods: `name`, `symbol` and `decimals` are required.
-2. Names of arguments are part of the standard.
-
-## Reference-level explanation
-### Custom tokens
-We have successfully tested the implementation of ERC-20-based token.
-Code is available at https://github.com/casper-ecosystem/cep18. 
-
-### Casper Token
-Currently Casper Token implements purse-based model. To support presented
-standard reimplementation of Casper Token (Mint) is required. In addition 
-Casper Token should be deployed at a know Address.
-
-It should be possible to implement host-side interface, that manipulates
-the memory directly, so CSPR transfers are as fast as possible.
-
-## Rationale
-In this section we compare purse-based model and account-based model.
-
-Purse-based model allows accounts and contracts on creation of object
-called `purses`. Each purse can have it's own balance. Each purse have
-unique token access, that allows for tokens spending. This token access 
-has to passed to contracts to send tokens.
-
-### Scenario
-Let's consider the most widely used scenario of interaction between two
-contracts: sending tokens from contract to contract. In this example we
-assume that:
-1. `Oracle` contract is already deployed and can provide a dollar price for tokens.
-2. `TokenEx` contract is deployed.
-3. `Vault` contract is deployed.
-4. `Source` contract is deployed.
-5. Goal is to transfer 10 dollars worth of Ex tokens into the `Vault` from the `Source`.
-6. Scenario starts by calling `action` on `Source`.
-
-Below code is pseudo-code.
-
-### Purse-based Model.
-In this example `TokenEx` implements purse-based model.
-```rust
-[#casper_contract]
-mod Source {
-
-    [#casper_method]
-    fn action(max_amount_of_tokens_allowed: U512) {
-        // Read purse from the local contract's memory.
-        let main_purse: URef = runtime::get_key("contracts_main_purse_for_ex_tokens");
-
-        // Call the Token contract to transfer tokens into the new purse.
-        // That's important, so the `Vault` contract is not exposed to the whole balance.
-        let intermediate_purse: URef = 
-            runtime::call_contract("token_ex_address", "transfer_to_new_purse", runtime_args!{
-                from => main_purse,
-                amount => max_amount_of_tokens_allowed
-            });
-
-        // Deposit tokens.
-        runtime::call_contract("vault_address", "deposit_10_dollars", runtime_args!{
-            ex_purse => intermediate_purse
-        });
-
-        // Transfer back the remaining from intermediate_purse to have all
-        // the Ex tokens on one purse.
-        runtime::call_contract("token_ex_address", "transfer_all", runtime_args!{
-            from => intermediate_purse,
-            to => main_purse
-        });
-    }
-}
-
-[#casper_contract]
-mod Vault {
-
-    [#casper_method]
-    fn deposit_10_dollars(ex_purse: URef) {
-        let main_purse: URef = runtime::get_key("contracts_main_purse_for_ex_tokens");
-        let price = runtime::call_contract("oracle_address", "ex_price");
-        let expected_amount = 10.0 / price;
-        runtime::call_contact("token_ex_address", "transfer", runtime_args!{
-            from => ex_purse,
-            to => main_purse,
-            amount => expected_amount
-        });
-    }
-}
-```
-
-### Account-based Model.
-In this example `TokenEx` implements account-based model.
-```rust
-[#casper_contract]
-mod Source {
-
-    [#casper_method]
-    fn action(max_amount_of_tokens_allowed: U512) {
-        // Approve tokens.
-        runtime::call_contract("token_ex_address", "approve", runtime_args!{
-            spender => "vault_address",
-            amount => max_amount_of_tokens_allowed
-        });
-
-        // Deposit tokens.
-        runtime::call_contract("vault_address", "deposit_10_dollars", runtime_args!{});
-    }
-}
-
-[#casper_contract]
-mod Vault {
-
-    [#casper_method]
-    fn deposit_10_dollars() {
-        let price = runtime::call_contract("oracle_address", "ex_price");
-        let expected_amount = 10.0 / price;
-        runtime::call_contact("token_ex_address", "transferFrom", runtime_args!{
-            from => runtime::get_caller(),
-            to => "vault_address",
-            amount => expected_amount
-        });
-    }
-}
-```
-
-
-Account-based model is better because:
-1. It doesn't require contracts and accounts to maintain purses in their 
-   named keys space.
-2. Transferring tokens in a purse-based model creates a lot of empty purses, that 
-   probably will never be reused. The solution for that might some sort of 
-   garbage collector, but that's just not a problem with the account-based model.
-3. In most cases accounts and contracts will want to have all the tokens of one
-   type in a single purse. That makes accounting much easier (also much cheaper).
-   Account-based model gives that by the design.
-4. Most of the platforms have token defined that way. Following that path,
-   makes it much easier for developers to implement smart contract, because that's
-   what they already know.
-5. It will allow for much better Solidity portability via the Caspiler transpiler. 
-
-### Approve and Call Problem
-On Ethereum it is problematic for accounts to interact with contracts, that require
-tokens. The account has to first call the `approve` function, wait for it, to
-be executed and only then call desired contract's method.
-
-On Casper platform contracts can provide helper functions for accounts, that are executed
-in the account context. That helper function can easily aggregate multiple approves
-and contract calls into one call.
-
-## Drawbacks and alternatives
-The alternative is to:
-1. Keep current implementation of Mint and wait for more feedback on purse-based model.
-2. Do not define any standard and see what would the community do.
+A standard interface for fungible tokens on the Casper blockchain. The standard
+is inspired by the ERC-20 standard from Ethereum and is designed to be easy to
+implement and use. The standard defines a set of entry points, events, error
+codes, and storage structures that all CEP-18 tokens must implement.
 
 ## Prior art
 We point at ERC-20 a the main source of influence: https://eips.ethereum.org/EIPS/eip-20
 
-## Unresolved questions
-It is useful if the interaction with contracts generates events, that describe 
-what happened. Currently the Casper platform doesn't have that features, 
-so this standard will have to be updated in a future, when the shape of the event 
-functionality is known.
+## Specification
 
-The standard doesn't cover the upgradeability story. Maybe it should?
+The CEP-18 token is defined by 4 components:
+- entrypoints,
+- events,
+- error codes,
+- storage structure.
 
+Below definitions use Rust syntax, but they are not Rust specific.
+
+### Entrypoints interface
+
+Contracts implementing this standard must expose the following entry points:
+
+```rust
+pub trait CEP18Interface {
+    /// Returns the token name.
+    fn name(&self) -> String;
+
+    /// Returns the token symbol.
+    fn symbol(&self) -> String;
+
+    /// Returns the number of token decimals.
+    fn decimals(&self) -> u8;
+
+    /// Returns the total supply of tokens.
+    fn total_supply(&self) -> U256;
+
+    /// Returns the amount of tokens given address holds.
+    /// The `account` is the address of the token holder.
+    fn balance_of(&self, account: Key) -> U256;
+
+    /// Returns the amount allowed to spend.
+    /// The `owner` is the address of the token holder.
+    /// The `spender` is the address of the account that is allowed to spend
+    /// the tokens on behalf of the owner.
+    fn allowance(&self, owner: Key, spender: Key) -> U256;
+
+    /// Transfer tokens from the direct function caller to the `recipient`.
+    /// The caller is the sender of the tokens.
+    /// The `recipient` is the address of the account that will receive the tokens.
+    /// The `amount` is the number of tokens to transfer.
+    /// The transfer should fail:
+    /// - if the caller does not have enough tokens,
+    /// - if the recipient is the owner itself.
+    fn transfer(&mut self, recipient: Key, amount: U256);
+
+    /// Transfer tokens from `owner` address to the `recipient` address if required.
+    /// The caller is the spender of the tokens.
+    /// The `owner` is the address of the token holder.
+    /// The `recipient` is the address of the account that will receive the tokens.
+    /// The `amount` is the number of tokens to transfer.
+    /// The transfer should fail:
+    /// - if the recipient is the owner itself,
+    /// - if the owner does not have enough tokens,
+    /// - if the caller does not have enough allowance.
+    fn transfer_from(&mut self, owner: Key, recipient: Key, amount: U256);
+
+    /// Allow other address to transfer caller's tokens.
+    /// The `spender` is the address of the account that is allowed to spend
+    /// the tokens on behalf of the caller.
+    /// The `amount` is the number of tokens to approve.
+    fn approve(&mut self, spender: Key, amount: U256);
+
+    /// Atomically decreases the allowance granted to spender by the caller.
+    /// If the `decr_by` is greater than the current allowance, the allowance
+    /// is set to zero.
+    /// The `spender` is the address of the account that is allowed to spend
+    /// the tokens on behalf of the caller.
+    /// The `decr_by` is the amount by which the allowance should be decreased.
+    fn decrease_allowance(&mut self, spender: Key, decr_by: U256);
+
+    /// Atomically increases the allowance granted to spender by the caller.
+    /// If the sum of the current allowance and `inc_by` is greater than the
+    /// maximum value of U256, the allowance is set to the maximum value of U256.
+    /// The `spender` is the address of the account that is allowed to spend
+    /// the tokens on behalf of the caller.
+    /// The `inc_by` is the amount by which the allowance should be increased.
+    fn increase_allowance(&mut self, spender: Key, inc_by: U256);
+}
+```
+
+### Events interface
+
+Changes to the token state should be communicated to the outside world using events.
+Events should be emitted using [Casper Event Standard](https://github.com/make-software/casper-event-standard).
+
+Events definition:
+```rust
+pub enum CEP18Event {
+    /// An event emitted when a mint operation is performed.
+    Mint {
+        /// The recipient of the minted tokens.
+        recipient: Key,
+        /// The amount of tokens minted.
+        amount: U256
+    },
+
+    /// Emitted when the token is burned.
+    Burn {
+        /// The owner of the tokens that are burned.
+        owner: Key,
+        /// The amount of tokens burned.
+        amount: U256
+    },
+
+    /// An event emitted when an allowance is set.
+    SetAllowance {
+        /// The owner of the tokens.
+        owner: Key,
+        /// The spender that is allowed to spend the tokens.
+        spender: Key,
+        /// The allowance amount.
+        allowance: U256
+    },
+
+    /// An event emitted when an allowance is increased.
+    IncreaseAllowance {
+        /// The owner of the tokens.
+        owner: Key,
+        /// The spender that is allowed to spend the tokens.
+        spender: Key,
+        /// The final allowance amount.
+        allowance: U256,
+        /// The amount by which the allowance was increased.
+        inc_by: U256
+    },
+
+    /// An event emitted when an allowance is decreased.
+    DecreaseAllowance {
+        /// The owner of the tokens.
+        owner: Key,
+        /// The spender that is allowed to spend the tokens.
+        spender: Key,
+        /// The final allowance amount.
+        allowance: U256,
+        /// The amount by which the allowance was decreased.
+        decr_by: U256
+    },
+
+    /// An event emitted when a transfer is performed.
+    Transfer {
+        /// The sender of the tokens.
+        sender: Key,
+        /// The recipient of the tokens.
+        recipient: Key,
+        /// The amount of tokens transferred.
+        amount: U256
+    },
+
+    /// An event emitted when a transfer_from is performed.
+    TransferFrom {
+        /// The spender that is allowed to spend the tokens.
+        spender: Key,
+        /// The sender of the tokens.
+        owner: Key,
+        /// The recipient of the tokens.
+        recipient: Key,
+        /// The amount of tokens transferred.
+        amount: U256
+    }
+}
+```
+
+### Error Codes interface
+
+The CEP-18 token contract should revert with the following error codes
+when the appropriate conditions are met:
+
+```rust
+pub enum CEP18Error {
+    /// Spender does not have enough balance.
+    InsufficientBalance = 60001,
+    /// Spender does not have enough allowance approved.
+    InsufficientAllowance = 60002,
+    /// The user cannot target themselves.
+    CannotTargetSelfUser = 60003,
+}
+```
+
+### Storage inteface
+
+Querying the token state requires direct access to the contract storage. For
+this reason, the layout of the CEP-18's contract storage is also part of the
+standard.
+
+#### Simple values
+
+All the below simple values are stored in the contract's named keys under
+following names:
+
+- The name of the token is stored under the key `name` with the type `String`.
+- The symbol of the token is stored under the key `symbol` with the type `String`.
+- The number of decimals is stored under the key `decimals` with the type `u8`.
+- The total supply of tokens is stored under the key `total_supply` with the type `U256`.
+
+#### Balances
+
+Balances are stored in the dictionary under the key `balances`. It is a
+key-value storage where:
+- The key is the account address of the token holder.
+- The value is the amount of tokens held by the account.
+
+The key is created using following algorithm: 
+- The account address is converted to bytes using standard `CLType` encoding.
+- The bytes are encoded to string using base64 encoding.
+
+An example balance key generation implementation:
+
+```rust
+use base64::prelude::{Engine, BASE64_STANDARD};
+
+fn balance_key(account: Key) -> String {
+    let preimage = key.to_bytes().unwrap();
+    BASE64_STANDARD.encode(preimage)
+}
+```
+
+The value is stored as a `U256` value.
+
+#### Allowances
+
+Allowances are stored in the dictionary under the key `allowances`.
+It is a key-value storage where:
+- The key is a pair of two account addresses: the owner and the spender.
+- The value is the amount of tokens that the spender is allowed to spend on behalf of the owner.
+
+The key is created using following algorithm:
+- The owner and spender addresses are converted to bytes using standard `CLType` encoding.
+- The bytes are concatenated into a single bytes vector.
+- The concatenated value is hashed using blake2b hashing algorithm.
+- The hash is encoded to string using hex encoding.
+
+An example balance key generation implementation:
+
+```rust
+fn allowance_key(owner: Key, spender: Key) -> String {
+    let mut preimage = Vec::new();
+    preimage.extend_from_slice(owner.to_bytes().unwrap());
+    preimage.extend_from_slice(spender.to_bytes().unwrap());
+    let hash_bytes = runtime::blake2b(preimage)
+    hex::encode(hash_bytes)
+}
+```
+
+## Exisiting implementations
+
+The CEP-18 token implementations are available under the following links:
+- https://github.com/casper-ecosystem/cep18
+- https://github.com/odradev/odra/blob/HEAD/modules/src/cep18_token.rs
