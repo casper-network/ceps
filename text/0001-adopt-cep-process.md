@@ -6,19 +6,19 @@
 
 CEP PR: [casperlabs/ceps#0001](https://github.com/casperlabs/ceps/pull/0001)
 
-Make specifications, ideas and implementation guidelines more developer friendly and accessible through the introduction of an easy to use CEPs process.
+Make specifications, ideas and implementation guidelines more developer friendly and accessible through the introduction of an easy to use Casper Enhancement Proposal (CEP) process.
 
 ## Motivation
 
 [motivation]: #motivation
 
-To standardize on a single unified process for capturing and specifying proposals for enhancements to our software.
+To standardize on a single unified process for capturing and specifying proposals for enhancements to the Casper software and protocol.
 
-There is a need for a reasonably lightweight process to discuss and adopt ideas, not only on the tech side, but governance and economics as well. We want this process to serve those behind these ideas and those implementing them first, instead of being caught in project management tooling. If possible, it should also be friendly to outside contributors, setting a low barrier for them to contribute feedback or their own ideas.
+There is a need for a reasonably lightweight process to discuss and adopt ideas, not only to evolve the technology, but also the Casper Network governance and economics. This process serves those behind these ideas and those implementing them first, rather than bogging down innovation cycles with project management tooling. This process should also be friendly to outside contributors, setting a low barrier for external contributors to submit feedback or propose their own ideas.
 
-Typical usecases are the discussion of refactoring or design decisions of the software, policies for governance, or schemes cooked up by the economics team.
+Typical use cases for the CEP process are the discussion of refactoring or design decisions of the Casper software, policies for governance of the Casper Network, or economic proposals affecting the CSPR token on the Casper Network.
 
-By introducing a little bit of formality, we hope to keep these designs fun and stave off the introduction of more restrictive processes. Creating CEPs should be easy using Markdown and GitHub, tools that everyone is already familiar with.
+By introducing a consistent format and process, we hope to keep the introduction of new ideas both straightforward as well as enjoyable. Creating CEPs should be created with universally familiar tools: Markdown on Github.
 
 Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albeit simplified, this document will tell you all you need to know about creating a CEP.
 
@@ -26,14 +26,25 @@ Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albe
 
 [guide-level-explanation]: #guide-level-explanation
 
-Any CEP (short for "casper enhancement proposal") starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create a CEP for these. However, after some initial vetting, discussion should be moved into the CEP format using the following process:
+Any CEP starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversations before making it into a pull request, there is no need to create a CEP for these. However, more substantial ideas, innovations and changes are either substantial enough or warrant public pre-disclosure and participation, that discussion should be moved into the CEP format using the following process:
 
-1. Fork the CEP repo at [casperlabs/ceps](https://github.com/casperlabs/ceps).
+1. Fork the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
 2. Create a new branch for your CEP on your private repo, name it accordingly, e.g. `my-new-proposal`.
 3. Copy the `0000-template.md` from the root to `text/0000-my-new-proposal.md`.
 4. Edit the file, creating the first draft of the CEP.
-5. Once the proposal is ready to be discussed, create a pull request to the CEP repo at [casperlabs/ceps](https://github.com/casperlabs/ceps). This PR will have a number, which is the official CEP number.
-6. Add one commit immediately that updates the file name and links inside the CEP with the assigned number. Afterwards, add a "Rendered" link pointing to the branch-latest file via GitHub on your CEPs branch for easier reading (e.g. `https://github.com/yourgitusername/CEPs/blob/my-new-proposal/text/1234-my-new-proposal.md`)
+5. Once the proposal is ready to be discussed, create a pull request to the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps). 
+6. You have two choices to number your CEP. Either: (a) The number of the PR you just made against the formal GitHub repository, or (b) a meaningful number that indicates alignment with a known concept outside of the Casper ecossytem; for example, you may call the Casper port of ERC-1155: CEP-1155. If naming a CEP after a known external concept, you have to reference the external concept as prior art in the CEP.
+7. Add one commit immediately that updates the file name and links inside the CEP with the assigned number, when basing it on the PR number. Afterwards, add a "Rendered" link pointing to the branch-latest file via GitHub on your CEPs branch for easier reading (e.g. `https://github.com/yourgitusername/CEPs/blob/my-new-proposal/text/1234-my-new-proposal.md`)
+
+## How to amend a CEP
+
+CEPs may require amendment from time to time. When introducing materially new functionality, it is generally preferred to create a new CEP. For example, an extension to an existing token standard in most cases warrants its own CEP. However, when changes are either relatively minor or mostly corrective in nature, a previously adopted CEP may go through an amendment process. Similarly, for a CEP that caries a name that is tied to a known external concept, for example a hypothetical CEP-1155 as the Casper-equivalent of ERC-1155, it is appropriate to apply changes to the existing CEP. Amendment adheres to the following process:
+
+1. Fork the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
+2. Create a new branch for the CEP you're amending on your private repo, name it accordingly, e.g. `cep-1155-amendment`.
+3. Edit the file and make your amendments
+4. Once the proposal is ready to be discussed, create a pull request to the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
+
 
 ### Discussion and merging
 
@@ -41,9 +52,7 @@ The CEP now enters the discussion period. Invite people to review it by requesti
 
 Feedback and comments to the PR should be handled via GitHub to capture the discussion for later reference.
 
-The initial guidance for acceptance is that once a CEP is finished and has at least two approvals from core developers it can be merged. As the project and this process matures, this guidance is expected to be replaced with a more formal requirement.
-
-The prescribed process ends here. How proposed features and changes make it into the product is currently unspecified.
+The standing guidance for acceptance is that once a CEP is finished and has at least two approvals from core developers it can be merged. 
 
 ### Deviations
 
@@ -57,8 +66,6 @@ The goal of this process is to unify and replace previous approaches on other co
 
 Another is potential growth of the process, making it become cumbersome. Any extension to this CEP itself should keep this in mind.
 
-While suggested, it is not possible to make the branch contain the CEP number, since it is assigned only by the time the PR is made, for which the branch already needs to exist. This is also why the seperate step updating the docs is required.
-
 ## Rationale and alternatives
 
 [rationale-and-alternatives]: #rationale-and-alternatives
@@ -67,9 +74,9 @@ Some of the existing infrastructure could accomodate this process at least parti
 
 ### Wiki/Confluence
 
-The internal confluence or any other Wiki could also handle some of this process, however they are typically lacking the sophisticated change tracking that is inherent in revision control systems like git. While this feature typically comes with a UX hit due to complexity, the fact that all people working on the project are familiar with developer tools makes this a non-issue.
+The internal confluence or any other Wiki could also handle some of this process, however they are typically lacking the sophisticated change tracking that is inherent in revision control systems like git. While this feature typically comes with a UX hit due to complexity, the fact that all people working on the project are familiar with developer tools makes this a non-issue. Moreover, private wikis do not allow for public participation or external submissions.
 
-### docs.casperlabs.io
+### docs.casper.network
 
 The docs repository is for outside-facing, polished documentation. People reading it are typically not concerned about new ideas that are still under discussion or not implemented yet, and do not want to read about refactorings of node internals.
 
