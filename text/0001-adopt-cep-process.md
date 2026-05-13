@@ -45,6 +45,8 @@ CEPs may require amendment from time to time. When introducing materially new fu
 3. Edit the file and make your amendments
 4. Once the proposal is ready to be discussed, create a pull request to the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
 
+Amendments that change normative requirements, interfaces, behavior, compatibility expectations, or implementation guidance must include an "Amendment History" section in the CEP. This section records each amendment's pull request, approval date, summary of changes, and any compatibility notes.
+
 
 ### Discussion and merging
 
