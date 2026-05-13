@@ -18,7 +18,7 @@ There is a need for a reasonably lightweight process to discuss and adopt ideas,
 
 Typical use cases for the CEP process are the discussion of refactoring or design decisions of the Casper software, policies for governance of the Casper Network, or economic proposals affecting the CSPR token on the Casper Network.
 
-By introducing a consistent format and process, we hope to keep the introduction of new ideas both straightforward as well as enjoyable. Creating CEPs should be created with universally familiar tools: Markdown on Github.
+By introducing a consistent format and process, we hope to keep the introduction of new ideas both straightforward as well as enjoyable. Creating CEPs should be created with universally familiar tools: Markdown on GitHub.
 
 Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albeit simplified, this document will tell you all you need to know about creating a CEP.
 
@@ -26,19 +26,19 @@ Largely based on the [Rust RFC process](https://github.com/rust-lang/rfcs), albe
 
 [guide-level-explanation]: #guide-level-explanation
 
-Any CEP starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversations before making it into a pull request, there is no need to create a CEP for these. However, more substantial ideas, innovations and changes are either substantial enough or warrant public pre-disclosure and participation, that discussion should be moved into the CEP format using the following process:
+Any CEP starts out with an idea. Some ideas are small enough to be exhaustively discussed in a short Slack conversation before making it into a pull request, there is no need to create a CEP for these. However, more substantial ideas, innovations and changes are either substantial enough or warrant public pre-disclosure and participation, that discussion should be moved into the CEP format using the following process:
 
 1. Fork the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
 2. Create a new branch for your CEP on your private repo, name it accordingly, e.g. `my-new-proposal`.
 3. Copy the `0000-template.md` from the root to `text/0000-my-new-proposal.md`.
 4. Edit the file, creating the first draft of the CEP.
 5. Once the proposal is ready to be discussed, create a pull request to the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps). 
-6. You have two choices to number your CEP. Either: (a) The number of the PR you just made against the formal GitHub repository, or (b) a meaningful number that indicates alignment with a known concept outside of the Casper ecossytem; for example, you may call the Casper port of ERC-1155: CEP-1155. If naming a CEP after a known external concept, you have to reference the external concept as prior art in the CEP.
+6. You have two choices to number your CEP. Either: (a) The number of the PR you just made against the formal GitHub repository, or (b) a meaningful number that indicates alignment with a known concept outside of the Casper ecosystem; for example, you may call the Casper port of ERC-1155: CEP-1155. If naming a CEP after a known external concept, you have to reference the external concept as prior art in the CEP.
 7. Add one commit immediately that updates the file name and links inside the CEP with the assigned number, when basing it on the PR number. Afterwards, add a "Rendered" link pointing to the branch-latest file via GitHub on your CEPs branch for easier reading (e.g. `https://github.com/yourgitusername/CEPs/blob/my-new-proposal/text/1234-my-new-proposal.md`)
 
 ## How to amend a CEP
 
-CEPs may require amendment from time to time. When introducing materially new functionality, it is generally preferred to create a new CEP. For example, an extension to an existing token standard in most cases warrants its own CEP. However, when changes are either relatively minor or mostly corrective in nature, a previously adopted CEP may go through an amendment process. Similarly, for a CEP that caries a name that is tied to a known external concept, for example a hypothetical CEP-1155 as the Casper-equivalent of ERC-1155, it is appropriate to apply changes to the existing CEP. Amendment adheres to the following process:
+CEPs may require amendment from time to time. When introducing materially new functionality, it is generally preferred to create a new CEP. For example, an extension to an existing token standard in most cases warrants its own CEP. However, when changes are either relatively minor or mostly corrective in nature, a previously adopted CEP may go through an amendment process. Similarly, for a CEP that carries a name that is tied to a known external concept, for example a hypothetical CEP-1155 as the Casper-equivalent of ERC-1155, it is appropriate to apply changes to the existing CEP. Amendment adheres to the following process:
 
 1. Fork the CEP repo at [casper-network/ceps](https://github.com/casper-network/ceps).
 2. Create a new branch for the CEP you're amending on your private repo, name it accordingly, e.g. `cep-1155-amendment`.
