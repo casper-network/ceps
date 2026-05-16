@@ -5,15 +5,16 @@ A standard interface for off-chain authorization of CEP-18 token transfers
 via signed messages. The standard is inspired by the ERC-3009 standard
 from Ethereum and is adapted to Casper's native multi-scheme signatures
 (ed25519, secp256k1). A token holder signs a typed message authorizing a
-specific transfer (recipient, amount, validity window, unique nonce), and
-any party may submit that signature to execute the transfer on the
-holder's behalf — enabling gas-less transfers, recipient-pulled
-transfers, and payment-style flows.
+specific transfer (recipient, amount, validity window, unique nonce).
+Depending on the entry point, that signed authorization may then be
+submitted either by any relayer or only by the intended recipient —
+enabling gas-less transfers, recipient-pulled transfers, and
+payment-style flows.
 
 This CEP extends [CEP-18](0018-token-standard.md). It does not change
 CEP-18's `transfer` / `transfer_from` semantics; it adds new entry points
-that produce the same balance state change as `transfer` while being
-callable by a third party.
+that produce the same balance state change as `transfer`, with relay
+rules defined per entry point.
 
 In contrast to [CEP-2612](2612-permit-extension.md), which signs an
 allowance for later pull-style spending, CEP-3009 signs a one-shot
@@ -33,7 +34,8 @@ The CEP-3009 extension is defined by:
 - three new mutating entry points (`transfer_with_authorization`,
   `receive_with_authorization`, `cancel_authorization`),
 - one read entry point (`authorization_state`),
-- the EIP-712 typed data definitions for the three structs above,
+- the EIP-712 typed data definitions for the three structs above
+  and the domain separator,
 - events,
 - error codes,
 - storage structure for replay-protection nonces and the EIP-712 chain
@@ -42,7 +44,7 @@ The CEP-3009 extension is defined by:
 Below definitions use Rust syntax, but they are not Rust specific. `Bytes`
 denotes the Casper `bytesrepr::Bytes` type; nonces are exactly 32 bytes.
 
-### Entrypoint interface
+### Entry point interface
 
 Contracts implementing this standard must expose the following entry
 points in addition to the CEP-18 interface:
@@ -102,7 +104,7 @@ pub trait CEP3009Interface {
     ///
     /// The signature is verified against the `ReceiveWithAuthorization`
     /// typed payload — a distinct typehash from
-    /// `transfer_with_authorization`, so a signature for one cannot be
+    /// `TransferWithAuthorization`, so a signature for one cannot be
     /// replayed against the other.
     ///
     /// In addition to the reverts of `transfer_with_authorization`, this
@@ -197,11 +199,11 @@ CEP-3009 defines three EIP-712 typed structs. For each, the digest is
 computed using the standard EIP-712 rule
 (`keccak256("\x19\x01" || domainSeparator || keccak256(typeHash || encodedData))`).
 
-The EIP-712 `domainSeparator` (shared across all three payloads) uses:
+The `domainSeparator` is defined as:
 - `name` — the CEP-18 token's `name`,
-- `chainId` — the contract's `chain_name` (see Storage below); Casper
-  does not have a numeric chain id, so the chain name string is used in
-  its place,
+- `chainId` — the contract's `chain_name` (see Storage below); It should be 
+   in the [CAIP-2](https://github.com/ChainAgnostic/namespaces/blob/main/casper/caip2.md)
+   format,
 - `verifyingContract` — the contract's own address.
 
 The salt and version fields are not used.
@@ -236,22 +238,20 @@ RECEIVE_WITH_AUTHORIZATION_TYPEHASH = 0xd099cc98ef71107a616c4f0f941f04c322d8e254
 
 #### Transfer / Receive encoded message
 
+`Address` encoding is defined as 33 bytes, where the first byte is a type tag:
+- `0x00` for `AccountHash`,
+- `0x01` for `PackageHash`.
+
 For both `TransferWithAuthorization` and `ReceiveWithAuthorization`, the
 encoded message data hashed alongside the typehash is the
-concatenation, in order, of:
+concatenation of `CLValue` representations, in order, of:
 
-- `from` encoded as EIP-712 `address` (32 bytes, big-endian, left-padded),
-- `to` encoded as EIP-712 `address` (32 bytes, big-endian, left-padded),
-- `value` encoded as EIP-712 `uint256` (32 bytes, big-endian),
-- `valid_after` encoded as a `u64` left-padded to 32 bytes,
-- `valid_before` encoded as a `u64` left-padded to 32 bytes,
+- `from` encoded as EIP-712 `address`,
+- `to` encoded as EIP-712 `address`,
+- `value` encoded as EIP-712 `U256`,
+- `valid_after` encoded as a `U256`,
+- `valid_before` encoded as a `U256`,
 - `nonce` as a 32-byte value (right-padded with zeros if shorter).
-
-Note: `validAfter` and `validBefore` appear as `uint256` in the type
-string above — that text is fixed by ERC-3009 compatibility, and a
-`u64` value left-padded to 32 bytes is byte-identical to a `uint256`
-encoding of the same number, so signatures produced by tooling that
-encodes them as `uint256` remain valid.
 
 #### CancelAuthorization
 
@@ -269,8 +269,8 @@ CANCEL_AUTHORIZATION_TYPEHASH = 0x158b0a9edf7a828aad02f63cd515c68ef2f50ba807396f
 
 Encoded message data:
 
-- `authorizer` encoded as EIP-712 `address` (32 bytes, big-endian, left-padded),
-- `nonce` as a 32-byte value (right-padded with zeros if shorter).
+- `authorizer` encoded as EIP-712 `address`,
+- `nonce` as a 32-byte value.
 
 ### Events interface
 
@@ -344,6 +344,8 @@ contract's named keys:
 
 - The chain name is stored under the key `chain_name` with the type
   `String`.
+- Recommend to use CAIP-2 chain ids (e.g.: casper:casper, casper:casper-test, or
+  casper:casper-net-1).
 
 #### Used nonces
 
@@ -378,6 +380,12 @@ fn used_nonce_key(authorizer: Key, nonce: Bytes) -> String {
 
 The same value is exposed read-only through the `authorization_state`
 entry point, which returns `false` when no entry is present.
+
+#### Generating new nonces
+
+It is user's responsibility to generate fresh nonces for new authorizations. The
+best practice is to use a cryptographically secure random generator to produce a
+32-byte nonce, and to check that the generated nonce is not already used.
 
 ## Existing implementations
 
