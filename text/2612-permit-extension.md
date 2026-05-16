@@ -24,8 +24,8 @@ Casper](https://github.com/casper-ecosystem/casper-eip-712).
 ## Specification
 
 The CEP-2612 extension is defined by:
-- one new entrypoint (`permit`),
-- the EIP-712 typed data definition for the `Permit` struct,
+- one new entry point (`permit`),
+- the EIP-712 typed data definition for the `Permit` struct and its domain separator,
 - error codes,
 - storage structure for replay-protection nonces and the EIP-712 chain
   identifier.
@@ -36,7 +36,7 @@ events are introduced by this CEP.
 
 Below definitions use Rust syntax, but they are not Rust specific.
 
-### Entrypoint interface
+### Entry point interface
 
 Contracts implementing this standard must expose the following entry point
 in addition to the CEP-18 interface:
@@ -55,7 +55,7 @@ pub trait CEP2612Interface {
     ///   disables the expiry check.
     /// - `public_key` is the signer's Casper public key.
     /// - `signature` is `public_key`'s signature over the EIP-712 digest
-    ///   of the `Permit` typed data (see below).
+    ///   of the `Permit` typed data.
     ///
     /// On success:
     /// - the allowance of `spender` over `owner` is set to `value` (i.e.
@@ -67,10 +67,12 @@ pub trait CEP2612Interface {
     /// The call must revert:
     /// - with `PermitExpired` if `deadline != u64::MAX` and the current
     ///   block time is strictly greater than `deadline`,
+    /// - with `InvalidPublicKey` if `owner` is not the `Address` derived
+    ///   from `public_key` (see "Signature scheme" below),
     /// - with `InvalidSignature` if `signature` does not verify against
     ///   `public_key` over the recomputed digest,
-    /// - with `InvalidSignature` if `owner` is not the `Address` derived
-    ///   from `public_key` (see "Signature scheme" below).
+    /// - with `InvalidNonce` if the `nonce` is not exactly equal to
+    ///   the one expected by the contract.
     ///
     /// The transaction caller (`env().caller()`) is irrelevant — `permit`
     /// is designed to be relayed by any third party.
@@ -98,10 +100,10 @@ the signer from the signature, so this CEP takes an explicit
 To preserve the property that a permit signature only authorizes its own
 `owner`'s allowance, implementations MUST enforce:
 
-1. `signature` is a valid signature of `public_key` over the EIP-712
-   digest of the `Permit` typed data (described below), AND
-2. `owner == Address::from(public_key)` — i.e. `owner` is the account
-   address corresponding to `public_key`.
+1. `owner == Address::from(public_key)` — i.e. `owner` is the account
+   address corresponding to `public_key` AND
+2. `signature` is a valid signature of `public_key` over the EIP-712
+   digest of the `Permit` typed data (described below).
 
 Without (2) a third party could sign a digest containing an unrelated
 `owner` field with their own key and have the contract set that
@@ -123,26 +125,30 @@ Its typehash is keccak256 of the type string above:
 PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9
 ```
 
-The encoded message data hashed alongside the typehash is the
-concatenation, in order, of:
+`Address` encoding is defined as 33 bytes, where the first byte is a type tag:
+- `0x00` for `AccountHash`,
+- `0x01` for `PackageHash`.
 
-- `owner` encoded as an EIP-712 `address` (32 bytes, big-endian, left-padded),
-- `spender` encoded as an EIP-712 `address` (32 bytes, big-endian, left-padded),
-- `value` encoded as an EIP-712 `uint256` (32 bytes, big-endian),
-- `nonce` encoded as an EIP-712 `uint256` (32 bytes, big-endian) — equal
+The encoded message data hashed alongside the typehash is the
+concatenation of `CLValue` representations, in order, of:
+
+- `owner` encoded as an EIP-712 `address`,
+- `spender` encoded as an EIP-712 `address`,
+- `value` encoded as an EIP-712 `U256`,
+- `nonce` encoded as an EIP-712 `U256` — equal
   to the current on-chain `permit_nonces[owner]` value at the time the
   signature was produced,
-- `deadline` encoded as an EIP-712 `uint64` (32 bytes, big-endian,
+- `deadline` encoded as an EIP-712 `U256` (32 bytes, big-endian,
   left-padded).
 
 The final digest is computed using the standard EIP-712 rule
 (`keccak256("\x19\x01" || domainSeparator || keccak256(typeHash || encodedData))`).
 
-The EIP-712 `domainSeparator` uses:
+The `domainSeparator` is defined as:
 - `name` — the CEP-18 token's `name`,
-- `chainId` — the contract's `chain_name` (see Storage below); Casper
-  does not have a numeric chain id, so the chain name string is used in
-  its place,
+- `chainId` — the contract's `chain_name` (see Storage below); It should be 
+   in the [CAIP-2](https://github.com/ChainAgnostic/namespaces/blob/main/casper/caip2.md)
+   format,
 - `verifyingContract` — the contract's own address.
 
 The salt and version fields are not used.
@@ -155,12 +161,15 @@ codes when the appropriate conditions are met:
 ```rust
 pub enum CEP2612Error {
     /// Either `signature` does not verify against `public_key` over the
-    /// recomputed digest, or `owner` is not the account address derived
-    /// from `public_key`.
+    /// recomputed digest.
     InvalidSignature = 36_000,
     /// The current block time is strictly greater than `deadline`, and
     /// `deadline` is not the sentinel `u64::MAX`.
     PermitExpired = 36_001,
+    /// The `nonce` is not exactly equal to the one expected by the contract.
+    InvalidNonce = 36_002,
+    /// `owner` is not the `Address` derived from `public_key`.
+    InvalidPublicKey = 36_003,
 }
 ```
 
