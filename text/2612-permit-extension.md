@@ -105,9 +105,10 @@ To preserve the property that a permit signature only authorizes its own
 2. `signature` is a valid signature of `public_key` over the EIP-712
    digest of the `Permit` typed data (described below).
 
-Without (2) a third party could sign a digest containing an unrelated
-`owner` field with their own key and have the contract set that
-`owner`'s allowance. Both checks should revert with `InvalidSignature`.
+Without (2) a third party could sign a digest containing an unrelated `owner`
+field with their own key and have the contract set that `owner`'s allowance. (1)
+reverts with `InvalidPublicKey`, while (2) reverts with `InvalidSignature` if
+not satisfied.
 
 ### Signed payload (EIP-712)
 
@@ -127,18 +128,18 @@ PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d61
 
 `Address` encoding is defined as 33 bytes, where the first byte is a type tag:
 - `0x00` for `AccountHash`,
-- `0x01` for `PackageHash`.
+- `0x01` for package's `Hash`.
 
-The encoded message data hashed alongside the typehash is the
-concatenation of `CLValue` representations, in order, of:
+The encodeData value is the concatenation of the following EIP-712-encoded
+fields, in order:
 
 - `owner` encoded as an EIP-712 `address`,
 - `spender` encoded as an EIP-712 `address`,
-- `value` encoded as an EIP-712 `U256`,
-- `nonce` encoded as an EIP-712 `U256` — equal
+- `value` encoded as an EIP-712 `uint256`,
+- `nonce` encoded as an EIP-712 `uint256` — equal
   to the current on-chain `permit_nonces[owner]` value at the time the
   signature was produced,
-- `deadline` encoded as an EIP-712 `U256` (32 bytes, big-endian,
+- `deadline` encoded as an EIP-712 `uint256` (32 bytes, big-endian,
   left-padded).
 
 The final digest is computed using the standard EIP-712 rule
