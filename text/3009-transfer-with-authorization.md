@@ -201,12 +201,17 @@ computed using the standard EIP-712 rule
 
 The `domainSeparator` is defined as:
 - `name` — the CEP-18 token's `name`,
-- `chainId` — the contract's `chain_name` (see Storage below); It should be 
+- `version` - the current major version of the signing domain,
+- `chain_name` — the contract's `chain_name` (see Storage below); It should be 
    in the [CAIP-2](https://github.com/ChainAgnostic/namespaces/blob/main/casper/caip2.md)
    format,
-- `verifyingContract` — the contract's own address.
+- `contract_package_hash` — the contract's own address.
 
-The salt and version fields are not used.
+Using `EIP-712` notation, the domain separator type string is:
+
+```
+EIP712Domain(string name,string version,string chain_name,bytes32 contract_package_hash)
+```
 
 #### TransferWithAuthorization
 
@@ -240,17 +245,16 @@ RECEIVE_WITH_AUTHORIZATION_TYPEHASH = 0xd099cc98ef71107a616c4f0f941f04c322d8e254
 
 `Address` encoding is defined as 33 bytes, where the first byte is a type tag:
 - `0x00` for `AccountHash`,
-- `0x01` for `PackageHash`.
+- `0x01` for contract package's `Hash`.
 
-For both `TransferWithAuthorization` and `ReceiveWithAuthorization`, the
-encoded message data hashed alongside the typehash is the
-concatenation of `CLValue` representations, in order, of:
+The encodeData value is the concatenation of the following EIP-712-encoded
+fields, in order:
 
 - `from` encoded as EIP-712 `address`,
 - `to` encoded as EIP-712 `address`,
-- `value` encoded as EIP-712 `U256`,
-- `valid_after` encoded as a `U256`,
-- `valid_before` encoded as a `U256`,
+- `value` encoded as EIP-712 `uint256`,
+- `valid_after` encoded as a `uint256`,
+- `valid_before` encoded as a `uint256`,
 - `nonce` as a 32-byte value (right-padded with zeros if shorter).
 
 #### CancelAuthorization
@@ -344,7 +348,7 @@ contract's named keys:
 
 - The chain name is stored under the key `chain_name` with the type
   `String`.
-- Recommend to use CAIP-2 chain ids (e.g.: casper:casper, casper:casper-test, or
+- Must use CAIP-2 chain ids (e.g.: casper:casper, casper:casper-test, or
   casper:casper-net-1).
 
 #### Used nonces
