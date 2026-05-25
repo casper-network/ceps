@@ -147,12 +147,17 @@ The final digest is computed using the standard EIP-712 rule
 
 The `domainSeparator` is defined as:
 - `name` — the CEP-18 token's `name`,
-- `chainId` — the contract's `chain_name` (see Storage below); It should be 
+- `version` - the current major version of the signing domain,
+- `chain_name` — the contract's `chain_name` (see Storage below); It should be 
    in the [CAIP-2](https://github.com/ChainAgnostic/namespaces/blob/main/casper/caip2.md)
    format,
-- `verifyingContract` — the contract's own address.
+- `contract_package_hash` — the contract's own address.
 
-The salt and version fields are not used.
+Using `EIP-712` notation, the domain separator type string is:
+
+```
+EIP712Domain(string name,string version,string chain_name,bytes32 contract_package_hash)
+```
 
 ### Error codes
 
