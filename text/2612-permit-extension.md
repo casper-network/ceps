@@ -232,4 +232,4 @@ before signing).
 ## Existing implementations
 
 A reference implementation of CEP-2612 is available at:
-- https://github.com/odradev/odra/blob/feature/gasless-op/modules/src/erc2612.rs (TODO: update after acceptance).
+- https://github.com/odradev/odra/blob/release/2.7.0/modules/src/cep2612.rs

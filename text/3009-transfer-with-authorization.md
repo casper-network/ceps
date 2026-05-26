@@ -394,4 +394,4 @@ best practice is to use a cryptographically secure random generator to produce a
 ## Existing implementations
 
 A reference implementation of CEP-3009 is available at:
-- https://github.com/odradev/odra/blob/d1650b9ceae885c9f4a9ab2574fab239eee0c41d/modules/src/erc3009.rs (TODO: update after acceptance).
+- https://github.com/odradev/odra/blob/release/2.7.0/modules/src/cep3009.rs
