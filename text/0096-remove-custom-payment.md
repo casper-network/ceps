@@ -4,7 +4,9 @@
 
 [summary]: #summary
 
-The original design of the Casper blockchain expected the sender of each transaction to include a separate wasm responsible, when executed, for buying the gas that would be used to execute the primary logic of that transaction. This was the original payment mechanism, and all versions of the blockchain as of DevNet onward included an implementation to allow this. This was initially the only way to buy gas to pay for the execution of transactions. 
+The original design of the Casper blockchain expected the sender of each transaction to include a separate wasm responsible, when executed, for buying the gas that would be used to execute the primary logic of that transaction. This was the original payment mechanism, and all versions of the blockchain as of DevNet onward included an implementation to allow this. 
+
+> **Note**: This was initially intended to be the only way to buy gas to pay for the execution of transactions, but other options soon proliferated.
 
 The blockchain issues every account a purse to hold token in (the `main_purse`), but permits an account to have permissions on multiple purses. The wasm based payment logic was intended to allow the sender of the transaction to provide bespoke logic to pay for gas from among any of the purses available to them, and / or record any accounting details.
 
@@ -21,7 +23,7 @@ At some point during the 1.5 development timeline, planning for 2.0 was ongoing 
 
 This removal did occur, along with the removal of other deprecated functionality, and initial rel candidates for 2.0 no longer supported it.
 
-However, prior to release there was general pushback on deprecation of features. A requirement was given to prioritize retro-compatibility across the board, and add back such removed functionality. along with other removed logic. 
+However, prior to release there was general pushback on deprecation of features. A requirement was given to prioritize retro-compatibility across the board, and add back such removed functionality.
 
 There were pragmatic reasons to do this, but it was not straightforward to restore Custom Payment specifically. The original payment processing had been entirely replaced for 2.0, so unlike most other deprecated features that were un-removed, bringing back Custom Payment required re-architecture and re-implementation. 
 
@@ -50,6 +52,7 @@ There are multiple sad paths. The most prominent of which is, it would be an att
 Thus, this must be protected against in some way.
 
 #### Payment Wasm Gas Cost
+
 As explained, Custom Payment is externally provided opaque wasm, which the node executes without knowledge of what the logic will do. Famously, we cannot know if there is an intrinsic halting state. Thus, gas must be paid to cover the cost of executing this wasm so that we can meter and forcibly halt it if the execution exceeds the amount of gas available. In this manner, it is ensured that the payment wasm will halt if executed. 
 
 > The payment wasm needs gas to be paid so that it can be executed. 
@@ -65,7 +68,7 @@ There are ways to avoid or mitigate this payment paradox. The Casper blockchain 
 
 If there is enough to cover the penalty for failed payment, we allow the payment wasm to execute. If it errors or fails to pay the expected amount, the penalty is taken from the initiator's `main_purse`.
 
-> **Side Note**: the need for a discoverable purse to charge a penalty to was the original forcing function to add an explicit `main_purse` to the `Account` model.
+> **Note**: the need for a discoverable purse to charge a penalty to was the original forcing function to add an explicit `main_purse` to the `Account` model.
 
 #### The 2.5 CSPR Failed Payment Penalty 
 
@@ -95,6 +98,7 @@ Secondarily, with the removal of the logic to process custom payment, nodes shou
 - A new test would be added to prove rejection of a transaction with custom payment wasm attached.
 
 ### Historical Concerns
+
 There are no historical concerns. All preexisting transactions, having executed in the past, would not be affected. The `block_synchronizer` would continue to acquire such transactions for historical blocks when necessary. 
 
 Prior to version 1.5 of the network, when a node joining the network acquired a historical block, they would execute it for themselves. This required the software to retain the ability to execute all historical transactions, retaining code execution paths in perpetuity and dispatching transactions into the relevant path. 
@@ -111,9 +115,8 @@ The Custom Payment feature has been on the chopping block for removal multiple t
 
 The following have been the counter-arguments put forth to keep it:
 
-- It is a flexible option that combines custom wasm with multiple purses. It provides some ineffable utilitarian value in the abstract, despite the lack of usage or enthusiasm for it.
-- Retro-compatibility, though this is largely abstract due to the general lack of usage.
-
+- It is a flexible option that combines custom wasm with multiple purses. It provides some ineffable utilitarian value, despite the lack of usage or enthusiasm for it.
+- Retro-compatibility, though (again) this is largely abstract due to the general lack of usage.
 
 ## Future possibilities
 
