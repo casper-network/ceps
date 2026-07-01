@@ -96,12 +96,12 @@ After this change, there is exactly one way to pay for a transaction: the native
 
 From the perspective of a typical user or dApp developer, nothing changes — they already pay from their `main_purse` via native payment and never authored Custom Payment wasm. The change is only observable to the (effectively empty) set of senders who were attaching Custom Payment wasm; such transactions are now rejected at acceptance time rather than executed.
 
-Because the 2.5 CSPR failed-payment penalty is what forced an effective minimum balance and minimum transfer amount, removing Custom Payment removes the reason that constant had to exist. The **minimum transaction cost** — expressed through the enforced minimum balance for execution permission and the minimum transfer amount — is correspondingly lowered. Rather than replace 2.5 CSPR with a new hard-coded magic number, this CEP proposes that these minimums be controlled by a chainspec value, so they can be tuned by network governance to reflect real market conditions instead of a pre-mainnet projection.
+Because the 2.5 CSPR failed-payment penalty is what forced an effective minimum balance and minimum transfer amount, removing Custom Payment removes the reason that constant had to exist. The **minimum transaction cost** — expressed through the enforced minimum balance for execution permission and the minimum transfer amount — is correspondingly lowered to **0.1 CSPR**, aligning it with the current cost of a native CSPR transfer, a value already specified in the chainspec. Rather than retaining an arbitrary standalone constant, the minimum is anchored to a meaningful, already-defined network parameter.
 
 Concretely:
 - A transaction that includes Custom Payment wasm is rejected by the node.
-- The enforced minimum `main_purse` balance required to permit execution is no longer pinned to 2.5 CSPR; it becomes a chainspec-configurable value that can be set materially lower.
-- The minimum transfer amount is likewise decoupled from 2.5 CSPR and driven by the same or a related chainspec value.
+- The enforced minimum `main_purse` balance required to permit execution is no longer pinned to 2.5 CSPR; it is lowered to **0.1 CSPR**, aligning it with the current cost of a native CSPR transfer as already specified in the chainspec.
+- The minimum transfer amount is likewise decoupled from 2.5 CSPR and set to **0.1 CSPR**, so that the minimum a new account can receive matches the minimum it needs to transact.
 
 ## Reference-level explanation
 
@@ -122,13 +122,13 @@ Secondarily, with the removal of the logic to process custom payment, nodes shou
 
 ### Lowering the Minimum Transaction Cost
 
-With Custom Payment removed, the 2.5 CSPR failed-payment penalty no longer needs to exist, and the values that were anchored to it can be lowered and made configurable:
+With Custom Payment removed, the 2.5 CSPR failed-payment penalty no longer needs to exist, and the values that were anchored to it are lowered to **0.1 CSPR**:
 
-- The enforced minimum `main_purse` balance required for execution permission is moved from the hard-coded 2.5 CSPR to a chainspec value (e.g. a `minimum_balance` / minimum-execution-balance setting).
-- The minimum transfer amount is decoupled from 2.5 CSPR and driven by a chainspec value (this may be the same value, or a distinct minimum-transfer setting, to be decided during implementation review).
+- The enforced minimum `main_purse` balance required for execution permission is moved from the hard-coded 2.5 CSPR to 0.1 CSPR.
+- The minimum transfer amount is decoupled from 2.5 CSPR and set to 0.1 CSPR.
 - Existing accounts and balances are unaffected; the change only relaxes the lower bounds going forward.
 
-The specific default value(s) for these chainspec settings are intentionally left to be fixed during implementation/governance review rather than baked into this CEP, so that the number reflects market conditions at activation rather than reintroducing a new fixed magic constant. The design intent is that these minimums be materially lower than 2.5 CSPR and adjustable without a code change.
+The chosen value of 0.1 CSPR is deliberately aligned with the current cost of a native CSPR transfer, which is already specified in the chainspec. This anchors the minimum to a meaningful, pre-existing network parameter rather than an arbitrary constant: an account must be able to hold at least enough to perform the cheapest native operation (a transfer), and no more should be required merely to exist and transact. This removes the "magic number" character of the old 2.5 CSPR value by tying the minimum to something the protocol already reasons about.
 
 ### Historical Concerns
 
@@ -151,7 +151,7 @@ The following have been the counter-arguments put forth to keep it:
 - It is a flexible option that combines custom wasm with multiple purses. It provides some ineffable utilitarian value, despite the lack of usage or enthusiasm for it.
 - Retro-compatibility, though (again) this is largely abstract due to the general lack of usage.
 
-For the minimum transaction cost change, the primary drawback is that lowering the minimum balance / minimum transfer reduces the economic friction that discourages dust accounts and dust transfers. Making the value chainspec-controlled mitigates this by allowing the network to raise it again if abuse emerges, without requiring a code change.
+For the minimum transaction cost change, the primary drawback is that lowering the minimum balance / minimum transfer to 0.1 CSPR reduces the economic friction that discourages dust accounts and dust transfers. This is mitigated by anchoring the minimum to the native-transfer cost already in the chainspec: the floor tracks the cheapest real operation rather than sitting arbitrarily low, and it can be revisited through the same chainspec parameter if abuse emerges.
 
 ## Rationale and alternatives
 
@@ -159,7 +159,7 @@ For the minimum transaction cost change, the primary drawback is that lowering t
 
 - **Why remove rather than keep-and-fix?** Custom Payment's core problem — the payment paradox — is intrinsic to executing opaque, sender-provided payment wasm; it cannot be "fixed" without the penalty/metering machinery that created the 2.5 CSPR anchor in the first place. Given zero meaningful usage, the design friction and blocked 2.0 features (contract self-pay, prepay) are not justified. Removal is the design that best serves the 2.0 native-payment direction.
 - **Alternative: keep Custom Payment, only lower the minimums.** Rejected: as long as Custom Payment exists, the failed-payment penalty must exist, and the penalty is what forces the effective minimum balance. The two changes are coupled; you cannot cleanly lower the minimum without removing the mechanism that anchors it.
-- **Alternative: replace 2.5 CSPR with a different fixed constant.** Rejected: this would simply reintroduce a new magic number destined to drift from market reality, repeating the original mistake. A chainspec-controlled (and potentially governance-tunable) value is preferred.
+- **Alternative: replace 2.5 CSPR with a different arbitrary constant.** Rejected: picking another standalone magic number would repeat the original mistake. Instead 0.1 CSPR is chosen precisely because it is *not* arbitrary — it is aligned with the native CSPR transfer cost already defined in the chainspec, so the minimum tracks the cheapest real operation an account can perform.
 - **Impact of not doing this:** the complexity drag on `contract_runtime` remains, advanced payment features stay blocked, and the minimum transaction cost stays artificially anchored to a pre-mainnet projection.
 
 ## Prior art
@@ -172,9 +172,8 @@ The move away from user-supplied payment logic toward native, protocol-level fee
 
 [unresolved-questions]: #unresolved-questions
 
-- What are the concrete default chainspec value(s) for the minimum execution balance and the minimum transfer amount at activation, and should they be a single shared value or two distinct settings?
-- Should these minimums be a static chainspec value or wired to a dynamically calculated / on-chain-voted mechanism? (This CEP proposes chainspec as the baseline; a dynamic mechanism is left as a future possibility.)
 - Are there any tooling, SDK, or client surfaces that still construct or expect Custom Payment wasm and would need deprecation notices ahead of rejection at the node?
+- Should the minimum execution balance and the minimum transfer amount remain a single shared 0.1 CSPR value, or is there a case for splitting them into two distinct settings in the future? (This CEP sets both to 0.1 CSPR, aligned with the native-transfer cost.)
 
 ## Future possibilities
 
@@ -182,6 +181,6 @@ The move away from user-supplied payment logic toward native, protocol-level fee
 
 Removal of Custom Payment also removes the incompatibility blockage of more advanced payment options (contract self-pay, prepay, etc.).
 
-It also removes the center of gravity holding down the 2.5 CSPR magical value. Beyond the chainspec-based minimum proposed here, this opens the door for lowering additional flat costs that were reasoned about relative to 2.5 CSPR.
+It also removes the center of gravity holding down the 2.5 CSPR magical value. Beyond the 0.1 CSPR minimum set here, this opens the door for lowering additional flat costs that were reasoned about relative to 2.5 CSPR.
 
-It also falls neatly in line with changing the protocol to control minimum balance (for both execution permission, and new purse creation) via a dynamically calculated or voted upon value, rather than a static chainspec setting.
+It also falls neatly in line with a possible future move to control minimum balance (for both execution permission and new purse creation) via a dynamically calculated or voted-upon value, rather than a static chainspec setting.
