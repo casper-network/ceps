@@ -130,6 +130,8 @@ With Custom Payment removed, the 2.5 CSPR failed-payment penalty no longer needs
 
 The chosen value of 0.1 CSPR is deliberately aligned with the current cost of a native CSPR transfer, which is already specified in the chainspec. This anchors the minimum to a meaningful, pre-existing network parameter rather than an arbitrary constant: an account must be able to hold at least enough to perform the cheapest native operation (a transfer), and no more should be required merely to exist and transact. This removes the "magic number" character of the old 2.5 CSPR value by tying the minimum to something the protocol already reasons about.
 
+A direct beneficiary of this change is **microtransactions**. Under the old regime, an account needed 2.5 CSPR just to be permitted to transact, and a transfer of less than 2.5 CSPR was disallowed. A payment of a small fraction of a CSPR that nonetheless carries a 2.5 CSPR floor cannot meaningfully be called a "microtransaction" — the floor dwarfs the payload. Lowering the minimum to 0.1 CSPR, the native-transfer cost, makes genuine micro-value transfers viable: the amount moved can now be on the order of the network's own operational cost rather than an order of magnitude above it.
+
 ### Historical Concerns
 
 There are no historical concerns. All preexisting transactions, having executed in the past, would not be affected. The `block_synchronizer` would continue to acquire such transactions for historical blocks when necessary. 
@@ -181,6 +183,6 @@ The move away from user-supplied payment logic toward native, protocol-level fee
 
 Removal of Custom Payment also removes the incompatibility blockage of more advanced payment options (contract self-pay, prepay, etc.).
 
-It also removes the center of gravity holding down the 2.5 CSPR magical value. Beyond the 0.1 CSPR minimum set here, this opens the door for lowering additional flat costs that were reasoned about relative to 2.5 CSPR.
+It also removes the center of gravity holding down the 2.5 CSPR magical value. Beyond the 0.1 CSPR minimum set here, this opens the door for lowering additional flat costs that were reasoned about relative to 2.5 CSPR, and for microtransaction-driven use cases (tipping, per-call metering, pay-per-use services) that were previously impractical under a 2.5 CSPR floor.
 
 It also falls neatly in line with a possible future move to control minimum balance (for both execution permission and new purse creation) via a dynamically calculated or voted-upon value, rather than a static chainspec setting.
