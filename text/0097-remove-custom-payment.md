@@ -1,8 +1,10 @@
-# Remove Custom Payment Support
+# Remove Custom Payment Support and Lower Minimum Transaction Cost
 
 ## Summary
 
 [summary]: #summary
+
+CEP PR: [casper-network/ceps#102](https://github.com/casper-network/ceps/pull/102)
 
 The original design of the Casper blockchain expected the sender of each transaction to include a separate wasm responsible, when executed, for buying the gas that would be used to execute the primary logic of that transaction. This was the original payment mechanism, and all versions of the blockchain as of DevNet onward included an implementation to allow this. 
 
@@ -17,6 +19,8 @@ Soon, still prior to mainnet, having to constantly pass the same payment wasm on
 Still later, this default behavior was uplifted further into native logic and the Standard Payment wasm was dispensed with entirely. 
 
 The option for a sender to provide Custom Payment wasm was retained for retro-compatibility, but saw little usage. 
+
+This CEP proposes two related changes: (1) the removal of Custom Payment support, and (2) the consequent lowering of the minimum transaction cost (the effective minimum balance / minimum transfer amount) that was historically anchored to the 2.5 CSPR failed-payment penalty. The second change is enabled by the first: removing Custom Payment removes the mechanism that made 2.5 CSPR a load-bearing constant.
 
 ### Deprecation, Removal, Restoration
 At some point during the 1.5 development timeline, planning for 2.0 was ongoing in the background. The nature of Custom Payment was in the way of various planned 2.0 features, and after discussion the decision was made to deprecate the feature with removal to follow with 2.0 release.
@@ -84,9 +88,28 @@ In this way, the magical value of 2.5 became insinuated into various pricing con
 
 Over time, the original purpose of this magical number as the custom payment penalty amount became esoteric.
 
-## Implementation Plan
+## Guide-level explanation
 
-The steps to enact this proposal are simple, and the effort is low for someone familiar with the logic. 
+[guide-level-explanation]: #guide-level-explanation
+
+After this change, there is exactly one way to pay for a transaction: the native payment handling introduced in 2.0, where the intent to pay for execution is expressed in the transaction itself. The ability to attach opaque Custom Payment wasm to a transaction is removed.
+
+From the perspective of a typical user or dApp developer, nothing changes — they already pay from their `main_purse` via native payment and never authored Custom Payment wasm. The change is only observable to the (effectively empty) set of senders who were attaching Custom Payment wasm; such transactions are now rejected at acceptance time rather than executed.
+
+Because the 2.5 CSPR failed-payment penalty is what forced an effective minimum balance and minimum transfer amount, removing Custom Payment removes the reason that constant had to exist. The **minimum transaction cost** — expressed through the enforced minimum balance for execution permission and the minimum transfer amount — is correspondingly lowered. Rather than replace 2.5 CSPR with a new hard-coded magic number, this CEP proposes that these minimums be controlled by a chainspec value, so they can be tuned by network governance to reflect real market conditions instead of a pre-mainnet projection.
+
+Concretely:
+- A transaction that includes Custom Payment wasm is rejected by the node.
+- The enforced minimum `main_purse` balance required to permit execution is no longer pinned to 2.5 CSPR; it becomes a chainspec-configurable value that can be set materially lower.
+- The minimum transfer amount is likewise decoupled from 2.5 CSPR and driven by the same or a related chainspec value.
+
+## Reference-level explanation
+
+[reference-level-explanation]: #reference-level-explanation
+
+### Removal of Custom Payment
+
+The steps to enact the removal are simple, and the effort is low for someone familiar with the logic. 
 
 The majority of the custom payment handling logic is at the top of the transaction processing loop in the `contract_runtime`. 
 - All the relevant logic would be removed, greatly simplifying the transaction processing loop.
@@ -96,6 +119,16 @@ The majority of the custom payment handling logic is at the top of the transacti
 Secondarily, with the removal of the logic to process custom payment, nodes should reject transactions containing custom payment.
 - The `transaction_acceptor` would be modified to reject such transactions.
 - A new test would be added to prove rejection of a transaction with custom payment wasm attached.
+
+### Lowering the Minimum Transaction Cost
+
+With Custom Payment removed, the 2.5 CSPR failed-payment penalty no longer needs to exist, and the values that were anchored to it can be lowered and made configurable:
+
+- The enforced minimum `main_purse` balance required for execution permission is moved from the hard-coded 2.5 CSPR to a chainspec value (e.g. a `minimum_balance` / minimum-execution-balance setting).
+- The minimum transfer amount is decoupled from 2.5 CSPR and driven by a chainspec value (this may be the same value, or a distinct minimum-transfer setting, to be decided during implementation review).
+- Existing accounts and balances are unaffected; the change only relaxes the lower bounds going forward.
+
+The specific default value(s) for these chainspec settings are intentionally left to be fixed during implementation/governance review rather than baked into this CEP, so that the number reflects market conditions at activation rather than reintroducing a new fixed magic constant. The design intent is that these minimums be materially lower than 2.5 CSPR and adjustable without a code change.
 
 ### Historical Concerns
 
@@ -118,12 +151,37 @@ The following have been the counter-arguments put forth to keep it:
 - It is a flexible option that combines custom wasm with multiple purses. It provides some ineffable utilitarian value, despite the lack of usage or enthusiasm for it.
 - Retro-compatibility, though (again) this is largely abstract due to the general lack of usage.
 
+For the minimum transaction cost change, the primary drawback is that lowering the minimum balance / minimum transfer reduces the economic friction that discourages dust accounts and dust transfers. Making the value chainspec-controlled mitigates this by allowing the network to raise it again if abuse emerges, without requiring a code change.
+
+## Rationale and alternatives
+
+[rationale-and-alternatives]: #rationale-and-alternatives
+
+- **Why remove rather than keep-and-fix?** Custom Payment's core problem — the payment paradox — is intrinsic to executing opaque, sender-provided payment wasm; it cannot be "fixed" without the penalty/metering machinery that created the 2.5 CSPR anchor in the first place. Given zero meaningful usage, the design friction and blocked 2.0 features (contract self-pay, prepay) are not justified. Removal is the design that best serves the 2.0 native-payment direction.
+- **Alternative: keep Custom Payment, only lower the minimums.** Rejected: as long as Custom Payment exists, the failed-payment penalty must exist, and the penalty is what forces the effective minimum balance. The two changes are coupled; you cannot cleanly lower the minimum without removing the mechanism that anchors it.
+- **Alternative: replace 2.5 CSPR with a different fixed constant.** Rejected: this would simply reintroduce a new magic number destined to drift from market reality, repeating the original mistake. A chainspec-controlled (and potentially governance-tunable) value is preferred.
+- **Impact of not doing this:** the complexity drag on `contract_runtime` remains, advanced payment features stay blocked, and the minimum transaction cost stays artificially anchored to a pre-mainnet projection.
+
+## Prior art
+
+[prior-art]: #prior-art
+
+The move away from user-supplied payment logic toward native, protocol-level fee handling mirrors the trajectory of other smart-contract platforms. Ethereum, for example, never exposed arbitrary "payment wasm" and instead handles gas payment natively at the protocol level (with EIP-1559 later making fee handling more dynamic and protocol-managed). Chains that expose minimum-balance / rent-style constants (e.g. Solana's rent-exempt minimum) have generally found value in making such thresholds protocol-configurable rather than hard-coded. The lesson consistently drawn is that fee and minimum-balance parameters should be adjustable via configuration/governance rather than frozen as source-level constants — which is the direction this CEP takes.
+
+## Unresolved questions
+
+[unresolved-questions]: #unresolved-questions
+
+- What are the concrete default chainspec value(s) for the minimum execution balance and the minimum transfer amount at activation, and should they be a single shared value or two distinct settings?
+- Should these minimums be a static chainspec value or wired to a dynamically calculated / on-chain-voted mechanism? (This CEP proposes chainspec as the baseline; a dynamic mechanism is left as a future possibility.)
+- Are there any tooling, SDK, or client surfaces that still construct or expect Custom Payment wasm and would need deprecation notices ahead of rejection at the node?
+
 ## Future possibilities
 
 [future-possibilities]: #future-possibilities
 
 Removal of Custom Payment also removes the incompatibility blockage of more advanced payment options (contract self-pay, prepay, etc.).
 
-It also removes the center of gravity holding down the 2.5 CSPR magical value. This opens the door for lowering certain flat costs. 
+It also removes the center of gravity holding down the 2.5 CSPR magical value. Beyond the chainspec-based minimum proposed here, this opens the door for lowering additional flat costs that were reasoned about relative to 2.5 CSPR.
 
-It also falls neatly in line with changing the protocol to control minimum balance (for both execution permission, and new purse creation) via a chainspec value, or a dynamically calculated or voted upon value.
+It also falls neatly in line with changing the protocol to control minimum balance (for both execution permission, and new purse creation) via a dynamically calculated or voted upon value, rather than a static chainspec setting.
