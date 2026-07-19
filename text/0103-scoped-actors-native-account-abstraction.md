@@ -4,7 +4,7 @@
 
 [summary]: #summary
 
-CEP PR: [casper-network/ceps#0000](https://github.com/casper-network/ceps/pull/0000)
+CEP PR: [casper-network/ceps#103](https://github.com/casper-network/ceps/pull/103)
 
 This CEP extends Casper's `AddressableEntity` account model with **scoped actors**: authorized credentials carrying a permission bitmask, an optional expiry, and an optional policy gate that restricts a credential to a single manager contract. Together with new native signature schemes (P-256 / WebAuthn passkeys) and a domain-separated gas-payer authorization, this delivers the full account-abstraction feature set — custom authentication, session keys, spending policies, and gas sponsorship — as a protocol-native capability, without ERC-4337-style bundler infrastructure or EIP-7702-style code injection.
 
